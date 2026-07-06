@@ -23,8 +23,8 @@ type hoverContentData struct {
 
 // HostFunctionHoverContent builds markdown-friendly hover content for the given host function.
 //
-// The presentation (markdown structure) lives in hover.tmpl, embedded at build time via
-// go:embed, so documentation formatting can be updated without touching Go code.
+// The presentation (markdown structure) lives in hover.tmpl, embedded at build time so
+// documentation formatting can be updated without touching Go code.
 func HostFunctionHoverContent(name string) string {
 	data := hoverContentData{
 		Name:        name,
