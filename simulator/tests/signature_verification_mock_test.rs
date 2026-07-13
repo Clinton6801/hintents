@@ -3,7 +3,7 @@
 
 //! Tests for signature verification mocking functionality
 
-use simulator::types::SimulationRequest;
+use erst_sim::types::SimulationRequest;
 
 #[test]
 fn test_signature_verification_mock_true() {

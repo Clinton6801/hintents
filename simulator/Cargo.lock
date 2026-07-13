@@ -782,6 +782,43 @@ dependencies = [
 ]
 
 [[package]]
+name = "erst-sim"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "base64 0.21.7",
+ "bincode",
+ "clap",
+ "colored",
+ "dirs",
+ "ed25519-dalek",
+ "gimli",
+ "hex",
+ "inferno",
+ "jsonschema",
+ "k256",
+ "libc",
+ "libloading",
+ "object",
+ "once_cell",
+ "pem-rfc7468",
+ "rand",
+ "regex",
+ "serde",
+ "serde_json",
+ "sha2",
+ "soroban-env-host",
+ "tempfile",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
+ "wasmparser 0.245.1",
+ "wat",
+ "zstd",
+]
+
+[[package]]
 name = "escape-bytes"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2396,43 +2433,6 @@ name = "simd-adler32"
 version = "0.3.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "703d5c7ef118737c72f1af64ad2f6f8c5e1921f818cdcb97b8fe6fc69bf66214"
-
-[[package]]
-name = "simulator"
-version = "0.1.0"
-dependencies = [
- "async-trait",
- "base64 0.21.7",
- "bincode",
- "clap",
- "colored",
- "dirs",
- "ed25519-dalek",
- "gimli",
- "hex",
- "inferno",
- "jsonschema",
- "k256",
- "libc",
- "libloading",
- "object",
- "once_cell",
- "pem-rfc7468",
- "rand",
- "regex",
- "serde",
- "serde_json",
- "sha2",
- "soroban-env-host",
- "tempfile",
- "thiserror 2.0.18",
- "tokio",
- "tracing",
- "tracing-subscriber",
- "wasmparser 0.245.1",
- "wat",
- "zstd",
-]
 
 [[package]]
 name = "slab"

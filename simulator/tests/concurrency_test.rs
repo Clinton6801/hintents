@@ -1,8 +1,8 @@
 // Copyright 2026 Erst Users
 // SPDX-License-Identifier: Apache-2.0
 
-use simulator::source_map_cache::{SourceMapCache, SourceMapCacheEntry};
-use simulator::source_mapper::SourceLocation;
+use erst_sim::source_map_cache::{SourceMapCache, SourceMapCacheEntry};
+use erst_sim::source_mapper::SourceLocation;
 use std::collections::HashMap;
 use std::sync::Arc;
 use std::thread;

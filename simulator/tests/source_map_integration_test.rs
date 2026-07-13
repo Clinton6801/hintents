@@ -20,7 +20,7 @@ use gimli::write::{
 };
 use gimli::{EndianSlice, LineEncoding, LittleEndian, SectionId};
 use object::{Object, ObjectSection};
-use simulator::source_mapper::SourceMapper;
+use erst_sim::source_mapper::SourceMapper;
 
 // Address in the fixture that maps to src/test.rs:42
 const CRASH_ADDR: u64 = 0x1000;

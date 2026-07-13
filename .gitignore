@@ -121,3 +121,11 @@ Resource.rc
 *.msi
 *.msix
 *.cab
+
+# Erst local debugging artifacts
+.erst/cache/
+.erst/snapshots/
+.erst/traces/
+*.trace.json
+*.flamegraph.svg
+*.flamegraph.html

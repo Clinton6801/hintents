@@ -124,9 +124,7 @@ func (s *Session) RunPipeline(ctx context.Context, p *pipeline.Pipeline) ([]*Inv
 	for _, cmd := range p.Commands {
 		// Replace $0, $1 with previous results (simplified)
 		resolvedArgs := make([]string, len(cmd.Args))
-		for i, arg := range cmd.Args {
-			resolvedArgs[i] = arg
-		}
+		copy(resolvedArgs, cmd.Args)
 		
 		res, err := s.Invoke(ctx, cmd.Target, cmd.Type, resolvedArgs) // Use Type as function name for simplicity
 		if err != nil {
