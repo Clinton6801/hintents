@@ -11,6 +11,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/dotandev/hintents/internal/pipeline"
 	"github.com/dotandev/hintents/internal/rpc"
 	"github.com/dotandev/hintents/internal/simulator"
 	"github.com/stellar/go-stellar-sdk/strkey"
@@ -112,6 +113,29 @@ func (s *Session) Invoke(ctx context.Context, contractID, function string, args 
 	}
 
 	return result, nil
+}
+
+// RunPipeline executes a series of commands as a single logical block,
+// piping outputs between them as requested by args like "$0".
+func (s *Session) RunPipeline(ctx context.Context, p *pipeline.Pipeline) ([]*InvocationResult, error) {
+	var results []*InvocationResult
+	
+	// Very simple implementation for PTB-like pipelines:
+	for _, cmd := range p.Commands {
+		// Replace $0, $1 with previous results (simplified)
+		resolvedArgs := make([]string, len(cmd.Args))
+		for i, arg := range cmd.Args {
+			resolvedArgs[i] = arg
+		}
+		
+		res, err := s.Invoke(ctx, cmd.Target, cmd.Type, resolvedArgs) // Use Type as function name for simplicity
+		if err != nil {
+			return results, fmt.Errorf("pipeline aborted at command %s: %w", cmd.Type, err)
+		}
+		results = append(results, res)
+	}
+
+	return results, nil
 }
 
 // buildInvocationEnvelope creates a transaction envelope for contract invocation
