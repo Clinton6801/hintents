@@ -90,10 +90,14 @@ func (c *Client) Install(ctx context.Context, pkg string) (string, error) {
 
 	logger.Logger.Info("Resolving package from GitHub...", "org", ref.Org, "repo", ref.Repo, "version", ref.Version)
 
-	// Fetch from GitHub raw content (MVP)
-	// Example: https://raw.githubusercontent.com/openzeppelin/token/v1.0.0/contract.wasm
-	// For production, we'd query the GitHub API for release assets.
-	url := fmt.Sprintf("https://raw.githubusercontent.com/%s/%s/%s/contract.wasm", ref.Org, ref.Repo, ref.Version)
+	// Fetch from custom registry or fallback to GitHub raw content (MVP)
+	baseURL := os.Getenv("ERST_REGISTRY_URL")
+	var url string
+	if baseURL != "" {
+		url = fmt.Sprintf("%s/%s/%s/%s/contract.wasm", strings.TrimRight(baseURL, "/"), ref.Org, ref.Repo, ref.Version)
+	} else {
+		url = fmt.Sprintf("https://raw.githubusercontent.com/%s/%s/%s/contract.wasm", ref.Org, ref.Repo, ref.Version)
+	}
 	
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
