@@ -679,7 +679,7 @@ fn main() {
                                         // Attempt to track assets if this looks like a token event
                                         if topics.len() >= 2 && request.enable_asset_safety {
                                             // Decoded event names are usually the second topic, we just do a heuristic
-                                            let function_topic = format!("{:?}", v0.topics.get(0).unwrap());
+                                            let function_topic = format!("{:?}", v0.topics.first().unwrap());
                                             if function_topic.contains("transfer") {
                                                 // mock tracking for MVP demo
                                                 asset_tracker.record_transfer("sender", "receiver", 100);
