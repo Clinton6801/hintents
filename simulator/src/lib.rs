@@ -3,6 +3,7 @@
 
 #![allow(clippy::pedantic, clippy::nursery, dead_code)]
 
+pub mod asset_tracker;
 pub mod context;
 pub mod gas_optimizer;
 pub mod git_detector;

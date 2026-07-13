@@ -6,6 +6,7 @@
 use crate::gas_optimizer::OptimizationReport;
 use crate::source_mapper::SourceLocation;
 use crate::stack_trace::WasmStackTrace;
+use crate::asset_tracker::AssetAnomaly;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -54,6 +55,8 @@ pub struct SimulationRequest {
     pub restore_preamble: Option<serde_json::Value>,
     #[serde(default)]
     pub include_linear_memory: bool,
+    #[serde(default)]
+    pub enable_asset_safety: bool,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -96,6 +99,8 @@ pub struct SimulationResponse {
     pub wasm_offset: Option<u64>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub linear_memory_dump: Option<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub asset_anomalies: Vec<AssetAnomaly>,
 }
 
 #[derive(Debug, Serialize)]

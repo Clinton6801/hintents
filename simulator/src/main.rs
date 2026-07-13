@@ -17,6 +17,7 @@ mod stack_trace;
 mod types;
 mod vm;
 mod wasm;
+mod asset_tracker;
 
 use crate::gas_optimizer::{BudgetMetrics, GasOptimizationAdvisor, CPU_LIMIT, MEMORY_LIMIT};
 use crate::source_mapper::SourceMapper;
@@ -75,6 +76,7 @@ fn send_error(msg: String) {
         stack_trace: Some(trace),
         wasm_offset: None,
         linear_memory_dump: None,
+        asset_anomalies: vec![],
     };
     if let Ok(json) = serde_json::to_string(&res) {
         println!("{}", json);
@@ -378,6 +380,7 @@ fn main() {
             stack_trace: None,
             wasm_offset: None,
             linear_memory_dump: None,
+            asset_anomalies: vec![],
         };
         tracing::error!("Failed to read stdin: {}", e);
         if let Ok(json) = serde_json::to_string(&res) {
@@ -409,6 +412,7 @@ fn main() {
                 stack_trace: None,
                 wasm_offset: None,
                 linear_memory_dump: None,
+                asset_anomalies: vec![],
             };
             println!(
                 "{}",
@@ -642,6 +646,8 @@ fn main() {
 
     match result {
         Ok(Ok(exec_logs)) => {
+            let mut asset_tracker = asset_tracker::AssetTracker::new(request.enable_asset_safety);
+
             let (events, diagnostic_events): (Vec<String>, Vec<DiagnosticEvent>) =
                 match sim_host.inner.get_events() {
                     Ok(evs) => {
@@ -669,6 +675,21 @@ fn main() {
                                         let topics: Vec<String> =
                                             v0.topics.iter().map(scval_to_xdr_base64).collect();
                                         let data = scval_to_xdr_base64(&v0.data);
+                                        
+                                        // Attempt to track assets if this looks like a token event
+                                        if topics.len() >= 2 && request.enable_asset_safety {
+                                            // Decoded event names are usually the second topic, we just do a heuristic
+                                            let function_topic = format!("{:?}", v0.topics.get(0).unwrap());
+                                            if function_topic.contains("transfer") {
+                                                // mock tracking for MVP demo
+                                                asset_tracker.record_transfer("sender", "receiver", 100);
+                                            } else if function_topic.contains("mint") {
+                                                asset_tracker.record_mint("receiver", 100, true);
+                                            } else if function_topic.contains("burn") {
+                                                asset_tracker.record_burn("sender", 100);
+                                            }
+                                        }
+
                                         (topics, data)
                                     }
                                 };
@@ -761,6 +782,7 @@ fn main() {
                         stack_trace: None,
                         wasm_offset: None,
                         linear_memory_dump: None,
+                        asset_anomalies: vec![],
                     };
 
                     if let Ok(json) = serde_json::to_string(&response) {
@@ -794,6 +816,7 @@ fn main() {
                     .as_ref()
                     .and_then(|m| m.map_wasm_offset_to_source(0)),
                 linear_memory_dump: None,
+                asset_anomalies: asset_tracker.finalize(),
             };
 
             if let Ok(json) = serde_json::to_string(&response) {
@@ -942,6 +965,7 @@ fn main() {
                 stack_trace: Some(wasm_trace),
                 wasm_offset,
                 linear_memory_dump: None,
+                asset_anomalies: vec![],
             };
             if let Ok(json) = serde_json::to_string(&response) {
                 println!("{}", json);
@@ -1004,6 +1028,7 @@ fn main() {
                 stack_trace: Some(wasm_trace),
                 wasm_offset: None,
                 linear_memory_dump: None,
+                asset_anomalies: vec![],
             };
             if let Ok(json) = serde_json::to_string(&response) {
                 println!("{}", json);

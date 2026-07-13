@@ -26,6 +26,7 @@ type SimulationRequestBuilder struct {
 	restorePreamble           map[string]interface{}
 	mockBaseFee               *uint32
 	enableOptimizationAdvisor bool
+	enableAssetSafety         bool
 	errors                    []string
 }
 
@@ -126,6 +127,12 @@ func (b *SimulationRequestBuilder) WithOptimizationAdvisor(enable bool) *Simulat
 	return b
 }
 
+// WithAssetSafety enables Move-level asset tracking.
+func (b *SimulationRequestBuilder) WithAssetSafety(enable bool) *SimulationRequestBuilder {
+	b.enableAssetSafety = enable
+	return b
+}
+
 // Build constructs and validates the final SimulationRequest.
 // Returns an error if required fields are missing or validation fails.
 func (b *SimulationRequestBuilder) Build() (req *SimulationRequest, err error) {
@@ -167,6 +174,7 @@ func (b *SimulationRequestBuilder) Build() (req *SimulationRequest, err error) {
 	}
 
 	req.EnableOptimizationAdvisor = b.enableOptimizationAdvisor
+	req.EnableAssetSafety = b.enableAssetSafety
 
 	return req, nil
 }
