@@ -119,13 +119,13 @@ func (s *Session) Invoke(ctx context.Context, contractID, function string, args 
 // piping outputs between them as requested by args like "$0".
 func (s *Session) RunPipeline(ctx context.Context, p *pipeline.Pipeline) ([]*InvocationResult, error) {
 	var results []*InvocationResult
-	
+
 	// Very simple implementation for PTB-like pipelines:
 	for _, cmd := range p.Commands {
 		// Replace $0, $1 with previous results (simplified)
 		resolvedArgs := make([]string, len(cmd.Args))
 		copy(resolvedArgs, cmd.Args)
-		
+
 		res, err := s.Invoke(ctx, cmd.Target, cmd.Type, resolvedArgs) // Use Type as function name for simplicity
 		if err != nil {
 			return results, fmt.Errorf("pipeline aborted at command %s: %w", cmd.Type, err)

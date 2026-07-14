@@ -237,8 +237,6 @@ func cloneRequest(req *SimulationRequest) *SimulationRequest {
 	return &reqCopy
 }
 
-
-
 // analyzeGasImpact calculates gas cost variance across protocol versions
 func analyzeGasImpact(gasCosts map[uint32]uint64) GasImpact {
 	if len(gasCosts) == 0 {

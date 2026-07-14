@@ -25,15 +25,15 @@ import (
 // ─── flags specific to the compare command ────────────────────────────────────
 
 var (
-	cmpNetworkFlag   string
-	cmpRPCURLFlag    string
-	cmpRPCTokenFlag  string
-	cmpLocalWasmFlag string
-	cmpBridgeWasm    []string
-	cmpOptimizeFlag  bool
-	cmpArgsFlag      []string
-	cmpVerboseFlag   bool
-	cmpSimPathFlag   string
+	cmpNetworkFlag     string
+	cmpRPCURLFlag      string
+	cmpRPCTokenFlag    string
+	cmpLocalWasmFlag   string
+	cmpBridgeWasm      []string
+	cmpOptimizeFlag    bool
+	cmpArgsFlag        []string
+	cmpVerboseFlag     bool
+	cmpSimPathFlag     string
 	cmpThemeFlag       string
 	cmpProtoFlag       uint32
 	cmpAssetSafetyFlag bool

@@ -55,7 +55,10 @@ impl AssetTracker {
                 anomaly_type: AnomalyType::DoubleSpend,
                 contract_id: from.to_string(),
                 amount,
-                message: format!("Double spend detected: {} attempted to transfer {} but only had {}", from, amount, from_bal),
+                message: format!(
+                    "Double spend detected: {} attempted to transfer {} but only had {}",
+                    from, amount, from_bal
+                ),
             });
         }
         *from_bal -= amount;
@@ -75,7 +78,10 @@ impl AssetTracker {
                 anomaly_type: AnomalyType::UnauthorizedMint,
                 contract_id: to.to_string(),
                 amount,
-                message: format!("Unauthorized mint detected: {} received {} without valid authorization", to, amount),
+                message: format!(
+                    "Unauthorized mint detected: {} received {} without valid authorization",
+                    to, amount
+                ),
             });
         }
 
@@ -95,7 +101,10 @@ impl AssetTracker {
                 anomaly_type: AnomalyType::DoubleSpend,
                 contract_id: from.to_string(),
                 amount,
-                message: format!("Burn exceeded balance: {} attempted to burn {} but only had {}", from, amount, from_bal),
+                message: format!(
+                    "Burn exceeded balance: {} attempted to burn {} but only had {}",
+                    from, amount, from_bal
+                ),
             });
         }
         *from_bal -= amount;

@@ -3,10 +3,10 @@
 
 #![allow(dead_code)]
 
+use crate::asset_tracker::AssetAnomaly;
 use crate::gas_optimizer::OptimizationReport;
 use crate::source_mapper::SourceLocation;
 use crate::stack_trace::WasmStackTrace;
-use crate::asset_tracker::AssetAnomaly;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 

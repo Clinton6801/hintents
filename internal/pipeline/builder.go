@@ -15,9 +15,9 @@ type Pipeline struct {
 
 // Command represents a single operation in a pipeline.
 type Command struct {
-	Type     string            `json:"type"`      // "MoveCall", "TransferObjects", etc.
-	Target   string            `json:"target"`    // e.g. "0x2::coin::mint"
-	Args     []string          `json:"args"`      // arguments or references to previous results
+	Type     string            `json:"type"`   // "MoveCall", "TransferObjects", etc.
+	Target   string            `json:"target"` // e.g. "0x2::coin::mint"
+	Args     []string          `json:"args"`   // arguments or references to previous results
 	Metadata map[string]string `json:"metadata"`
 }
 

@@ -98,7 +98,7 @@ func (c *Client) Install(ctx context.Context, pkg string) (string, error) {
 	} else {
 		url = fmt.Sprintf("https://raw.githubusercontent.com/%s/%s/%s/contract.wasm", ref.Org, ref.Repo, ref.Version)
 	}
-	
+
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return "", fmt.Errorf("failed to create request: %w", err)

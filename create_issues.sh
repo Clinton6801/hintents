@@ -1,4 +1,7 @@
 #!/bin/bash
+# Copyright (c) Hintents Authors.
+# SPDX-License-Identifier: Apache-2.0
+
 
 create_issue() {
     title="$1"

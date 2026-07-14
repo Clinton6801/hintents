@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #![allow(clippy::pedantic, clippy::nursery)]
+mod asset_tracker;
 mod config;
 mod context;
 mod debug_host_fn;
@@ -17,7 +18,6 @@ mod stack_trace;
 mod types;
 mod vm;
 mod wasm;
-mod asset_tracker;
 
 use crate::gas_optimizer::{BudgetMetrics, GasOptimizationAdvisor, CPU_LIMIT, MEMORY_LIMIT};
 use crate::source_mapper::SourceMapper;
@@ -675,14 +675,16 @@ fn main() {
                                         let topics: Vec<String> =
                                             v0.topics.iter().map(scval_to_xdr_base64).collect();
                                         let data = scval_to_xdr_base64(&v0.data);
-                                        
+
                                         // Attempt to track assets if this looks like a token event
                                         if topics.len() >= 2 && request.enable_asset_safety {
                                             // Decoded event names are usually the second topic, we just do a heuristic
-                                            let function_topic = format!("{:?}", v0.topics.first().unwrap());
+                                            let function_topic =
+                                                format!("{:?}", v0.topics.first().unwrap());
                                             if function_topic.contains("transfer") {
                                                 // mock tracking for MVP demo
-                                                asset_tracker.record_transfer("sender", "receiver", 100);
+                                                asset_tracker
+                                                    .record_transfer("sender", "receiver", 100);
                                             } else if function_topic.contains("mint") {
                                                 asset_tracker.record_mint("receiver", 100, true);
                                             } else if function_topic.contains("burn") {

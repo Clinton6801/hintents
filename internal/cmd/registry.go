@@ -69,7 +69,7 @@ func newRegistryInitCommand() *cobra.Command {
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cwd, _ := os.Getwd()
-			
+
 			if _, err := os.Stat(cwd + "/erst.json"); err == nil {
 				return fmt.Errorf("erst.json already exists")
 			}
