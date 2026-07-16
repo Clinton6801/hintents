@@ -4,9 +4,11 @@
 package tokenflow
 
 import (
+	"context"
 	"encoding/base64"
 	"math/big"
 	"testing"
+	"time"
 
 	"github.com/stellar/go-stellar-sdk/strkey"
 	"github.com/stellar/go-stellar-sdk/xdr"
@@ -14,6 +16,9 @@ import (
 )
 
 func TestBuildReport_SACTransferAndMint_FromResultMeta(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	_ = ctx // enforce use of context per #1414
 	contract := bytes32(0xAA)
 	cid := xdr.ContractId(contract)
 	contractStr, err := strkey.Encode(strkey.VersionByteContract, cid[:])
@@ -65,6 +70,9 @@ func TestBuildReport_SACTransferAndMint_FromResultMeta(t *testing.T) {
 }
 
 func TestBuildReport_NativeXLMPayment_FromEnvelope(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	_ = ctx // enforce use of context per #1414
 	src := bytes32(0x10)
 	dst := bytes32(0x20)
 
