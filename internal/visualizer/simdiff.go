@@ -1,5 +1,20 @@
-// Copyright 2026 Erst Users
 // SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 dotandev
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+// Copyright 2026 Erst Users
 
 // Package visualizer provides terminal rendering helpers for simulation output.
 // This file implements colored before/after ledger state diff rendering.
@@ -118,7 +133,10 @@ func RenderLedgerStateDiffTo(w io.Writer, before, after map[string]string, showU
 	printLedgerDiffHeader(w, len(before), len(after), added, removed, modified)
 
 	if added+removed+modified == 0 {
-		fmt.Fprintf(w, "\n  %s Ledger state is identical — no entries changed.\n\n",
+		fmt.Fprintf(w, "
+  %s Ledger state is identical — no entries changed.
+
+",
 			Colorize("[=]", "dim"))
 		return
 	}
@@ -127,8 +145,10 @@ func RenderLedgerStateDiffTo(w io.Writer, before, after map[string]string, showU
 	fmt.Fprintln(w)
 	beforeHeader := Colorize("BEFORE", "dim") + strings.Repeat(" ", ledgerColWidth-len("BEFORE"))
 	afterHeader := Colorize("AFTER", "dim") + strings.Repeat(" ", ledgerColWidth-len("AFTER"))
-	fmt.Fprintf(w, "  %-4s  %s%s%s\n", "", beforeHeader, ledgerColSep, afterHeader)
-	fmt.Fprintf(w, "  %s\n", Colorize(strings.Repeat("─", 4+2+ledgerColWidth*2+len(ledgerColSep)), "dim"))
+	fmt.Fprintf(w, "  %-4s  %s%s%s
+", "", beforeHeader, ledgerColSep, afterHeader)
+	fmt.Fprintf(w, "  %s
+", Colorize(strings.Repeat("─", 4+2+ledgerColWidth*2+len(ledgerColSep)), "dim"))
 
 	for _, e := range entries {
 		if e.ChangeKind == ledgerUnchanged && !showUnchanged {
@@ -157,11 +177,13 @@ func renderLedgerEntry(w io.Writer, e LedgerDiffEntry) {
 	// Shorten the key for display.
 	keyDisplay := shortenLedgerKey(e.Key)
 
-	fmt.Fprintf(w, "  %s   %s\n",
+	fmt.Fprintf(w, "  %s   %s
+",
 		Colorize(marker, ledgerChangeColor(e.ChangeKind)),
 		Colorize(keyDisplay, "dim"),
 	)
-	fmt.Fprintf(w, "       %s%s%s\n",
+	fmt.Fprintf(w, "       %s%s%s
+",
 		Colorize(beforePadded, beforeColor),
 		ledgerColSep,
 		Colorize(afterPadded, afterColor),
@@ -238,14 +260,18 @@ func printLedgerDiffHeader(w io.Writer, beforeCount, afterCount, added, removed,
 	if pad < 0 {
 		pad = 0
 	}
-	fmt.Fprintf(w, Colorize("║", "cyan")+"%s"+strings.Repeat(" ", pad)+Colorize("║", "cyan")+"\n", title)
+	fmt.Fprintf(w, Colorize("║", "cyan")+"%s"+strings.Repeat(" ", pad)+Colorize("║", "cyan")+"
+", title)
 	fmt.Fprintln(w, Colorize("╚"+sep+"╝", "cyan"))
 
-	fmt.Fprintf(w, "\n  Entries before: %s   after: %s\n",
+	fmt.Fprintf(w, "
+  Entries before: %s   after: %s
+",
 		Colorize(fmt.Sprintf("%d", beforeCount), "dim"),
 		Colorize(fmt.Sprintf("%d", afterCount), "dim"),
 	)
-	fmt.Fprintf(w, "  Changes: %s added  %s removed  %s modified\n",
+	fmt.Fprintf(w, "  Changes: %s added  %s removed  %s modified
+",
 		Colorize(fmt.Sprintf("+%d", added), "green"),
 		Colorize(fmt.Sprintf("-%d", removed), "red"),
 		Colorize(fmt.Sprintf("~%d", modified), "yellow"),
@@ -256,7 +282,9 @@ func printLedgerDiffHeader(w io.Writer, beforeCount, afterCount, added, removed,
 func printLedgerDiffSummary(w io.Writer, added, removed, modified, unchanged int) {
 	sep := strings.Repeat("─", ledgerColWidth*2+len(ledgerColSep)+8)
 	fmt.Fprintln(w, Colorize("  "+sep, "dim"))
-	fmt.Fprintf(w, "  %s  %s added  %s removed  %s modified  %s unchanged\n\n",
+	fmt.Fprintf(w, "  %s  %s added  %s removed  %s modified  %s unchanged
+
+",
 		Colorize("Summary:", "bold"),
 		Colorize(fmt.Sprintf("%d", added), "green"),
 		Colorize(fmt.Sprintf("%d", removed), "red"),
@@ -380,6 +408,7 @@ func RenderLedgerStateDiffJSON(w io.Writer, before, after map[string]string, inc
 	if _, err := w.Write(data); err != nil {
 		return err
 	}
-	_, err = io.WriteString(w, "\n")
+	_, err = io.WriteString(w, "
+")
 	return err
 }

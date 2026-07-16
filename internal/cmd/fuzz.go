@@ -1,5 +1,20 @@
-// Copyright 2026 Erst Users
 // SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 dotandev
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+// Copyright 2026 Erst Users
 
 package cmd
 
@@ -46,17 +61,23 @@ func runFuzz(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("--iterations must be specified and greater than 0")
 	}
 
-	fmt.Printf("Starting fuzzing campaign\n")
-	fmt.Printf("  Iterations: %d\n", fuzzIterations)
-	fmt.Printf("  Timeout: %dms\n", fuzzTimeout)
-	fmt.Printf("  Max Input Size: %d bytes\n", fuzzMaxSize)
+	fmt.Printf("Starting fuzzing campaign
+")
+	fmt.Printf("  Iterations: %d
+", fuzzIterations)
+	fmt.Printf("  Timeout: %dms
+", fuzzTimeout)
+	fmt.Printf("  Max Input Size: %d bytes
+", fuzzMaxSize)
 
 	if fuzzInputXDR != "" {
-		fmt.Printf("  Base Input: %s...\n", fuzzInputXDR[:min(32, len(fuzzInputXDR))])
+		fmt.Printf("  Base Input: %s...
+", fuzzInputXDR[:min(32, len(fuzzInputXDR))])
 	}
 
 	if fuzzTargetContract != "" {
-		fmt.Printf("  Target Contract: %s\n", fuzzTargetContract)
+		fmt.Printf("  Target Contract: %s
+", fuzzTargetContract)
 	}
 
 	// Initialize simulator runner
@@ -89,13 +110,19 @@ func runFuzz(cmd *cobra.Command, args []string) error {
 			return fmt.Errorf("fuzzing failed: %w", fuzzErr)
 		}
 
-		fmt.Printf("\nFuzz Test Result:\n")
-		fmt.Printf("  Status: %s\n", result.Status)
+		fmt.Printf("
+Fuzz Test Result:
+")
+		fmt.Printf("  Status: %s
+", result.Status)
 		if result.ErrorMessage != "" {
-			fmt.Printf("  Error: %s\n", result.ErrorMessage)
+			fmt.Printf("  Error: %s
+", result.ErrorMessage)
 		}
-		fmt.Printf("  Execution Time: %dms\n", result.ExecutionTimeMs)
-		fmt.Printf("  Code Coverage: %d%%\n", result.CodeCoverage)
+		fmt.Printf("  Execution Time: %dms
+", result.ExecutionTimeMs)
+		fmt.Printf("  Code Coverage: %d%%
+", result.CodeCoverage)
 
 		if result.Status == "crash" {
 			return fmt.Errorf("fuzzing found a crash")
@@ -105,7 +132,8 @@ func runFuzz(cmd *cobra.Command, args []string) error {
 	}
 
 	// Run normal fuzzing campaign without base input
-	fmt.Println("\nNo base XDR provided - using random generation")
+	fmt.Println("
+No base XDR provided - using random generation")
 	fmt.Println("Starting fuzzing campaign...")
 
 	// Create empty base input for fuzzing
@@ -130,14 +158,18 @@ func runFuzz(cmd *cobra.Command, args []string) error {
 	}
 
 	// Print summary
-	fmt.Println("\n" + harness.Summary())
+	fmt.Println("
+" + harness.Summary())
 
 	// Print first few crashing inputs if found
 	if len(crashingInputs) > 0 {
-		fmt.Printf("\n%d unique crash(es) found!\n", len(crashingInputs))
+		fmt.Printf("
+%d unique crash(es) found!
+", len(crashingInputs))
 		for i, input := range crashingInputs {
 			if i < 5 {
-				fmt.Printf("  Crash %d (seed %d): %s...\n",
+				fmt.Printf("  Crash %d (seed %d): %s...
+",
 					i+1,
 					input.Seed,
 					fuzzInputXDR[:min(20, len(fuzzInputXDR))],
@@ -145,13 +177,16 @@ func runFuzz(cmd *cobra.Command, args []string) error {
 			}
 		}
 		if len(crashingInputs) > 5 {
-			fmt.Printf("  ... and %d more crashes\n", len(crashingInputs)-5)
+			fmt.Printf("  ... and %d more crashes
+", len(crashingInputs)-5)
 		}
 		return fmt.Errorf("fuzzing found %d crashes", len(crashingInputs))
 	}
 
 	if len(results) > 0 {
-		fmt.Printf("\nFuzzing completed: %d/%d tests passed\n",
+		fmt.Printf("
+Fuzzing completed: %d/%d tests passed
+",
 			len(results),
 			fuzzIterations,
 		)

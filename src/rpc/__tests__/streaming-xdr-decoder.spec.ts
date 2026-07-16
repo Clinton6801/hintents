@@ -1,5 +1,18 @@
+// SPDX-License-Identifier: Apache-2.0
 // Copyright (c) 2026 dotandev
-// SPDX-License-Identifier: MIT OR Apache-2.0
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 
 import { XDRDecoder } from '../../xdr/decoder';
 
@@ -9,7 +22,8 @@ describe('Streaming XDR decoder memory usage', () => {
             const mockDecodeFn = () => ({ dummy: true });
             // Generate 1000 fake base64-encoded LedgerEntry XDRs (simulate real entries)
             const fakeEntry = Buffer.from('AAAAAA==', 'base64').toString('base64'); // Minimal valid base64
-            const entries = Array(1000).fill(fakeEntry).join('\n');
+            const entries = Array(1000).fill(fakeEntry).join('
+');
 
             const input = Buffer.from(entries, 'utf8');
             const initialMemory = process.memoryUsage().heapUsed;

@@ -1,5 +1,20 @@
-// Copyright 2026 Erst Users
 // SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 dotandev
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+// Copyright 2026 Erst Users
 
 package visualizer
 
@@ -198,7 +213,8 @@ func TestRenderLedgerStateDiffJSON(t *testing.T) {
 	// Output must be valid JSON deserializing back into the report shape.
 	var decoded LedgerStateDiffReport
 	if err := json.Unmarshal(buf.Bytes(), &decoded); err != nil {
-		t.Fatalf("output is not valid JSON: %v\n%s", err, buf.String())
+		t.Fatalf("output is not valid JSON: %v
+%s", err, buf.String())
 	}
 
 	if decoded.Added != 1 || decoded.Modified != 1 {
@@ -209,7 +225,7 @@ func TestRenderLedgerStateDiffJSON(t *testing.T) {
 	}
 
 	// The JSON must be free of ANSI escape codes (headless integration).
-	if strings.Contains(buf.String(), "\x1b[") {
+	if strings.Contains(buf.String(), "[") {
 		t.Error("JSON output should not contain ANSI escape codes")
 	}
 }
@@ -226,10 +242,12 @@ func TestRenderLedgerStateDiffToWritesToWriter(t *testing.T) {
 		t.Fatal("expected rendered output, got empty string")
 	}
 	if !strings.Contains(out, "LEDGER STATE DIFF") {
-		t.Errorf("rendered output missing header, got:\n%s", out)
+		t.Errorf("rendered output missing header, got:
+%s", out)
 	}
 	if !strings.Contains(out, "Summary:") {
-		t.Errorf("rendered output missing summary, got:\n%s", out)
+		t.Errorf("rendered output missing summary, got:
+%s", out)
 	}
 }
 

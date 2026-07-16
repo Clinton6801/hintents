@@ -1,5 +1,20 @@
-// Copyright 2026 Erst Users
 // SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 dotandev
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+// Copyright 2026 Erst Users
 
 package cmd
 
@@ -48,7 +63,8 @@ Examples:
 			defer probeCancel()
 			if resolved, err := rpc.ResolveNetwork(probeCtx, args[0], token); err == nil {
 				authNetworkFlag = string(resolved)
-				fmt.Printf("Resolved network: %s\n", authNetworkFlag)
+				fmt.Printf("Resolved network: %s
+", authNetworkFlag)
 			}
 		}
 		switch rpc.Network(authNetworkFlag) {
@@ -80,7 +96,8 @@ Examples:
 			return errors.WrapRPCConnectionFailed(err)
 		}
 
-		fmt.Printf("Transaction Envelope: %d bytes\n", len(resp.EnvelopeXdr))
+		fmt.Printf("Transaction Envelope: %d bytes
+", len(resp.EnvelopeXdr))
 
 		config := authtrace.Config{
 			TraceCustomContracts: true,
@@ -111,16 +128,20 @@ Examples:
 
 func printDetailedAnalysis(reporter *authtrace.DetailedReporter) {
 	metrics := reporter.SummaryMetrics()
-	fmt.Println("\n--- SUMMARY METRICS ---")
+	fmt.Println("
+--- SUMMARY METRICS ---")
 	for key, value := range metrics {
-		fmt.Printf("%s: %v\n", key, value)
+		fmt.Printf("%s: %v
+", key, value)
 	}
 
 	missingKeys := reporter.IdentifyMissingKeys()
 	if len(missingKeys) > 0 {
-		fmt.Println("\n--- MISSING SIGNATURES ---")
+		fmt.Println("
+--- MISSING SIGNATURES ---")
 		for _, signer := range missingKeys {
-			fmt.Printf("  - %s (required weight: %d)\n", signer.SignerKey, signer.Weight)
+			fmt.Printf("  - %s (required weight: %d)
+", signer.SignerKey, signer.Weight)
 		}
 	}
 }

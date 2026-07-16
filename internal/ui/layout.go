@@ -1,5 +1,20 @@
-// Copyright 2026 Erst Users
 // SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 dotandev
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+// Copyright 2026 Erst Users
 
 package ui
 
@@ -127,7 +142,8 @@ func (l *SplitLayout) Render(leftLines, rightLines []string) {
 	sb := &strings.Builder{}
 
 	sb.WriteString(l.borderRow(lw, rw))
-	sb.WriteByte('\n')
+	sb.WriteByte('
+')
 
 	for row := 0; row < contentRows; row++ {
 		leftCell := cellAt(leftLines, row, lw)
@@ -138,12 +154,14 @@ func (l *SplitLayout) Render(leftLines, rightLines []string) {
 		sb.WriteString(l.divider())
 		sb.WriteString(l.panePrefix(PaneState))
 		sb.WriteString(rightCell)
-		sb.WriteByte('\n')
+		sb.WriteByte('
+')
 	}
 
 	bottom := "+" + strings.Repeat("-", lw) + "+" + strings.Repeat("-", rw) + "+"
 	sb.WriteString(bottom)
-	sb.WriteByte('\n')
+	sb.WriteByte('
+')
 
 	status := fmt.Sprintf(" [focus: %s]  %s", l.Focus, KeyHelp())
 	if len(status) > l.Width {
@@ -188,7 +206,8 @@ func cellAt(lines []string, row, width int) string {
 	if row < len(lines) {
 		text = lines[row]
 	}
-	text = strings.ReplaceAll(text, "\n", " ")
+	text = strings.ReplaceAll(text, "
+", " ")
 	if len(text) > width {
 		return text[:width]
 	}

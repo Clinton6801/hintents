@@ -1,5 +1,20 @@
-// Copyright 2026 Erst Users
 // SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 dotandev
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+// Copyright 2026 Erst Users
 
 package testgen
 
@@ -159,7 +174,8 @@ func (g *TestGenerator) GenerateGoTest(data *TestData) error {
 		return fmt.Errorf("failed to execute Go template: %w", err)
 	}
 
-	fmt.Printf("Generated Go test: %s\n", filename)
+	fmt.Printf("Generated Go test: %s
+", filename)
 	return nil
 }
 
@@ -186,7 +202,8 @@ func (g *TestGenerator) GenerateRustTest(data *TestData) error {
 		return fmt.Errorf("failed to execute Rust template: %w", err)
 	}
 
-	fmt.Printf("Generated Rust test: %s\n", filename)
+	fmt.Printf("Generated Rust test: %s
+", filename)
 	return nil
 }
 
@@ -243,45 +260,55 @@ func (g *TestGenerator) writeFuzzSummary(testName string, stats *fuzz.FuzzingSta
 	}
 	defer file.Close()
 
-	_, err = fmt.Fprintf(file, "Dynamic fuzz generation report for %s\n", testName)
+	_, err = fmt.Fprintf(file, "Dynamic fuzz generation report for %s
+", testName)
 	if err != nil {
 		return err
 	}
-	_, err = fmt.Fprintf(file, "Transactions: %s\n", testName)
+	_, err = fmt.Fprintf(file, "Transactions: %s
+", testName)
 	if err != nil {
 		return err
 	}
-	_, err = fmt.Fprintf(file, "Total executions: %d\n", stats.ExecutionCount)
+	_, err = fmt.Fprintf(file, "Total executions: %d
+", stats.ExecutionCount)
 	if err != nil {
 		return err
 	}
-	_, err = fmt.Fprintf(file, "Crashes found: %d\n", stats.CrashCount)
+	_, err = fmt.Fprintf(file, "Crashes found: %d
+", stats.CrashCount)
 	if err != nil {
 		return err
 	}
-	_, err = fmt.Fprintf(file, "New coverage count: %d\n", stats.NewCoverageCount)
+	_, err = fmt.Fprintf(file, "New coverage count: %d
+", stats.NewCoverageCount)
 	if err != nil {
 		return err
 	}
-	_, err = fmt.Fprintf(file, "Corpus size: %d\n", stats.CorpusSize)
+	_, err = fmt.Fprintf(file, "Corpus size: %d
+", stats.CorpusSize)
 	if err != nil {
 		return err
 	}
 
 	if len(crashes) > 0 {
-		_, err = fmt.Fprintf(file, "\n-- Crash inputs --\n")
+		_, err = fmt.Fprintf(file, "
+-- Crash inputs --
+")
 		if err != nil {
 			return err
 		}
 		for i, input := range crashes {
-			_, err = fmt.Fprintf(file, "%d: seed=%d envelope_hex=%s ledger_entries=%d\n", i+1, input.Seed, input.EnvelopeXdr, len(input.LedgerEntries))
+			_, err = fmt.Fprintf(file, "%d: seed=%d envelope_hex=%s ledger_entries=%d
+", i+1, input.Seed, input.EnvelopeXdr, len(input.LedgerEntries))
 			if err != nil {
 				return err
 			}
 		}
 	}
 
-	fmt.Printf("Generated dynamic fuzz report: %s\n", filename)
+	fmt.Printf("Generated dynamic fuzz report: %s
+", filename)
 	return nil
 }
 

@@ -1,5 +1,20 @@
-// Copyright 2026 Erst Users
 // SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 dotandev
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+// Copyright 2026 Erst Users
 
 package cmd
 
@@ -74,10 +89,12 @@ var exportCmd = &cobra.Command{
 			return errors.WrapValidationError(fmt.Sprintf("failed to save snapshot: %v", err))
 		}
 
-		fmt.Printf("Snapshot exported to %s (%d entries)\n", exportSnapshotFlag, len(snap.LedgerEntries))
+		fmt.Printf("Snapshot exported to %s (%d entries)
+", exportSnapshotFlag, len(snap.LedgerEntries))
 		if snap.LinearMemory != "" {
 			decodedBytes := base64.StdEncoding.DecodedLen(len(snap.LinearMemory)) - strings.Count(snap.LinearMemory, "=")
-			fmt.Printf("Included linear memory dump: %d bytes\n", decodedBytes)
+			fmt.Printf("Included linear memory dump: %d bytes
+", decodedBytes)
 		}
 		return nil
 	},
@@ -121,7 +138,8 @@ var exportDecodeMemoryCmd = &cobra.Command{
 		}
 
 		segment := memory[decodeOffsetFlag:end]
-		fmt.Printf("Linear memory segment [%d:%d] (%d bytes)\n", decodeOffsetFlag, end, len(segment))
+		fmt.Printf("Linear memory segment [%d:%d] (%d bytes)
+", decodeOffsetFlag, end, len(segment))
 		for i := 0; i < len(segment); i += 16 {
 			lineEnd := i + 16
 			if lineEnd > len(segment) {

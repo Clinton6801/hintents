@@ -1,5 +1,20 @@
-// Copyright 2026 Erst Users
 // SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 dotandev
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+// Copyright 2026 Erst Users
 
 package cmd
 
@@ -48,7 +63,8 @@ Example:
 			return errors.WrapValidationError(fmt.Sprintf("failed to optimize WASM: %v", err))
 		}
 		newWasmBytes = optimizedWasmBytes
-		fmt.Printf("Loaded new WASM code: %d bytes\n", len(newWasmBytes))
+		fmt.Printf("Loaded new WASM code: %d bytes
+", len(newWasmBytes))
 		if upgradeOptimizeFlag {
 			printOptimizationReport(report)
 		}
@@ -68,7 +84,8 @@ Example:
 		registerCacheFlushHook()
 
 		// 3. Fetch Transaction
-		fmt.Printf("Fetching transaction: %s from %s\n", txHash, networkFlag)
+		fmt.Printf("Fetching transaction: %s from %s
+", txHash, networkFlag)
 		resp, err := client.GetTransaction(cmd.Context(), txHash)
 		if err != nil {
 			return errors.WrapRPCConnectionFailed(err)
@@ -84,14 +101,16 @@ Example:
 		if err != nil {
 			return errors.WrapRPCConnectionFailed(err)
 		}
-		fmt.Printf("Fetched %d ledger entries\n", len(entries))
+		fmt.Printf("Fetched %d ledger entries
+", len(entries))
 
 		// 5. Identify Contract ID and Inject New Code
 		contractID, err := getContractIDFromEnvelope(resp.EnvelopeXdr)
 		if err != nil {
 			return errors.WrapSimulationLogicError(fmt.Sprintf("failed to identify contract from transaction: %v", err))
 		}
-		fmt.Printf("Identified target contract: %x\n", *contractID)
+		fmt.Printf("Identified target contract: %x
+", *contractID)
 
 		if injectErr := injectNewCode(entries, *contractID, newWasmBytes); injectErr != nil {
 			return errors.WrapSimulationLogicError(fmt.Sprintf("failed to inject new code: %v", injectErr))

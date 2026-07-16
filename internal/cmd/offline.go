@@ -1,5 +1,20 @@
-// Copyright 2026 Erst Users
 // SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 dotandev
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+// Copyright 2026 Erst Users
 
 package cmd
 
@@ -99,11 +114,16 @@ func runOfflineGenerate(_ *cobra.Command, args []string) error {
 		return err
 	}
 
-	fmt.Printf("Unsigned envelope saved to %s\n", output)
-	fmt.Printf("  Network:  %s\n", offlineNetworkFlag)
-	fmt.Printf("  Checksum: %s\n", ef.Checksum)
-	fmt.Println("\nTransfer this file to the air-gapped machine and run:")
-	fmt.Printf("  erst offline sign --key <hex-seed> %s\n", output)
+	fmt.Printf("Unsigned envelope saved to %s
+", output)
+	fmt.Printf("  Network:  %s
+", offlineNetworkFlag)
+	fmt.Printf("  Checksum: %s
+", ef.Checksum)
+	fmt.Println("
+Transfer this file to the air-gapped machine and run:")
+	fmt.Printf("  erst offline sign --key <hex-seed> %s
+", output)
 
 	return nil
 }
@@ -149,11 +169,16 @@ func runOfflineSign(_ *cobra.Command, args []string) error {
 		return err
 	}
 
-	fmt.Printf("Envelope signed successfully (%d total signature(s))\n", len(ef.Signatures))
-	fmt.Printf("  File: %s\n", path)
-	fmt.Println("\nNext steps:")
-	fmt.Printf("  erst offline verify %s\n", path)
-	fmt.Printf("  erst offline submit %s\n", path)
+	fmt.Printf("Envelope signed successfully (%d total signature(s))
+", len(ef.Signatures))
+	fmt.Printf("  File: %s
+", path)
+	fmt.Println("
+Next steps:")
+	fmt.Printf("  erst offline verify %s
+", path)
+	fmt.Printf("  erst offline submit %s
+", path)
 
 	return nil
 }
@@ -179,9 +204,11 @@ func runOfflineVerify(_ *cobra.Command, args []string) error {
 		return err
 	}
 
-	fmt.Printf("All %d signature(s) verified successfully\n", len(ef.Signatures))
+	fmt.Printf("All %d signature(s) verified successfully
+", len(ef.Signatures))
 	for i, sig := range ef.Signatures {
-		fmt.Printf("  [%d] key=%s signed_at=%s\n", i, sig.PublicKey[:16]+"...", sig.SignedAt)
+		fmt.Printf("  [%d] key=%s signed_at=%s
+", i, sig.PublicKey[:16]+"...", sig.SignedAt)
 	}
 
 	return nil
@@ -228,17 +255,21 @@ func runOfflineSubmit(cmd *cobra.Command, args []string) error {
 		ctx = context.Background()
 	}
 
-	fmt.Printf("Submitting to %s (%s)...\n", ef.Network, rpcURL)
+	fmt.Printf("Submitting to %s (%s)...
+", ef.Network, rpcURL)
 
 	resp, err := offline.SubmitSignedEnvelope(ctx, rpcURL, ef.EnvelopeXDR)
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("Transaction submitted successfully\n")
-	fmt.Printf("  Status: %s\n", resp.Result.Status)
+	fmt.Printf("Transaction submitted successfully
+")
+	fmt.Printf("  Status: %s
+", resp.Result.Status)
 	if resp.Result.Hash != "" {
-		fmt.Printf("  Hash:   %s\n", resp.Result.Hash)
+		fmt.Printf("  Hash:   %s
+", resp.Result.Hash)
 	}
 
 	return nil
@@ -273,7 +304,8 @@ func bytesTrimSpaceOffline(b []byte) []byte {
 }
 
 func isSpace(c byte) bool {
-	return c == ' ' || c == '\n' || c == '\r' || c == '\t'
+	return c == ' ' || c == '
+' || c == '' || c == '	'
 }
 
 // ── init ────────────────────────────────────────────────────────────────────

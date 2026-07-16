@@ -1,5 +1,20 @@
-// Copyright 2026 Erst Users
 // SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 dotandev
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+// Copyright 2026 Erst Users
 
 package cmd
 
@@ -116,9 +131,11 @@ func runDryRun(cmd *cobra.Command, args []string) error {
 			mem = preflight.Result.Cost.MemBytes_
 		}
 
-		fmt.Printf("Min resource fee (stroops): %s\n", fee)
+		fmt.Printf("Min resource fee (stroops): %s
+", fee)
 		if cpu != 0 || mem != 0 {
-			fmt.Printf("Preflight cost: CPU=%d, MEM=%d\n", cpu, mem)
+			fmt.Printf("Preflight cost: CPU=%d, MEM=%d
+", cpu, mem)
 		}
 		return nil
 	}
@@ -158,8 +175,10 @@ func runDryRun(cmd *cobra.Command, args []string) error {
 		return errors.WrapSimulationFailed(fmt.Errorf("gas estimation: %w", err), "")
 	}
 
-	fmt.Printf("Estimated required fee (stroops): %d\n", gas.EstimatedFeeLowerBound)
-	fmt.Printf("Budget usage: CPU=%d, MEM=%d\n", gas.CPUCost, gas.MemoryCost)
+	fmt.Printf("Estimated required fee (stroops): %d
+", gas.EstimatedFeeLowerBound)
+	fmt.Printf("Budget usage: CPU=%d, MEM=%d
+", gas.CPUCost, gas.MemoryCost)
 
 	return nil
 }
@@ -167,11 +186,13 @@ func runDryRun(cmd *cobra.Command, args []string) error {
 func bytesTrimSpace(b []byte) []byte {
 	// Small local trim to avoid importing bytes.
 	start := 0
-	for start < len(b) && (b[start] == ' ' || b[start] == '\n' || b[start] == '\r' || b[start] == '\t') {
+	for start < len(b) && (b[start] == ' ' || b[start] == '
+' || b[start] == '' || b[start] == '	') {
 		start++
 	}
 	end := len(b)
-	for end > start && (b[end-1] == ' ' || b[end-1] == '\n' || b[end-1] == '\r' || b[end-1] == '\t') {
+	for end > start && (b[end-1] == ' ' || b[end-1] == '
+' || b[end-1] == '' || b[end-1] == '	') {
 		end--
 	}
 	return b[start:end]

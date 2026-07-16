@@ -1,5 +1,20 @@
-// Copyright 2026 Erst Users
 // SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 dotandev
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+// Copyright 2026 Erst Users
 
 package visualizer
 
@@ -145,7 +160,7 @@ func resolveColorSpec(spec string) string {
 		return ""
 	}
 	// A raw escape sequence is passed through verbatim.
-	if strings.ContainsRune(spec, '\033') {
+	if strings.ContainsRune(spec, '') {
 		return spec
 	}
 
@@ -157,7 +172,7 @@ func resolveColorSpec(spec string) string {
 			continue
 		}
 		if n, ok := parse256Color(token); ok {
-			fmt.Fprintf(&b, "\033[38;5;%dm", n)
+			fmt.Fprintf(&b, "[38;5;%dm", n)
 			continue
 		}
 		// Unknown token: ignored so a typo never injects garbage escapes.
@@ -197,11 +212,11 @@ func themeColors(semantic string) string {
 		case "error":
 			return sgrBold + sgrRed
 		case "warning":
-			return sgrBold + "\033[38;5;130m"
+			return sgrBold + "[38;5;130m"
 		case "info":
 			return sgrBold + sgrBlue
 		case "dim":
-			return "\033[38;5;240m"
+			return "[38;5;240m"
 		case "bold":
 			return sgrBold
 		default:
@@ -210,15 +225,15 @@ func themeColors(semantic string) string {
 	case ThemeDark:
 		switch semantic {
 		case "success":
-			return "\033[38;5;46m"
+			return "[38;5;46m"
 		case "error":
-			return "\033[38;5;196m"
+			return "[38;5;196m"
 		case "warning":
-			return "\033[38;5;226m"
+			return "[38;5;226m"
 		case "info":
-			return "\033[38;5;51m"
+			return "[38;5;51m"
 		case "dim":
-			return "\033[38;5;244m"
+			return "[38;5;244m"
 		case "bold":
 			return sgrBold
 		default:

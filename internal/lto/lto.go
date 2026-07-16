@@ -1,5 +1,20 @@
-// Copyright 2026 Erst Users
 // SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 dotandev
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+// Copyright 2026 Erst Users
 
 // Package lto detects Link Time Optimization (LTO) settings in Soroban
 // contract projects and warns users about offset inaccuracies in DWARF
@@ -136,7 +151,8 @@ func CheckProjectDir(dir string) ([]DetectionResult, error) {
 func ParseCargoTomlContent(content string) []DetectionResult {
 	var results []DetectionResult
 
-	lines := strings.Split(content, "\n")
+	lines := strings.Split(content, "
+")
 	currentProfile := ""
 	inProfile := false
 
@@ -220,22 +236,33 @@ func FormatWarning(result DetectionResult) string {
 	var b strings.Builder
 
 	if result.Severity == "error" {
-		b.WriteString("WARNING: LTO (Link Time Optimization) detected.\n")
+		b.WriteString("WARNING: LTO (Link Time Optimization) detected.
+")
 	} else {
-		b.WriteString("Note: Thin LTO detected.\n")
+		b.WriteString("Note: Thin LTO detected.
+")
 	}
 
 	b.WriteString("  ")
 	b.WriteString(result.Message)
-	b.WriteString("\n\n")
+	b.WriteString("
 
-	b.WriteString("  LTO destructures predictable DWARF debug mappings, causing\n")
-	b.WriteString("  WASM instruction offsets in stack traces and source maps to\n")
-	b.WriteString("  point to incorrect source lines.\n\n")
+")
 
-	b.WriteString("  To fix: in your Cargo.toml, set:\n")
-	b.WriteString("    [profile.release]\n")
-	b.WriteString("    lto = false\n")
+	b.WriteString("  LTO destructures predictable DWARF debug mappings, causing
+")
+	b.WriteString("  WASM instruction offsets in stack traces and source maps to
+")
+	b.WriteString("  point to incorrect source lines.
+
+")
+
+	b.WriteString("  To fix: in your Cargo.toml, set:
+")
+	b.WriteString("    [profile.release]
+")
+	b.WriteString("    lto = false
+")
 
 	return b.String()
 }
@@ -249,7 +276,8 @@ func FormatWarnings(results []DetectionResult) string {
 	var b strings.Builder
 	for i, r := range results {
 		if i > 0 {
-			b.WriteString("\n")
+			b.WriteString("
+")
 		}
 		b.WriteString(FormatWarning(r))
 	}

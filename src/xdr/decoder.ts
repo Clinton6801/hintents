@@ -1,9 +1,21 @@
-// Copyright (c) Hintents Authors.
 // SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 dotandev
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
 
 import { Readable } from 'stream';
-// Copyright (c) Hintents Authors.
-// SPDX-License-Identifier: Apache-2.0
 
 import { xdr } from '@stellar/stellar-sdk';
 import { Buffer } from './buffer-shim';
@@ -29,12 +41,14 @@ export class XDRDecoder {
         // Robust type check for Buffer (works for both Node and polyfill)
         const isBuffer = (val: any) => val && typeof val === 'object' && typeof val.length === 'number' && typeof val.toString === 'function' && !val.readable;
         if (isBuffer(input)) {
-            stream = Readable.from(input.toString().split('\n'));
+            stream = Readable.from(input.toString().split('
+'));
         } else if (input && typeof input.read === 'function') {
             stream = input;
         } else {
             // Fallback: treat as string
-            stream = Readable.from(String(input).split('\n'));
+            stream = Readable.from(String(input).split('
+'));
         }
 
         for await (const chunk of stream) {

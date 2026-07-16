@@ -1,5 +1,20 @@
-// Copyright 2026 Erst Users
 // SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 dotandev
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+// Copyright 2026 Erst Users
 
 package visualizer
 
@@ -69,7 +84,9 @@ func InjectDarkMode(svg string) string {
 	}
 
 	// Insert the <style> block right after the opening <svg> tag.
-	styleBlock := "\n<style type=\"text/css\">" + darkModeCSS + "</style>\n"
+	styleBlock := "
+<style type=\"text/css\">" + darkModeCSS + "</style>
+"
 	return svg[:idx+1] + styleBlock + svg[idx+1:]
 }
 
@@ -354,7 +371,8 @@ const interactiveHTML = `<!DOCTYPE html>
         if (g && g.tagName === 'g') {
           const title = g.querySelector('title');
           if (title) {
-            tooltip.innerHTML = title.textContent.replace(/\n/g, '<br>');
+            tooltip.innerHTML = title.textContent.replace(/
+/g, '<br>');
             tooltip.style.display = 'block';
           }
         }

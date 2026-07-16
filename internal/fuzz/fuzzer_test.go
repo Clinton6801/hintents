@@ -1,5 +1,20 @@
-// Copyright 2026 Erst Users
 // SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 dotandev
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+// Copyright 2026 Erst Users
 
 package fuzz
 
@@ -251,7 +266,13 @@ func TestExecuteInputWithCoverage(t *testing.T) {
 		assert.True(t, req.EnableCoverage)
 		return &simulator.SimulationResponse{
 			Status:     "success",
-			LCOVReport: "TN:\nSF:/tmp/contract.wasm\nDA:10,1\nDA:11,0\nDA:20,2\nend_of_record\n",
+			LCOVReport: "TN:
+SF:/tmp/contract.wasm
+DA:10,1
+DA:11,0
+DA:20,2
+end_of_record
+",
 		}, nil
 	})
 	fuzzer := NewCoverageGuidedFuzzer(runner, FuzzerConfig{EnableCoverage: true})
@@ -290,7 +311,12 @@ func TestCoverageTempFileReuse(t *testing.T) {
 
 		return &simulator.SimulationResponse{
 			Status:     "success",
-			LCOVReport: "TN:\nSF:/tmp/contract.wasm\nDA:10,1\nDA:20,1\nend_of_record\n",
+			LCOVReport: "TN:
+SF:/tmp/contract.wasm
+DA:10,1
+DA:20,1
+end_of_record
+",
 		}, nil
 	})
 

@@ -1,5 +1,20 @@
-// Copyright 2026 Erst Users
 // SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 dotandev
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+// Copyright 2026 Erst Users
 
 package cmd
 
@@ -152,10 +167,13 @@ func (d *DebugCommand) runDebug(cmd *cobra.Command, cmdArgs []string) error {
 		return errors.WrapValidationError(fmt.Sprintf("failed to create client: %v", err))
 	}
 
-	fmt.Printf("Debugging transaction: %s\n", txHash)
-	fmt.Printf("Network: %s\n", networkFlag)
+	fmt.Printf("Debugging transaction: %s
+", txHash)
+	fmt.Printf("Network: %s
+", networkFlag)
 	if rpcURLFlag != "" {
-		fmt.Printf("RPC URL: %s\n", rpcURLFlag)
+		fmt.Printf("RPC URL: %s
+", rpcURLFlag)
 	}
 
 	// Fetch transaction details
@@ -164,7 +182,8 @@ func (d *DebugCommand) runDebug(cmd *cobra.Command, cmdArgs []string) error {
 		return errors.WrapRPCConnectionFailed(err)
 	}
 
-	fmt.Printf("Transaction fetched successfully. Envelope size: %d bytes\n", len(resp.EnvelopeXdr))
+	fmt.Printf("Transaction fetched successfully. Envelope size: %d bytes
+", len(resp.EnvelopeXdr))
 
 	simReq := &simulator.SimulationRequest{
 		EnvelopeXdr:   resp.EnvelopeXdr,
@@ -243,7 +262,8 @@ Local WASM Replay Mode:
 			defer probeCancel()
 			if resolved, err := rpc.ResolveNetwork(probeCtx, args[0], token); err == nil {
 				networkFlag = string(resolved)
-				fmt.Printf("Resolved network: %s\n", networkFlag)
+				fmt.Printf("Resolved network: %s
+", networkFlag)
 			}
 		}
 
@@ -305,7 +325,8 @@ Local WASM Replay Mode:
 			uiStore = s
 			defer uiStore.Close()
 			if prev, err := uiStore.LoadSectionState(ctx, txHash); err == nil && len(prev) > 0 {
-				fmt.Printf("Restoring viewer state: last session showed [%s] for this transaction.\n", strings.Join(prev, ", "))
+				fmt.Printf("Restoring viewer state: last session showed [%s] for this transaction.
+", strings.Join(prev, ", "))
 			}
 		}
 
@@ -390,10 +411,13 @@ Local WASM Replay Mode:
 
 		_ = client.CheckStaleness(ctx, networkFlag)
 
-		fmt.Printf("Debugging transaction: %s\n", txHash)
-		fmt.Printf("Primary Network: %s\n", networkFlag)
+		fmt.Printf("Debugging transaction: %s
+", txHash)
+		fmt.Printf("Primary Network: %s
+", networkFlag)
 		if compareNetworkFlag != "" {
-			fmt.Printf("Comparing against Network: %s\n", compareNetworkFlag)
+			fmt.Printf("Comparing against Network: %s
+", compareNetworkFlag)
 		}
 
 		// Fetch transaction details
@@ -431,13 +455,15 @@ Local WASM Replay Mode:
 			spinner.StopWithMessage(fmt.Sprintf("Transaction reached %s. Starting debug...", strings.ToLower(finalStatus.Status)))
 		}
 
-		fmt.Printf("Fetching transaction: %s\n", txHash)
+		fmt.Printf("Fetching transaction: %s
+", txHash)
 		resp, err := client.GetTransaction(ctx, txHash)
 		if err != nil {
 			return errors.WrapRPCConnectionFailed(err)
 		}
 
-		fmt.Printf("Transaction fetched successfully. Envelope size: %d bytes\n", len(resp.EnvelopeXdr))
+		fmt.Printf("Transaction fetched successfully. Envelope size: %d bytes
+", len(resp.EnvelopeXdr))
 
 		// Extract ledger keys for replay
 		keys, err := extractLedgerKeys(resp.ResultMetaXdr)
@@ -484,7 +510,9 @@ Local WASM Replay Mode:
 
 		for _, ts := range timestamps {
 			if len(timestamps) > 1 {
-				fmt.Printf("\n--- Simulating at Timestamp: %d ---\n", ts)
+				fmt.Printf("
+--- Simulating at Timestamp: %d ---
+", ts)
 			}
 
 			var simResp *simulator.SimulationResponse
@@ -498,7 +526,8 @@ Local WASM Replay Mode:
 						return errors.WrapValidationError(fmt.Sprintf("failed to load snapshot: %v", err))
 					}
 					ledgerEntries = snap.ToMap()
-					fmt.Printf("Loaded %d ledger entries from snapshot\n", len(ledgerEntries))
+					fmt.Printf("Loaded %d ledger entries from snapshot
+", len(ledgerEntries))
 				} else {
 					// Try to extract from metadata first, fall back to fetching
 					ledgerEntries, err = rpc.ExtractLedgerEntriesFromMeta(resp.ResultMetaXdr)
@@ -515,14 +544,16 @@ Local WASM Replay Mode:
 
 				if len(overrideEntries) > 0 {
 					ledgerEntries = simulator.MergeLedgerOverrides(ledgerEntries, overrideEntries)
-					fmt.Printf("Applied %d mock ledger override entries\n", len(overrideEntries))
+					fmt.Printf("Applied %d mock ledger override entries
+", len(overrideEntries))
 				}
 
 				if saveSnapshotsFlag != "" {
 					collectedEntries = append(collectedEntries, snapshotEntry{ts: ts, entries: ledgerEntries})
 				}
 
-				fmt.Printf("Running simulation on %s...\n", networkFlag)
+				fmt.Printf("Running simulation on %s...
+", networkFlag)
 				simReq := &simulator.SimulationRequest{
 					EnvelopeXdr:       resp.EnvelopeXdr,
 					ResultMetaXdr:     resp.ResultMetaXdr,
@@ -539,7 +570,8 @@ Local WASM Replay Mode:
 						return fmt.Errorf("invalid protocol version %d: %w", protocolVersionFlag, err)
 					}
 					simReq.ProtocolVersion = &protocolVersionFlag
-					fmt.Printf("Using protocol version override: %d\n", protocolVersionFlag)
+					fmt.Printf("Using protocol version override: %d
+", protocolVersionFlag)
 				}
 				applySimulationFeeMocks(simReq)
 
@@ -586,7 +618,8 @@ Local WASM Replay Mode:
 					}
 					if len(overrideEntries) > 0 {
 						entries = simulator.MergeLedgerOverrides(entries, overrideEntries)
-						fmt.Printf("Applied %d mock ledger override entries to primary comparison\n", len(overrideEntries))
+						fmt.Printf("Applied %d mock ledger override entries to primary comparison
+", len(overrideEntries))
 					}
 					primaryReq := &simulator.SimulationRequest{
 						EnvelopeXdr:     resp.EnvelopeXdr,
@@ -631,7 +664,8 @@ Local WASM Replay Mode:
 
 					if len(overrideEntries) > 0 {
 						entries = simulator.MergeLedgerOverrides(entries, overrideEntries)
-						fmt.Printf("Applied %d mock ledger override entries to compare comparison\n", len(overrideEntries))
+						fmt.Printf("Applied %d mock ledger override entries to compare comparison
+", len(overrideEntries))
 					}
 
 					compareReq := &simulator.SimulationRequest{
@@ -670,14 +704,17 @@ Local WASM Replay Mode:
 			if exportSVGFlag != "" && simResp != nil && len(simResp.DiagnosticEvents) > 0 {
 				callTree, err := decoder.DecodeDiagnosticEvents(simResp.DiagnosticEvents, maxDepth)
 				if err != nil {
-					fmt.Printf("%s Error building call tree for SVG: %v\n", visualizer.Symbol("error"), err)
+					fmt.Printf("%s Error building call tree for SVG: %v
+", visualizer.Symbol("error"), err)
 				} else {
 					svg := visualizer.GenerateCallGraphSVG(callTree, maxDepth)
 					err := os.WriteFile(exportSVGFlag, []byte(svg), 0644)
 					if err != nil {
-						fmt.Printf("%s Error saving SVG: %v\n", visualizer.Symbol("error"), err)
+						fmt.Printf("%s Error saving SVG: %v
+", visualizer.Symbol("error"), err)
 					} else {
-						fmt.Printf("%s Call graph exported to: %s\n", visualizer.Symbol("success"), exportSVGFlag)
+						fmt.Printf("%s Call graph exported to: %s
+", visualizer.Symbol("success"), exportSVGFlag)
 					}
 				}
 			}
@@ -694,9 +731,11 @@ Local WASM Replay Mode:
 				reg.Add(ce.ts, snapshot.FromMap(ce.entries))
 			}
 			if err := reg.SaveToFile(saveSnapshotsFlag); err != nil {
-				fmt.Printf("Warning: failed to save snapshot registry: %v\n", err)
+				fmt.Printf("Warning: failed to save snapshot registry: %v
+", err)
 			} else {
-				fmt.Printf("Snapshot registry saved: %s (%d entr%s)\n",
+				fmt.Printf("Snapshot registry saved: %s (%d entr%s)
+",
 					saveSnapshotsFlag, len(reg.Entries), pluralIes(len(reg.Entries)))
 			}
 		}
@@ -716,11 +755,14 @@ Local WASM Replay Mode:
 		}
 
 		// Analysis: Security
-		fmt.Printf("\n=== Security Analysis ===\n")
+		fmt.Printf("
+=== Security Analysis ===
+")
 		secDetector := security.NewDetector()
 		findings := secDetector.Analyze(resp.EnvelopeXdr, resp.ResultMetaXdr, lastSimResp.Events, lastSimResp.Logs)
 		if len(findings) == 0 {
-			fmt.Printf("%s No security issues detected\n", visualizer.Success())
+			fmt.Printf("%s No security issues detected
+", visualizer.Success())
 		} else {
 			verifiedCount := 0
 			heuristicCount := 0
@@ -734,22 +776,30 @@ Local WASM Replay Mode:
 			}
 
 			if verifiedCount > 0 {
-				fmt.Printf("\n[!]  VERIFIED SECURITY RISKS: %d\n", verifiedCount)
+				fmt.Printf("
+[!]  VERIFIED SECURITY RISKS: %d
+", verifiedCount)
 			}
 			if heuristicCount > 0 {
-				fmt.Printf("* HEURISTIC WARNINGS: %d\n", heuristicCount)
+				fmt.Printf("* HEURISTIC WARNINGS: %d
+", heuristicCount)
 			}
 
-			fmt.Printf("\nFindings:\n")
+			fmt.Printf("
+Findings:
+")
 			for i, finding := range findings {
 				icon := "*"
 				if finding.Type == security.FindingVerifiedRisk {
 					icon = "[!]"
 				}
-				fmt.Printf("%d. %s [%s] %s - %s\n", i+1, icon, finding.Type, finding.Severity, finding.Title)
-				fmt.Printf("   %s\n", finding.Description)
+				fmt.Printf("%d. %s [%s] %s - %s
+", i+1, icon, finding.Type, finding.Severity, finding.Title)
+				fmt.Printf("   %s
+", finding.Description)
 				if finding.Evidence != "" {
-					fmt.Printf("   Evidence: %s\n", finding.Evidence)
+					fmt.Printf("   Evidence: %s
+", finding.Evidence)
 				}
 			}
 		}
@@ -758,11 +808,16 @@ Local WASM Replay Mode:
 		hasTokenFlows := false
 		if report, err := tokenflow.BuildReport(resp.EnvelopeXdr, resp.ResultMetaXdr); err == nil && len(report.Agg) > 0 {
 			hasTokenFlows = true
-			fmt.Printf("\nToken Flow Summary:\n")
+			fmt.Printf("
+Token Flow Summary:
+")
 			for _, line := range report.SummaryLines() {
-				fmt.Printf("  %s\n", line)
+				fmt.Printf("  %s
+", line)
 			}
-			fmt.Printf("\nToken Flow Chart (Mermaid):\n")
+			fmt.Printf("
+Token Flow Chart (Mermaid):
+")
 			fmt.Println(report.MermaidFlowchart())
 		}
 
@@ -780,11 +835,13 @@ Local WASM Replay Mode:
 		applySimulationFeeMocks(simReq)
 		simReqJSON, err := json.Marshal(simReq)
 		if err != nil {
-			fmt.Printf("Warning: failed to serialize simulation data: %v\n", err)
+			fmt.Printf("Warning: failed to serialize simulation data: %v
+", err)
 		}
 		simRespJSON, err := json.Marshal(lastSimResp)
 		if err != nil {
-			fmt.Printf("Warning: failed to serialize simulation results: %v\n", err)
+			fmt.Printf("Warning: failed to serialize simulation results: %v
+", err)
 		}
 
 		sessionData := &session.Data{
@@ -804,8 +861,11 @@ Local WASM Replay Mode:
 			SchemaVersion:   session.SchemaVersion,
 		}
 		SetCurrentSession(sessionData)
-		fmt.Printf("\nSession created: %s\n", sessionData.ID)
-		fmt.Printf("Run 'erst session save' to persist this session.\n")
+		fmt.Printf("
+Session created: %s
+", sessionData.ID)
+		fmt.Printf("Run 'erst session save' to persist this session.
+")
 
 		// Publish signed audit trail to decentralised storage when requested.
 		if publishIPFSFlag || publishArweaveFlag {
@@ -835,25 +895,33 @@ Local WASM Replay Mode:
 				ArweaveWallet:  arweaveWalletFlag,
 			})
 
-			fmt.Printf("\n=== Decentralised Storage ===\n")
+			fmt.Printf("
+=== Decentralised Storage ===
+")
 
 			if publishIPFSFlag {
 				result, ipfsErr := pub.PublishIPFS(ctx, auditBytes)
 				if ipfsErr != nil {
-					fmt.Printf("IPFS publish failed: %v\n", ipfsErr)
+					fmt.Printf("IPFS publish failed: %v
+", ipfsErr)
 				} else {
-					fmt.Printf("IPFS CID : %s\n", result.CID)
-					fmt.Printf("IPFS URL : %s\n", result.URL)
+					fmt.Printf("IPFS CID : %s
+", result.CID)
+					fmt.Printf("IPFS URL : %s
+", result.URL)
 				}
 			}
 
 			if publishArweaveFlag {
 				result, arErr := pub.PublishArweave(ctx, auditBytes)
 				if arErr != nil {
-					fmt.Printf("Arweave publish failed: %v\n", arErr)
+					fmt.Printf("Arweave publish failed: %v
+", arErr)
 				} else {
-					fmt.Printf("Arweave TXID : %s\n", result.TXID)
-					fmt.Printf("Arweave URL  : %s\n", result.URL)
+					fmt.Printf("Arweave TXID : %s
+", result.TXID)
+					fmt.Printf("Arweave URL  : %s
+", result.URL)
 				}
 			}
 		}
@@ -869,25 +937,46 @@ func runDemoMode(cmdArgs []string) error {
 		txHash = cmdArgs[0]
 	}
 
-	fmt.Printf("Fetching transaction: %s\n", txHash)
-	fmt.Printf("Transaction fetched successfully. Envelope size: 256 bytes\n")
-	fmt.Printf("\n--- Result for %s ---\n", networkFlag)
-	fmt.Printf("Status: success\n")
-	fmt.Printf("\nResource Usage:\n")
-	fmt.Printf("  CPU Instructions: 12345\n")
-	fmt.Printf("  Memory Bytes: 1024\n")
-	fmt.Printf("  Operations: 5\n")
-	fmt.Printf("\nEvents: 2, Logs: 3\n")
-	fmt.Printf("\n=== Security Analysis ===\n")
-	fmt.Printf("%s No security issues detected\n", visualizer.Success())
-	fmt.Printf("\nToken Flow Summary:\n")
-	fmt.Printf("  %s XLM transferred\n", visualizer.Symbol("arrow_r"))
-	fmt.Printf("\nSession ready. Use 'erst session save' to persist.\n")
+	fmt.Printf("Fetching transaction: %s
+", txHash)
+	fmt.Printf("Transaction fetched successfully. Envelope size: 256 bytes
+")
+	fmt.Printf("
+--- Result for %s ---
+", networkFlag)
+	fmt.Printf("Status: success
+")
+	fmt.Printf("
+Resource Usage:
+")
+	fmt.Printf("  CPU Instructions: 12345
+")
+	fmt.Printf("  Memory Bytes: 1024
+")
+	fmt.Printf("  Operations: 5
+")
+	fmt.Printf("
+Events: 2, Logs: 3
+")
+	fmt.Printf("
+=== Security Analysis ===
+")
+	fmt.Printf("%s No security issues detected
+", visualizer.Success())
+	fmt.Printf("
+Token Flow Summary:
+")
+	fmt.Printf("  %s XLM transferred
+", visualizer.Symbol("arrow_r"))
+	fmt.Printf("
+Session ready. Use 'erst session save' to persist.
+")
 	return nil
 }
 
 func runLocalWasmReplay() error {
-	fmt.Printf("%s  WARNING: Using Mock State (not mainnet data)\n", visualizer.Warning())
+	fmt.Printf("%s  WARNING: Using Mock State (not mainnet data)
+", visualizer.Warning())
 	fmt.Println()
 
 	// Verify WASM file exists
@@ -897,9 +986,12 @@ func runLocalWasmReplay() error {
 	}
 	wasmBase64 = base64.StdEncoding.EncodeToString(wasmBytes)
 
-	fmt.Printf("%s Local WASM Replay Mode\n", visualizer.Symbol("wrench"))
-	fmt.Printf("WASM File: %s\n", wasmPath)
-	fmt.Printf("Arguments: %v\n", args)
+	fmt.Printf("%s Local WASM Replay Mode
+", visualizer.Symbol("wrench"))
+	fmt.Printf("WASM File: %s
+", wasmPath)
+	fmt.Printf("Arguments: %v
+", args)
 	fmt.Println()
 
 	// Check for LTO in the project that produced the WASM
@@ -964,23 +1056,28 @@ func runLocalWasmReplayOnce(ctx context.Context, runner simulator.RunnerInterfac
 	}
 	if len(overrideEntries) > 0 {
 		req.LedgerEntries = simulator.MergeLedgerOverrides(req.LedgerEntries, overrideEntries)
-		fmt.Printf("Applied %d mock ledger override entries for local replay\n", len(overrideEntries))
+		fmt.Printf("Applied %d mock ledger override entries for local replay
+", len(overrideEntries))
 	}
 
 	// Run simulation
-	fmt.Printf("%s Executing contract locally...\n", visualizer.Symbol("play"))
+	fmt.Printf("%s Executing contract locally...
+", visualizer.Symbol("play"))
 	resp, err := runner.Run(ctx, req)
 	if err != nil {
-		fmt.Printf("%s Technical failure: %v\n", visualizer.Error(), err)
+		fmt.Printf("%s Technical failure: %v
+", visualizer.Error(), err)
 		return err
 	}
 
 	// Display results
 	fmt.Println()
 	if resp.Status == "error" {
-		fmt.Printf("%s Execution failed\n", visualizer.Error())
+		fmt.Printf("%s Execution failed
+", visualizer.Error())
 		if resp.Error != "" {
-			fmt.Printf("Error: %s\n", resp.Error)
+			fmt.Printf("Error: %s
+", resp.Error)
 		}
 
 		if resp.StackTrace != nil {
@@ -988,7 +1085,8 @@ func runLocalWasmReplayOnce(ctx context.Context, runner simulator.RunnerInterfac
 		}
 
 		if resp.SourceLocation != nil {
-			fmt.Printf("%s Top-level Location: %s:%d\n", visualizer.Symbol("location"), resp.SourceLocation.File, resp.SourceLocation.Line)
+			fmt.Printf("%s Top-level Location: %s:%d
+", visualizer.Symbol("location"), resp.SourceLocation.File, resp.SourceLocation.Line)
 			displaySourceLocation(resp.SourceLocation)
 		}
 
@@ -1002,32 +1100,39 @@ func runLocalWasmReplayOnce(ctx context.Context, runner simulator.RunnerInterfac
 			}
 		}
 	} else {
-		fmt.Printf("%s Execution completed successfully\n", visualizer.Success())
+		fmt.Printf("%s Execution completed successfully
+", visualizer.Success())
 	}
 	fmt.Println()
 
 	if len(resp.Logs) > 0 {
-		fmt.Printf("%s Logs:\n", visualizer.Symbol("logs"))
+		fmt.Printf("%s Logs:
+", visualizer.Symbol("logs"))
 		for _, log := range resp.Logs {
-			fmt.Printf("  %s\n", log)
+			fmt.Printf("  %s
+", log)
 		}
 		fmt.Println()
 	}
 
 	if len(resp.Events) > 0 {
-		fmt.Printf("%s Events:\n", visualizer.Symbol("events"))
+		fmt.Printf("%s Events:
+", visualizer.Symbol("events"))
 		for _, event := range resp.Events {
 			if deprecatedFn, ok := findDeprecatedHostFunction(event); ok {
-				fmt.Printf("  %s %s %s\n", event, visualizer.Warning(), visualizer.Colorize("deprecated host fn: "+deprecatedFn, "yellow"))
+				fmt.Printf("  %s %s %s
+", event, visualizer.Warning(), visualizer.Colorize("deprecated host fn: "+deprecatedFn, "yellow"))
 				continue
 			}
-			fmt.Printf("  %s\n", event)
+			fmt.Printf("  %s
+", event)
 		}
 		fmt.Println()
 	}
 
 	if verbose {
-		fmt.Printf("%s Full Response:\n", visualizer.Symbol("magnify"))
+		fmt.Printf("%s Full Response:
+", visualizer.Symbol("magnify"))
 		jsonBytes, _ := json.MarshalIndent(resp, "", "  ")
 		fmt.Println(string(jsonBytes))
 	}
@@ -1068,7 +1173,8 @@ func runLocalWasmReplaySession(ctx context.Context, runner simulator.RunnerInter
 			case 'r':
 				fmt.Println("[watcher] Re-running simulation with updated WASM")
 				if err := runLocalWasmReplayOnce(ctx, runner, true); err != nil {
-					fmt.Printf("[watcher] Re-run failed: %v\n", err)
+					fmt.Printf("[watcher] Re-run failed: %v
+", err)
 				} else {
 					lastAppliedHash = pending.Hash
 				}
@@ -1090,7 +1196,8 @@ func runLocalWasmReplaySession(ctx context.Context, runner simulator.RunnerInter
 				reloadErrors = nil
 				continue
 			}
-			fmt.Printf("[watcher] Warning: %v\n", watchErr)
+			fmt.Printf("[watcher] Warning: %v
+", watchErr)
 		case event, ok := <-reloadEvents:
 			if !ok {
 				return nil
@@ -1108,7 +1215,8 @@ func runLocalWasmReplaySession(ctx context.Context, runner simulator.RunnerInter
 func promptHotReloadChoice(reader *bufio.Reader, out io.Writer) (byte, error) {
 	for {
 		fmt.Fprint(out, "Re-run simulation? (r = reload, s = skip, q = quit): ")
-		line, err := reader.ReadString('\n')
+		line, err := reader.ReadString('
+')
 		if err != nil {
 			if err == io.EOF && strings.TrimSpace(line) != "" {
 				// Accept final line without trailing newline.
@@ -1250,12 +1358,17 @@ func collectContractIDsFromDiagnosticEvents(events []simulator.DiagnosticEvent) 
 func printSimulationResult(network string, res *simulator.SimulationResponse) {
 	// Section header
 	sep := strings.Repeat("─", 60)
-	fmt.Printf("\n%s\n", visualizer.Colorize("  "+sep, "dim"))
-	fmt.Printf("  %s  %s\n",
+	fmt.Printf("
+%s
+", visualizer.Colorize("  "+sep, "dim"))
+	fmt.Printf("  %s  %s
+",
 		visualizer.Colorize("Result for", "bold"),
 		visualizer.Colorize(network, "cyan"),
 	)
-	fmt.Printf("  %s\n\n", visualizer.Colorize(sep, "dim"))
+	fmt.Printf("  %s
+
+", visualizer.Colorize(sep, "dim"))
 
 	// Status line — green for success, red for failure
 	statusColor := "green"
@@ -1264,7 +1377,8 @@ func printSimulationResult(network string, res *simulator.SimulationResponse) {
 		statusColor = "red"
 		statusIcon = visualizer.Error()
 	}
-	fmt.Printf("  %s  Status: %s\n", statusIcon, visualizer.Colorize(res.Status, statusColor))
+	fmt.Printf("  %s  Status: %s
+", statusIcon, visualizer.Colorize(res.Status, statusColor))
 
 	// Determine and display snapshot status
 	hasOOM := res.BudgetUsage != nil && res.BudgetUsage.MemoryUsagePercent >= 99.0
@@ -1277,14 +1391,18 @@ func printSimulationResult(network string, res *simulator.SimulationResponse) {
 	if !snapshotStatus.IsHealthy() {
 		snapshotColor = "yellow"
 	}
-	fmt.Printf("  %s  Snapshot: %s\n", visualizer.Info(), visualizer.Colorize(string(snapshotStatus), snapshotColor))
+	fmt.Printf("  %s  Snapshot: %s
+", visualizer.Info(), visualizer.Colorize(string(snapshotStatus), snapshotColor))
 	if !snapshotStatus.IsHealthy() {
-		fmt.Printf("       %s\n", visualizer.Colorize(snapshotStatus.StatusMessage(), "yellow"))
+		fmt.Printf("       %s
+", visualizer.Colorize(snapshotStatus.StatusMessage(), "yellow"))
 	}
 
 	// Error message — always red
 	if res.Error != "" {
-		fmt.Printf("\n  %s  %s\n", visualizer.Error(), visualizer.Colorize(res.Error, "red"))
+		fmt.Printf("
+  %s  %s
+", visualizer.Error(), visualizer.Colorize(res.Error, "red"))
 	}
 
 	// Stack trace with resolved source locations
@@ -1294,7 +1412,8 @@ func printSimulationResult(network string, res *simulator.SimulationResponse) {
 
 	// Top-level source location
 	if res.SourceLocation != nil {
-		fmt.Printf("  %s Location: %s:%d\n",
+		fmt.Printf("  %s Location: %s:%d
+",
 			visualizer.Symbol("location"),
 			visualizer.Colorize(res.SourceLocation.File, "cyan"),
 			res.SourceLocation.Line,
@@ -1304,10 +1423,13 @@ func printSimulationResult(network string, res *simulator.SimulationResponse) {
 
 	// Budget / resource usage
 	if res.BudgetUsage != nil {
-		fmt.Printf("\n  %s  Resource Usage:\n", visualizer.Colorize("──", "bold"))
+		fmt.Printf("
+  %s  Resource Usage:
+", visualizer.Colorize("──", "bold"))
 
 		cpuColor, cpuSuffix := budgetIndicator(res.BudgetUsage.CPUUsagePercent)
-		fmt.Printf("    CPU Instructions: %s / %d  %s%s\n",
+		fmt.Printf("    CPU Instructions: %s / %d  %s%s
+",
 			visualizer.Colorize(fmt.Sprintf("%d", res.BudgetUsage.CPUInstructions), cpuColor),
 			res.BudgetUsage.CPULimit,
 			visualizer.Colorize(fmt.Sprintf("(%.2f%%)", res.BudgetUsage.CPUUsagePercent), cpuColor),
@@ -1315,25 +1437,30 @@ func printSimulationResult(network string, res *simulator.SimulationResponse) {
 		)
 
 		memColor, memSuffix := budgetIndicator(res.BudgetUsage.MemoryUsagePercent)
-		fmt.Printf("    Memory Bytes:     %s / %d  %s%s\n",
+		fmt.Printf("    Memory Bytes:     %s / %d  %s%s
+",
 			visualizer.Colorize(fmt.Sprintf("%d", res.BudgetUsage.MemoryBytes), memColor),
 			res.BudgetUsage.MemoryLimit,
 			visualizer.Colorize(fmt.Sprintf("(%.2f%%)", res.BudgetUsage.MemoryUsagePercent), memColor),
 			memSuffix,
 		)
 
-		fmt.Printf("    Operations:       %d\n", res.BudgetUsage.OperationsCount)
+		fmt.Printf("    Operations:       %d
+", res.BudgetUsage.OperationsCount)
 	}
 
 	// Diagnostic events
 	if len(res.DiagnosticEvents) > 0 {
-		fmt.Printf("\n  %s  Diagnostic Events: %s\n",
+		fmt.Printf("
+  %s  Diagnostic Events: %s
+",
 			visualizer.Colorize("──", "bold"),
 			visualizer.Colorize(fmt.Sprintf("%d", len(res.DiagnosticEvents)), "cyan"),
 		)
 		for i, event := range res.DiagnosticEvents {
 			if i >= 10 {
-				fmt.Printf("    %s\n",
+				fmt.Printf("    %s
+",
 					visualizer.Colorize(fmt.Sprintf("… and %d more events", len(res.DiagnosticEvents)-10), "dim"),
 				)
 				break
@@ -1355,36 +1482,46 @@ func printSimulationResult(network string, res *simulator.SimulationResponse) {
 			}
 			fmt.Println()
 			if len(event.Topics) > 0 {
-				fmt.Printf("         Topics: %s\n", visualizer.Colorize(fmt.Sprintf("%v", event.Topics), "dim"))
+				fmt.Printf("         Topics: %s
+", visualizer.Colorize(fmt.Sprintf("%v", event.Topics), "dim"))
 			}
 			if event.Data != "" && len(event.Data) < 100 {
-				fmt.Printf("         Data:   %s\n", visualizer.Colorize(event.Data, "dim"))
+				fmt.Printf("         Data:   %s
+", visualizer.Colorize(event.Data, "dim"))
 			}
 		}
 	} else {
-		fmt.Printf("\n  Events: %s\n",
+		fmt.Printf("
+  Events: %s
+",
 			visualizer.Colorize(fmt.Sprintf("%d", len(res.Events)), "cyan"),
 		)
 	}
 
 	// Logs
 	if len(res.Logs) > 0 {
-		fmt.Printf("\n  %s  Logs: %s\n",
+		fmt.Printf("
+  %s  Logs: %s
+",
 			visualizer.Colorize("──", "bold"),
 			visualizer.Colorize(fmt.Sprintf("%d", len(res.Logs)), "cyan"),
 		)
 		for i, logLine := range res.Logs {
 			if i >= 5 {
-				fmt.Printf("    %s\n",
+				fmt.Printf("    %s
+",
 					visualizer.Colorize(fmt.Sprintf("… and %d more logs", len(res.Logs)-5), "dim"),
 				)
 				break
 			}
-			fmt.Printf("    %s %s\n", visualizer.Colorize("·", "dim"), logLine)
+			fmt.Printf("    %s %s
+", visualizer.Colorize("·", "dim"), logLine)
 		}
 	}
 
-	fmt.Printf("\n  %s\n",
+	fmt.Printf("
+  %s
+",
 		visualizer.Colorize(
 			fmt.Sprintf("Events: %d  Logs: %d", len(res.Events), len(res.Logs)),
 			"dim",
@@ -1413,22 +1550,27 @@ func diffResults(res1, res2 *simulator.SimulationResponse, net1, net2 string) {
 	if pad < 0 {
 		pad = 0
 	}
-	fmt.Printf(visualizer.Colorize("║", "cyan")+"%s"+strings.Repeat(" ", pad)+visualizer.Colorize("║", "cyan")+"\n", title)
+	fmt.Printf(visualizer.Colorize("║", "cyan")+"%s"+strings.Repeat(" ", pad)+visualizer.Colorize("║", "cyan")+"
+", title)
 	fmt.Println(visualizer.Colorize("╚"+sep+"╝", "cyan"))
 	fmt.Println()
 
 	// ── Status ────────────────────────────────────────────────────────────────
 	fmt.Println(visualizer.Colorize("── Execution Status "+strings.Repeat("─", 44), "bold"))
 	if res1.Status != res2.Status {
-		fmt.Printf("  %s  Status mismatch:\n", visualizer.Error())
-		fmt.Printf("    %-12s %s\n", visualizer.Colorize(net1+":", "dim"), visualizer.Colorize(res1.Status, "red"))
-		fmt.Printf("    %-12s %s\n", visualizer.Colorize(net2+":", "dim"), visualizer.Colorize(res2.Status, "red"))
+		fmt.Printf("  %s  Status mismatch:
+", visualizer.Error())
+		fmt.Printf("    %-12s %s
+", visualizer.Colorize(net1+":", "dim"), visualizer.Colorize(res1.Status, "red"))
+		fmt.Printf("    %-12s %s
+", visualizer.Colorize(net2+":", "dim"), visualizer.Colorize(res2.Status, "red"))
 	} else {
 		statusColor := "green"
 		if res1.Status != "success" {
 			statusColor = "red"
 		}
-		fmt.Printf("  %s  Status match: %s\n",
+		fmt.Printf("  %s  Status match: %s
+",
 			visualizer.Success(),
 			visualizer.Colorize(res1.Status, statusColor),
 		)
@@ -1439,25 +1581,29 @@ func diffResults(res1, res2 *simulator.SimulationResponse, net1, net2 string) {
 	fmt.Println(visualizer.Colorize("── Event Counts "+strings.Repeat("─", 47), "bold"))
 	if len(res1.DiagnosticEvents) > 0 || len(res2.DiagnosticEvents) > 0 {
 		if len(res1.DiagnosticEvents) != len(res2.DiagnosticEvents) {
-			fmt.Printf("  %s  Diagnostic events: %s (%s)  vs  %s (%s)\n",
+			fmt.Printf("  %s  Diagnostic events: %s (%s)  vs  %s (%s)
+",
 				visualizer.Warning(),
 				visualizer.Colorize(fmt.Sprintf("%d", len(res1.DiagnosticEvents)), "yellow"), net1,
 				visualizer.Colorize(fmt.Sprintf("%d", len(res2.DiagnosticEvents)), "yellow"), net2,
 			)
 		} else {
-			fmt.Printf("  %s  Diagnostic events: %s (both networks)\n",
+			fmt.Printf("  %s  Diagnostic events: %s (both networks)
+",
 				visualizer.Success(),
 				visualizer.Colorize(fmt.Sprintf("%d", len(res1.DiagnosticEvents)), "green"),
 			)
 		}
 	} else if len(res1.Events) != len(res2.Events) {
-		fmt.Printf("  %s  Events: %s (%s)  vs  %s (%s)\n",
+		fmt.Printf("  %s  Events: %s (%s)  vs  %s (%s)
+",
 			visualizer.Warning(),
 			visualizer.Colorize(fmt.Sprintf("%d", len(res1.Events)), "yellow"), net1,
 			visualizer.Colorize(fmt.Sprintf("%d", len(res2.Events)), "yellow"), net2,
 		)
 	} else {
-		fmt.Printf("  %s  Events: %s (both networks)\n",
+		fmt.Printf("  %s  Events: %s (both networks)
+",
 			visualizer.Success(),
 			visualizer.Colorize(fmt.Sprintf("%d", len(res1.Events)), "green"),
 		)
@@ -1512,17 +1658,21 @@ func diffResults(res1, res2 *simulator.SimulationResponse, net1, net2 string) {
 
 			if !inRes1 || !inRes2 || ev1Raw != ev2Raw {
 				hasMismatch = true
-				fmt.Printf("  %s  [%d] %s\n",
+				fmt.Printf("  %s  [%d] %s
+",
 					visualizer.Error(),
 					i,
 					visualizer.Colorize("MISMATCH", "red"),
 				)
-				fmt.Printf("    %-12s %s\n", visualizer.Colorize(net1+":", "dim"), ev1Display)
-				fmt.Printf("    %-12s %s\n", visualizer.Colorize(net2+":", "dim"), ev2Display)
+				fmt.Printf("    %-12s %s
+", visualizer.Colorize(net1+":", "dim"), ev1Display)
+				fmt.Printf("    %-12s %s
+", visualizer.Colorize(net2+":", "dim"), ev2Display)
 			}
 		}
 		if !hasMismatch {
-			fmt.Printf("  %s  All %s events match\n",
+			fmt.Printf("  %s  All %s events match
+",
 				visualizer.Success(),
 				visualizer.Colorize(fmt.Sprintf("%d", maxEvents), "green"),
 			)
@@ -1541,7 +1691,8 @@ func printBudgetComparison(label string, v1, v2 int64, net1, net2 string) {
 			sign = ""
 			deltaColor = "green"
 		}
-		fmt.Printf("  %s  %-20s %s (%s)  vs  %s (%s)  delta: %s\n",
+		fmt.Printf("  %s  %-20s %s (%s)  vs  %s (%s)  delta: %s
+",
 			visualizer.Warning(),
 			label+":",
 			visualizer.Colorize(fmt.Sprintf("%d", v1), "dim"), net1,
@@ -1549,7 +1700,8 @@ func printBudgetComparison(label string, v1, v2 int64, net1, net2 string) {
 			visualizer.Colorize(fmt.Sprintf("%s%d", sign, delta), deltaColor),
 		)
 	} else {
-		fmt.Printf("  %s  %-20s %s\n",
+		fmt.Printf("  %s  %-20s %s
+",
 			visualizer.Success(),
 			label+":",
 			visualizer.Colorize(fmt.Sprintf("%d (match)", v1), "green"),
@@ -1636,11 +1788,14 @@ func runFromRegistry(ctx context.Context, path string) error {
 	}
 
 	for _, w := range reg.VerifyIntegrity() {
-		fmt.Fprintf(os.Stderr, "Warning: integrity check failed: %s\n", w.Error())
+		fmt.Fprintf(os.Stderr, "Warning: integrity check failed: %s
+", w.Error())
 	}
 
-	fmt.Printf("Offline replay: %s\n", reg.TxHash)
-	fmt.Printf("Network: %s | Created: %s | Entries: %d\n",
+	fmt.Printf("Offline replay: %s
+", reg.TxHash)
+	fmt.Printf("Network: %s | Created: %s | Entries: %d
+",
 		reg.Network, reg.CreatedAt.Format(time.RFC3339), len(reg.Entries))
 
 	runner, err := simulator.NewRunnerWithMockTime("", tracingEnabled, mockTimeFlag)
@@ -1651,7 +1806,9 @@ func runFromRegistry(ctx context.Context, path string) error {
 
 	for _, entry := range reg.Entries {
 		if len(reg.Entries) > 1 {
-			fmt.Printf("\n--- Simulating at Timestamp: %d ---\n", entry.Timestamp)
+			fmt.Printf("
+--- Simulating at Timestamp: %d ---
+", entry.Timestamp)
 		}
 
 		simReq := &simulator.SimulationRequest{
@@ -1714,7 +1871,9 @@ func init() {
 }
 
 func printWasmBacktrace(trace *simulator.WasmStackTrace) {
-	fmt.Printf("\nBacktrace (%d frames):\n", len(trace.Frames))
+	fmt.Printf("
+Backtrace (%d frames):
+", len(trace.Frames))
 	for _, frame := range trace.Frames {
 		name := "<unknown>"
 		if frame.FuncName != nil {
@@ -1734,7 +1893,8 @@ func printWasmBacktrace(trace *simulator.WasmStackTrace) {
 			location = fmt.Sprintf(" @ 0x%x", *frame.WasmOffset)
 		}
 
-		fmt.Printf("  #%d %s%s\n", frame.Index, name, location)
+		fmt.Printf("  #%d %s%s
+", frame.Index, name, location)
 	}
 
 	// Show inline source context for the trap-site frame (index 0).
@@ -1760,7 +1920,9 @@ func checkLTOWarning(wasmFilePath string) {
 			break
 		}
 		if lto.HasLTO(results) {
-			fmt.Fprintf(os.Stderr, "\n%s\n", lto.FormatWarnings(results))
+			fmt.Fprintf(os.Stderr, "
+%s
+", lto.FormatWarnings(results))
 			return
 		}
 		parent := filepath.Dir(dir)
@@ -1771,7 +1933,8 @@ func checkLTOWarning(wasmFilePath string) {
 	}
 }
 func displaySourceLocation(loc *simulator.SourceLocation) {
-	fmt.Printf("%s Location: %s:%d:%d\n", visualizer.Symbol("location"), loc.File, loc.Line, loc.Column)
+	fmt.Printf("%s Location: %s:%d:%d
+", visualizer.Symbol("location"), loc.File, loc.Line, loc.Column)
 
 	// Try to find the file
 	content, err := os.ReadFile(loc.File)
@@ -1784,7 +1947,8 @@ func displaySourceLocation(loc *simulator.SourceLocation) {
 		}
 	}
 
-	lines := strings.Split(string(content), "\n")
+	lines := strings.Split(string(content), "
+")
 	if int(loc.Line) > len(lines) {
 		return
 	}
@@ -1807,7 +1971,8 @@ func displaySourceLocation(loc *simulator.SourceLocation) {
 			prefix = "> "
 		}
 
-		fmt.Printf("%s %4d | %s\n", prefix, lineNum, lines[i])
+		fmt.Printf("%s %4d | %s
+", prefix, lineNum, lines[i])
 
 		// Highlight the token if this is the failing line
 		if lineNum == int(loc.Line) {
@@ -1830,7 +1995,8 @@ func displaySourceLocation(loc *simulator.SourceLocation) {
 					highlightLen = len(lines[i]) - offset
 				}
 				marker := strings.Repeat(" ", offset) + strings.Repeat("^", highlightLen)
-				fmt.Printf("      | %s%s\n", markerIndent[:2], marker)
+				fmt.Printf("      | %s%s
+", markerIndent[:2], marker)
 			}
 		}
 	}

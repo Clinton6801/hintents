@@ -1,5 +1,20 @@
-// Copyright 2026 Erst Users
 // SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 dotandev
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+// Copyright 2026 Erst Users
 
 package cmd
 
@@ -52,13 +67,17 @@ func TestGenerate_WithAttestation(t *testing.T) {
 	attestation := &HardwareAttestation{
 		Certificates: []AttestationCertificate{
 			{
-				PEM:     "-----BEGIN CERTIFICATE-----\nMIIBfTCB...\n-----END CERTIFICATE-----",
+				PEM:     "-----BEGIN CERTIFICATE-----
+MIIBfTCB...
+-----END CERTIFICATE-----",
 				Subject: "CN=YubiKey PIV Attestation",
 				Issuer:  "CN=Yubico PIV Root CA",
 				Serial:  "0a1b2c3d",
 			},
 			{
-				PEM:     "-----BEGIN CERTIFICATE-----\nMIIBgTCB...\n-----END CERTIFICATE-----",
+				PEM:     "-----BEGIN CERTIFICATE-----
+MIIBgTCB...
+-----END CERTIFICATE-----",
 				Subject: "CN=Yubico PIV Root CA",
 				Issuer:  "CN=Yubico PIV Root CA",
 				Serial:  "0001",
@@ -97,7 +116,9 @@ func TestVerify_DetectsTamperedAttestation(t *testing.T) {
 	attestation := &HardwareAttestation{
 		Certificates: []AttestationCertificate{
 			{
-				PEM:     "-----BEGIN CERTIFICATE-----\nMIIBfTCB...\n-----END CERTIFICATE-----",
+				PEM:     "-----BEGIN CERTIFICATE-----
+MIIBfTCB...
+-----END CERTIFICATE-----",
 				Subject: "CN=YubiKey PIV Attestation",
 				Issuer:  "CN=Yubico PIV Root CA",
 				Serial:  "aabb",
@@ -133,7 +154,9 @@ func TestVerify_DetectsRemovedAttestation(t *testing.T) {
 	attestation := &HardwareAttestation{
 		Certificates: []AttestationCertificate{
 			{
-				PEM:     "-----BEGIN CERTIFICATE-----\nMIIBfTCBaQIBATANBg...\n-----END CERTIFICATE-----",
+				PEM:     "-----BEGIN CERTIFICATE-----
+MIIBfTCBaQIBATANBg...
+-----END CERTIFICATE-----",
 				Subject: "CN=Test Attestation",
 				Issuer:  "CN=Test Root",
 				Serial:  "ff00",
@@ -191,7 +214,9 @@ func TestAuditLog_JSONSerialization(t *testing.T) {
 	attestation := &HardwareAttestation{
 		Certificates: []AttestationCertificate{
 			{
-				PEM:     "-----BEGIN CERTIFICATE-----\ntest\n-----END CERTIFICATE-----",
+				PEM:     "-----BEGIN CERTIFICATE-----
+test
+-----END CERTIFICATE-----",
 				Subject: "CN=Test",
 				Issuer:  "CN=Root",
 				Serial:  "01",
@@ -270,7 +295,9 @@ func TestGenerateWithSigner_WithAttestation(t *testing.T) {
 	attestation := &HardwareAttestation{
 		Certificates: []AttestationCertificate{
 			{
-				PEM:     "-----BEGIN CERTIFICATE-----\ntest\n-----END CERTIFICATE-----",
+				PEM:     "-----BEGIN CERTIFICATE-----
+test
+-----END CERTIFICATE-----",
 				Subject: "CN=Test",
 				Issuer:  "CN=Root",
 				Serial:  "01",

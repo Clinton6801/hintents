@@ -1,5 +1,20 @@
-// Copyright 2026 Erst Users
 // SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 dotandev
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+// Copyright 2026 Erst Users
 
 package rpc
 
@@ -172,7 +187,8 @@ func TestLoggingMiddleware_SuccessfulRequest(t *testing.T) {
 
 	// Find the "http request completed" log entry.
 	found := false
-	for _, line := range bytes.Split(bytes.TrimSpace(buf.Bytes()), []byte("\n")) {
+	for _, line := range bytes.Split(bytes.TrimSpace(buf.Bytes()), []byte("
+")) {
 		var entry map[string]any
 		if err := json.Unmarshal(line, &entry); err != nil {
 			continue
@@ -213,7 +229,8 @@ func TestLoggingMiddleware_FailedRequest(t *testing.T) {
 	require.NotEmpty(t, buf.String(), "expected at least one log line")
 
 	found := false
-	for _, line := range bytes.Split(bytes.TrimSpace(buf.Bytes()), []byte("\n")) {
+	for _, line := range bytes.Split(bytes.TrimSpace(buf.Bytes()), []byte("
+")) {
 		var entry map[string]any
 		if jsonErr := json.Unmarshal(line, &entry); jsonErr != nil {
 			continue
@@ -257,7 +274,8 @@ func TestLoggingMiddleware_FailedRequestWithResponse(t *testing.T) {
 	require.NotEmpty(t, buf.String(), "expected at least one log line")
 
 	found := false
-	for _, line := range bytes.Split(bytes.TrimSpace(buf.Bytes()), []byte("\n")) {
+	for _, line := range bytes.Split(bytes.TrimSpace(buf.Bytes()), []byte("
+")) {
 		var entry map[string]any
 		if jsonErr := json.Unmarshal(line, &entry); jsonErr != nil {
 			continue
@@ -290,7 +308,8 @@ func TestWithLoggingEnabled_DisabledByDefault(t *testing.T) {
 
 	_, _ = client.GetHealth(context.Background())
 
-	for _, line := range bytes.Split(bytes.TrimSpace(buf.Bytes()), []byte("\n")) {
+	for _, line := range bytes.Split(bytes.TrimSpace(buf.Bytes()), []byte("
+")) {
 		var entry map[string]any
 		if json.Unmarshal(line, &entry) == nil {
 			assert.NotEqual(t, "http request completed", entry["msg"],

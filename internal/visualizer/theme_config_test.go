@@ -1,5 +1,20 @@
-// Copyright 2026 Erst Users
 // SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 dotandev
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+// Copyright 2026 Erst Users
 
 package visualizer
 
@@ -19,9 +34,9 @@ func TestResolveColorSpec(t *testing.T) {
 		{"named", "green", sgrGreen},
 		{"combined", "bold green", sgrBold + sgrGreen},
 		{"case insensitive", "BOLD Red", sgrBold + sgrRed},
-		{"256 color", "256:130", "\033[38;5;130m"},
-		{"named plus 256", "bold 256:46", sgrBold + "\033[38;5;46m"},
-		{"raw escape passthrough", "\033[38;5;200m", "\033[38;5;200m"},
+		{"256 color", "256:130", "[38;5;130m"},
+		{"named plus 256", "bold 256:46", sgrBold + "[38;5;46m"},
+		{"raw escape passthrough", "[38;5;200m", "[38;5;200m"},
 		{"unknown token skipped", "green notacolor", sgrGreen},
 		{"out of range 256 skipped", "256:999", ""},
 	}
@@ -62,8 +77,8 @@ func TestLoadThemeFileJSON(t *testing.T) {
 	defer SetTheme(original)
 	SetTheme(theme)
 
-	if got := themeColors("success"); got != "\033[38;5;46m" {
-		t.Errorf("success = %q, want %q", got, "\033[38;5;46m")
+	if got := themeColors("success"); got != "[38;5;46m" {
+		t.Errorf("success = %q, want %q", got, "[38;5;46m")
 	}
 	if got := themeColors("error"); got != sgrBold+sgrRed {
 		t.Errorf("error = %q, want %q", got, sgrBold+sgrRed)
@@ -80,7 +95,11 @@ func TestLoadThemeFileJSON(t *testing.T) {
 func TestLoadThemeFileYAML(t *testing.T) {
 	dir := t.TempDir()
 	path := filepath.Join(dir, "mytheme.yaml")
-	contents := "name: ocean\ncolors:\n  success: \"bold cyan\"\n  error: magenta\n"
+	contents := "name: ocean
+colors:
+  success: \"bold cyan\"
+  error: magenta
+"
 	if err := os.WriteFile(path, []byte(contents), 0o600); err != nil {
 		t.Fatalf("writing fixture: %v", err)
 	}

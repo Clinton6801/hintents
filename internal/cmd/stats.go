@@ -1,5 +1,20 @@
-// Copyright 2026 Erst Users
 // SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 dotandev
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+// Copyright 2026 Erst Users
 
 package cmd
 
@@ -159,8 +174,11 @@ func eventCost(eventType string) uint64 {
 
 func printStatsTable(stats []contractStat) {
 	const colContract = 44
-	fmt.Printf("Top %d most expensive contract calls\n\n", statsTopN)
-	fmt.Printf("%-44s | %-12s | %-7s\n", "Contract ID", "Est. Cost", "Depth")
+	fmt.Printf("Top %d most expensive contract calls
+
+", statsTopN)
+	fmt.Printf("%-44s | %-12s | %-7s
+", "Contract ID", "Est. Cost", "Depth")
 	fmt.Println(strings.Repeat("-", colContract+23))
 
 	for i, s := range stats {
@@ -168,7 +186,8 @@ func printStatsTable(stats []contractStat) {
 		if len(displayID) > colContract {
 			displayID = displayID[:colContract-3] + "..."
 		}
-		fmt.Printf("%d. %-41s | %-12d | %-7d\n", i+1, displayID, s.estimatedCost, s.callDepth)
+		fmt.Printf("%d. %-41s | %-12d | %-7d
+", i+1, displayID, s.estimatedCost, s.callDepth)
 	}
 }
 

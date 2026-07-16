@@ -1,5 +1,20 @@
-// Copyright 2026 Erst Users
 // SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 dotandev
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+// Copyright 2026 Erst Users
 
 package cmd
 
@@ -105,7 +120,8 @@ The session ID can be auto-generated or specified with --id flag.`,
 		err = store.Cleanup(ctx, session.DefaultTTL, session.DefaultMaxSessions)
 		if err != nil {
 			// Log but don't fail on cleanup errors
-			fmt.Fprintf(os.Stderr, "Warning: cleanup failed: %v\n", err)
+			fmt.Fprintf(os.Stderr, "Warning: cleanup failed: %v
+", err)
 		}
 
 		// Save session
@@ -113,10 +129,14 @@ The session ID can be auto-generated or specified with --id flag.`,
 			return errors.WrapValidationError(fmt.Sprintf("failed to save session: %v", err))
 		}
 
-		fmt.Printf("Session saved: %s\n", data.ID)
-		fmt.Printf("  Transaction: %s\n", data.TxHash)
-		fmt.Printf("  Network: %s\n", data.Network)
-		fmt.Printf("  Created: %s\n", data.CreatedAt.Format(time.RFC3339))
+		fmt.Printf("Session saved: %s
+", data.ID)
+		fmt.Printf("  Transaction: %s
+", data.TxHash)
+		fmt.Printf("  Network: %s
+", data.Network)
+		fmt.Printf("  Created: %s
+", data.CreatedAt.Format(time.RFC3339))
 
 		return nil
 	},
@@ -150,7 +170,8 @@ Use 'erst session list' to see available sessions.`,
 		// Run cleanup
 		err = store.Cleanup(ctx, session.DefaultTTL, session.DefaultMaxSessions)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Warning: session cleanup failed: %v\n", err)
+			fmt.Fprintf(os.Stderr, "Warning: session cleanup failed: %v
+", err)
 		}
 
 		// Resolve session by exact ID, partial ID prefix, tx hash, or fuzzy match
@@ -169,32 +190,46 @@ Use 'erst session list' to see available sessions.`,
 		SetCurrentSession(data)
 
 		// Display session info
-		fmt.Printf("Session resumed: %s\n", data.ID)
-		fmt.Printf("  Transaction: %s\n", data.TxHash)
-		fmt.Printf("  Network: %s\n", data.Network)
-		fmt.Printf("  Created: %s\n", data.CreatedAt.Format(time.RFC3339))
-		fmt.Printf("  Last accessed: %s\n", data.LastAccessAt.Format(time.RFC3339))
+		fmt.Printf("Session resumed: %s
+", data.ID)
+		fmt.Printf("  Transaction: %s
+", data.TxHash)
+		fmt.Printf("  Network: %s
+", data.Network)
+		fmt.Printf("  Created: %s
+", data.CreatedAt.Format(time.RFC3339))
+		fmt.Printf("  Last accessed: %s
+", data.LastAccessAt.Format(time.RFC3339))
 
 		// Show transaction envelope info
 		if data.EnvelopeXdr != "" {
-			fmt.Printf("\nTransaction Envelope:\n")
-			fmt.Printf("  Size: %d bytes\n", len(data.EnvelopeXdr))
+			fmt.Printf("
+Transaction Envelope:
+")
+			fmt.Printf("  Size: %d bytes
+", len(data.EnvelopeXdr))
 		}
 
 		// Show simulation results if available
 		if data.SimResponseJSON != "" {
 			resp, err := data.ToSimulationResponse()
 			if err == nil {
-				fmt.Printf("\nSimulation Results:\n")
-				fmt.Printf("  Status: %s\n", resp.Status)
+				fmt.Printf("
+Simulation Results:
+")
+				fmt.Printf("  Status: %s
+", resp.Status)
 				if resp.Error != "" {
-					fmt.Printf("  Error: %s\n", resp.Error)
+					fmt.Printf("  Error: %s
+", resp.Error)
 				}
 				if len(resp.Events) > 0 {
-					fmt.Printf("  Events: %d\n", len(resp.Events))
+					fmt.Printf("  Events: %d
+", len(resp.Events))
 				}
 				if len(resp.Logs) > 0 {
-					fmt.Printf("  Logs: %d\n", len(resp.Logs))
+					fmt.Printf("  Logs: %d
+", len(resp.Logs))
 				}
 			}
 		}
@@ -203,10 +238,13 @@ Use 'erst session list' to see available sessions.`,
 		if uiStore, err := session.NewUIStateStore(); err == nil {
 			defer uiStore.Close()
 			if sections, err := uiStore.LoadSectionState(ctx, data.TxHash); err == nil && len(sections) > 0 {
-				fmt.Printf("\nViewer state: [%s]\n", strings.Join(sections, ", "))
+				fmt.Printf("
+Viewer state: [%s]
+", strings.Join(sections, ", "))
 			}
 			if queries, err := uiStore.RecentSearches(ctx, 5); err == nil && len(queries) > 0 {
-				fmt.Printf("Recent searches: %s\n", strings.Join(queries, ", "))
+				fmt.Printf("Recent searches: %s
+", strings.Join(queries, ", "))
 			}
 		}
 
@@ -236,7 +274,8 @@ Displays session ID, network, last access time, and transaction hash.`,
 		// Run cleanup
 		err = store.Cleanup(ctx, session.DefaultTTL, session.DefaultMaxSessions)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Warning: session cleanup failed: %v\n", err)
+			fmt.Fprintf(os.Stderr, "Warning: session cleanup failed: %v
+", err)
 		}
 
 		// List sessions
@@ -250,8 +289,11 @@ Displays session ID, network, last access time, and transaction hash.`,
 			return nil
 		}
 
-		fmt.Printf("Saved sessions (%d):\n\n", len(sessions))
-		fmt.Printf("%-20s %-12s %-20s %-66s\n", "ID", "Network", "Last Accessed", "Transaction Hash")
+		fmt.Printf("Saved sessions (%d):
+
+", len(sessions))
+		fmt.Printf("%-20s %-12s %-20s %-66s
+", "ID", "Network", "Last Accessed", "Transaction Hash")
 		fmt.Println("--------------------------------------------------------------------------------")
 
 		for _, s := range sessions {
@@ -260,7 +302,8 @@ Displays session ID, network, last access time, and transaction hash.`,
 			if len(txHash) > 64 {
 				txHash = txHash[:64] + "..."
 			}
-			fmt.Printf("%-20s %-12s %-20s %-66s\n", s.ID, s.Network, lastAccess, txHash)
+			fmt.Printf("%-20s %-12s %-20s %-66s
+", s.ID, s.Network, lastAccess, txHash)
 		}
 
 		return nil
@@ -297,7 +340,8 @@ Use 'erst session list' to see available sessions.`,
 			return errors.WrapValidationError(fmt.Sprintf("failed to delete session '%s': %v", resolved.ID, err))
 		}
 
-		fmt.Printf("Session deleted: %s\n", resolved.ID)
+		fmt.Printf("Session deleted: %s
+", resolved.ID)
 		return nil
 	},
 }

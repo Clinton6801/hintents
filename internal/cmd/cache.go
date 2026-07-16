@@ -1,5 +1,20 @@
-// Copyright 2026 Erst Users
 // SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 dotandev
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+// Copyright 2026 Erst Users
 
 package cmd
 
@@ -80,13 +95,19 @@ var cacheStatusCmd = &cobra.Command{
 			return errors.WrapValidationError(fmt.Sprintf("failed to list cache files: %v", err))
 		}
 
-		fmt.Printf("Cache directory: %s\n", cacheDir)
-		fmt.Printf("Cache size: %s\n", formatBytes(size))
-		fmt.Printf("Files cached: %d\n", len(files))
-		fmt.Printf("Maximum size: %s\n", formatBytes(cache.DefaultConfig().MaxSizeBytes))
+		fmt.Printf("Cache directory: %s
+", cacheDir)
+		fmt.Printf("Cache size: %s
+", formatBytes(size))
+		fmt.Printf("Files cached: %d
+", len(files))
+		fmt.Printf("Maximum size: %s
+", formatBytes(cache.DefaultConfig().MaxSizeBytes))
 
 		if size > cache.DefaultConfig().MaxSizeBytes {
-			fmt.Printf("\n[!]  Cache size exceeds maximum limit. Run 'erst cache clean' to free space.\n")
+			fmt.Printf("
+[!]  Cache size exceeds maximum limit. Run 'erst cache clean' to free space.
+")
 		}
 
 		return nil
@@ -150,7 +171,8 @@ var cacheClearCmd = &cobra.Command{
 
 		// Get confirmation unless force flag is set
 		if !cacheForceFlag {
-			fmt.Printf("This will delete ALL cached files in %s\n", cacheDir)
+			fmt.Printf("This will delete ALL cached files in %s
+", cacheDir)
 			fmt.Print("Are you sure? (yes/no): ")
 			var response string
 			if _, err := fmt.Scanln(&response); err != nil {
@@ -228,7 +250,8 @@ At least one filter must be specified. Filters can be combined.`,
 			return errors.WrapValidationError(fmt.Sprintf("RPC cache clean failed: %v", err))
 		}
 
-		fmt.Printf("%d RPC cache entries removed.\n", removed)
+		fmt.Printf("%d RPC cache entries removed.
+", removed)
 		return nil
 	},
 }

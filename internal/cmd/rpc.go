@@ -1,5 +1,20 @@
-// Copyright 2026 Erst Users
 // SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 dotandev
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+// Copyright 2026 Erst Users
 
 package cmd
 
@@ -83,12 +98,17 @@ var rpcHealthCmd = &cobra.Command{
 			duration := time.Since(start)
 
 			if success {
-				fmt.Printf("  [%d]  %s\n", i+1, url)
-				fmt.Printf("      Status: %s\n", status)
-				fmt.Printf("      Latency: %v\n", duration.Round(time.Millisecond))
+				fmt.Printf("  [%d]  %s
+", i+1, url)
+				fmt.Printf("      Status: %s
+", status)
+				fmt.Printf("      Latency: %v
+", duration.Round(time.Millisecond))
 			} else {
-				fmt.Printf("  [%d] %s %s\n", i+1, status, url)
-				fmt.Printf("      Error: %s\n", errStr)
+				fmt.Printf("  [%d] %s %s
+", i+1, status, url)
+				fmt.Printf("      Error: %s
+", errStr)
 			}
 			fmt.Println()
 		}

@@ -1,5 +1,20 @@
-// Copyright 2026 Erst Users
 // SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 dotandev
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+// Copyright 2026 Erst Users
 
 // Package rpc provides access to Stellar Horizon and Soroban RPC endpoints.
 // txstream.go implements TxStreamer: an abstraction that streams transaction
@@ -464,16 +479,24 @@ func wsDialUpgrade(ctx context.Context, wsURL, token string) (*wsConn, error) {
 	key := wsGenKey()
 
 	var reqSB strings.Builder
-	fmt.Fprintf(&reqSB, "GET %s HTTP/1.1\r\n", path)
-	fmt.Fprintf(&reqSB, "Host: %s\r\n", net.JoinHostPort(host, port))
-	reqSB.WriteString("Upgrade: websocket\r\n")
-	reqSB.WriteString("Connection: Upgrade\r\n")
-	fmt.Fprintf(&reqSB, "Sec-WebSocket-Key: %s\r\n", key)
-	reqSB.WriteString("Sec-WebSocket-Version: 13\r\n")
+	fmt.Fprintf(&reqSB, "GET %s HTTP/1.1
+", path)
+	fmt.Fprintf(&reqSB, "Host: %s
+", net.JoinHostPort(host, port))
+	reqSB.WriteString("Upgrade: websocket
+")
+	reqSB.WriteString("Connection: Upgrade
+")
+	fmt.Fprintf(&reqSB, "Sec-WebSocket-Key: %s
+", key)
+	reqSB.WriteString("Sec-WebSocket-Version: 13
+")
 	if token != "" {
-		fmt.Fprintf(&reqSB, "Authorization: Bearer %s\r\n", token)
+		fmt.Fprintf(&reqSB, "Authorization: Bearer %s
+", token)
 	}
-	reqSB.WriteString("\r\n")
+	reqSB.WriteString("
+")
 
 	if _, err := io.WriteString(raw, reqSB.String()); err != nil {
 		_ = raw.Close()
@@ -483,7 +506,8 @@ func wsDialUpgrade(ctx context.Context, wsURL, token string) (*wsConn, error) {
 	br := bufio.NewReader(raw)
 
 	// Read status line.
-	statusLine, err := br.ReadString('\n')
+	statusLine, err := br.ReadString('
+')
 	if err != nil {
 		_ = raw.Close()
 		return nil, fmt.Errorf("ws: read status line: %w", err)
@@ -496,12 +520,14 @@ func wsDialUpgrade(ctx context.Context, wsURL, token string) (*wsConn, error) {
 	// Read and validate headers.
 	gotAccept := ""
 	for {
-		line, err := br.ReadString('\n')
+		line, err := br.ReadString('
+')
 		if err != nil {
 			_ = raw.Close()
 			return nil, fmt.Errorf("ws: read upgrade headers: %w", err)
 		}
-		line = strings.TrimRight(line, "\r\n")
+		line = strings.TrimRight(line, "
+")
 		if line == "" {
 			break // blank line marks end of headers
 		}

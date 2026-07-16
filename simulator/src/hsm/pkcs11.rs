@@ -1,5 +1,20 @@
-// Copyright 2026 Erst Users
 // SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 dotandev
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+// Copyright 2026 Erst Users
 
 //! PKCS#11 HSM signer implementation for hardware-backed cryptographic operations.
 
@@ -194,51 +209,51 @@ impl Pkcs11Signer {
 
         Ok(Pkcs11Functions {
             C_Initialize: *lib
-                .get(b"C_Initialize\0")
+                .get(b"C_Initialize")
                 .map_err(|e| SignerError::Pkcs11(format!("Failed to load C_Initialize: {}", e)))?,
             C_Finalize: *lib
-                .get(b"C_Finalize\0")
+                .get(b"C_Finalize")
                 .map_err(|e| SignerError::Pkcs11(format!("Failed to load C_Finalize: {}", e)))?,
             C_GetInfo: *lib
-                .get(b"C_GetInfo\0")
+                .get(b"C_GetInfo")
                 .map_err(|e| SignerError::Pkcs11(format!("Failed to load C_GetInfo: {}", e)))?,
             C_GetSlotList: *lib
-                .get(b"C_GetSlotList\0")
+                .get(b"C_GetSlotList")
                 .map_err(|e| SignerError::Pkcs11(format!("Failed to load C_GetSlotList: {}", e)))?,
             C_GetSlotInfo: *lib
-                .get(b"C_GetSlotInfo\0")
+                .get(b"C_GetSlotInfo")
                 .map_err(|e| SignerError::Pkcs11(format!("Failed to load C_GetSlotInfo: {}", e)))?,
-            C_GetTokenInfo: *lib.get(b"C_GetTokenInfo\0").map_err(|e| {
+            C_GetTokenInfo: *lib.get(b"C_GetTokenInfo").map_err(|e| {
                 SignerError::Pkcs11(format!("Failed to load C_GetTokenInfo: {}", e))
             })?,
             C_OpenSession: *lib
-                .get(b"C_OpenSession\0")
+                .get(b"C_OpenSession")
                 .map_err(|e| SignerError::Pkcs11(format!("Failed to load C_OpenSession: {}", e)))?,
-            C_CloseSession: *lib.get(b"C_CloseSession\0").map_err(|e| {
+            C_CloseSession: *lib.get(b"C_CloseSession").map_err(|e| {
                 SignerError::Pkcs11(format!("Failed to load C_CloseSession: {}", e))
             })?,
             C_Login: *lib
-                .get(b"C_Login\0")
+                .get(b"C_Login")
                 .map_err(|e| SignerError::Pkcs11(format!("Failed to load C_Login: {}", e)))?,
             C_Logout: *lib
-                .get(b"C_Logout\0")
+                .get(b"C_Logout")
                 .map_err(|e| SignerError::Pkcs11(format!("Failed to load C_Logout: {}", e)))?,
-            C_FindObjectsInit: *lib.get(b"C_FindObjectsInit\0").map_err(|e| {
+            C_FindObjectsInit: *lib.get(b"C_FindObjectsInit").map_err(|e| {
                 SignerError::Pkcs11(format!("Failed to load C_FindObjectsInit: {}", e))
             })?,
             C_FindObjects: *lib
-                .get(b"C_FindObjects\0")
+                .get(b"C_FindObjects")
                 .map_err(|e| SignerError::Pkcs11(format!("Failed to load C_FindObjects: {}", e)))?,
-            C_FindObjectsFinal: *lib.get(b"C_FindObjectsFinal\0").map_err(|e| {
+            C_FindObjectsFinal: *lib.get(b"C_FindObjectsFinal").map_err(|e| {
                 SignerError::Pkcs11(format!("Failed to load C_FindObjectsFinal: {}", e))
             })?,
             C_SignInit: *lib
-                .get(b"C_SignInit\0")
+                .get(b"C_SignInit")
                 .map_err(|e| SignerError::Pkcs11(format!("Failed to load C_SignInit: {}", e)))?,
             C_Sign: *lib
-                .get(b"C_Sign\0")
+                .get(b"C_Sign")
                 .map_err(|e| SignerError::Pkcs11(format!("Failed to load C_Sign: {}", e)))?,
-            C_GetAttributeValue: *lib.get(b"C_GetAttributeValue\0").map_err(|e| {
+            C_GetAttributeValue: *lib.get(b"C_GetAttributeValue").map_err(|e| {
                 SignerError::Pkcs11(format!("Failed to load C_GetAttributeValue: {}", e))
             })?,
         })
@@ -307,7 +322,7 @@ impl Pkcs11Signer {
                     if result == CKR_OK {
                         let token_label_str =
                             CStr::from_ptr(token_info.label.as_ptr()).to_string_lossy();
-                        if token_label_str.trim_matches('\0') == token_label {
+                        if token_label_str.trim_matches('') == token_label {
                             return Ok(slot);
                         }
                     }

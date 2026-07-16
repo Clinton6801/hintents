@@ -1,5 +1,18 @@
+// SPDX-License-Identifier: Apache-2.0
 // Copyright (c) 2026 dotandev
-// SPDX-License-Identifier: MIT OR Apache-2.0
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 
 import * as os from 'os';
 import * as path from 'path';
@@ -63,12 +76,12 @@ export class ProtocolRegistrar {
      * Windows: Register via Registry
      */
     private async registerWindows(): Promise<void> {
-        const regPath = `HKEY_CURRENT_USER\\Software\\Classes\\${this.protocol}`;
+        const regPath = `HKEY_CURRENT_USER\Software\Classes\${this.protocol}`;
 
         const commands = [
             `reg add "${regPath}" /ve /d "URL:ERST Protocol" /f`,
             `reg add "${regPath}" /v "URL Protocol" /d "" /f`,
-            `reg add "${regPath}\\shell\\open\\command" /ve /d "\\"${this.cliPath}\\" protocol-handler \\"%1\\"" /f`,
+            `reg add "${regPath}\shell\open\command" /ve /d "\"${this.cliPath}\" protocol-handler \"%1\"" /f`,
         ];
 
         for (const cmd of commands) {
@@ -162,7 +175,7 @@ Terminal=false`;
         try {
             switch (platform) {
                 case 'win32':
-                    await execAsync(`reg delete "HKEY_CURRENT_USER\\Software\\Classes\\${this.protocol}" /f`);
+                    await execAsync(`reg delete "HKEY_CURRENT_USER\Software\Classes\${this.protocol}" /f`);
                     break;
                 case 'darwin':
                     const plistPath = path.join(os.homedir(), 'Library', 'LaunchAgents', 'com.erst.protocol.plist');
@@ -190,7 +203,7 @@ Terminal=false`;
         try {
             switch (platform) {
                 case 'win32':
-                    const { stdout } = await execAsync(`reg query "HKEY_CURRENT_USER\\Software\\Classes\\${this.protocol}"`);
+                    const { stdout } = await execAsync(`reg query "HKEY_CURRENT_USER\Software\Classes\${this.protocol}"`);
                     return stdout.includes('URL Protocol');
                 case 'darwin':
                     const plistPath = path.join(os.homedir(), 'Library', 'LaunchAgents', 'com.erst.protocol.plist');
@@ -215,7 +228,7 @@ Terminal=false`;
             switch (platform) {
                 case 'win32': {
                     const { stdout } = await execAsync(
-                        `reg query "HKEY_CURRENT_USER\\Software\\Classes\\${this.protocol}\\shell\\open\\command" /ve`
+                        `reg query "HKEY_CURRENT_USER\Software\Classes\${this.protocol}\shell\open\command" /ve`
                     );
                     const match = stdout.match(/"([^"]+)"\s+protocol-handler/);
                     return match ? match[1] : null;

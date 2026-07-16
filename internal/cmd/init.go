@@ -1,5 +1,20 @@
-// Copyright 2026 Erst Users
 // SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 dotandev
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+// Copyright 2026 Erst Users
 
 package cmd
 
@@ -67,7 +82,8 @@ the preferred RPC URL and network passphrase.`,
 			return err
 		}
 
-		_, _ = fmt.Fprintf(cmd.OutOrStdout(), "Initialized Erst project scaffold in %s\n", targetDir) //nolint:errcheck // Terminal output, write failure is non-critical
+		_, _ = fmt.Fprintf(cmd.OutOrStdout(), "Initialized Erst project scaffold in %s
+", targetDir) //nolint:errcheck // Terminal output, write failure is non-critical
 		printInitSuccessBanner(cmd.OutOrStdout())
 		return nil
 	},
@@ -117,7 +133,8 @@ func runInitWizard(cmd *cobra.Command, opts *initScaffoldOptions) error {
 
 func promptWithDefault(reader *bufio.Reader, out io.Writer, prompt, defaultValue string) (string, error) {
 	_, _ = fmt.Fprintf(out, "%s [%s]: ", prompt, defaultValue) //nolint:errcheck // Terminal output, write failure is non-critical
-	input, err := reader.ReadString('\n')
+	input, err := reader.ReadString('
+')
 	if err != nil && !errors.Is(err, io.EOF) {
 		return "", err
 	}
@@ -199,10 +216,13 @@ func ensureGitignoreBlock(path, block string) error {
 		return nil
 	}
 
-	if content != "" && !strings.HasSuffix(content, "\n") {
-		content += "\n"
+	if content != "" && !strings.HasSuffix(content, "
+") {
+		content += "
+"
 	}
-	content += "\n" + block
+	content += "
+" + block
 
 	if err := os.WriteFile(path, []byte(content), 0644); err != nil {
 		return fmt.Errorf("failed to update .gitignore: %w", err)

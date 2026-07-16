@@ -1,5 +1,20 @@
-// Copyright 2026 Erst Users
 // SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 dotandev
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+// Copyright 2026 Erst Users
 
 package cmd
 
@@ -102,9 +117,11 @@ func runShell(cmd *cobra.Command, args []string) error {
 	if shellInitState != "" {
 		if err := session.LoadState(shellInitState); err != nil {
 			logger.Logger.Warn("Failed to load initial state", "error", err)
-			fmt.Printf("Warning: Could not load initial state from %s: %v\n", shellInitState, err)
+			fmt.Printf("Warning: Could not load initial state from %s: %v
+", shellInitState, err)
 		} else {
-			fmt.Printf("Loaded initial state from %s\n", shellInitState)
+			fmt.Printf("Loaded initial state from %s
+", shellInitState)
 		}
 	}
 
@@ -129,7 +146,8 @@ func runShell(cmd *cobra.Command, args []string) error {
 			if errors.Is(err, errors.ErrShellExit) {
 				break
 			}
-			fmt.Printf("Error: %v\n", err)
+			fmt.Printf("Error: %v
+", err)
 		}
 	}
 
@@ -137,7 +155,8 @@ func runShell(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("error reading input: %w", err)
 	}
 
-	fmt.Println("\nGoodbye!")
+	fmt.Println("
+Goodbye!")
 	return nil
 }
 
@@ -175,7 +194,7 @@ func executeShellCommand(ctx context.Context, session *shell.Session, line strin
 		return handleState(session, args)
 
 	case "clear":
-		fmt.Print("\033[H\033[2J")
+		fmt.Print("[H[2J")
 		return nil
 
 	default:
@@ -224,7 +243,8 @@ func handleInvoke(ctx context.Context, session *shell.Session, args []string) er
 	function := args[1]
 	funcArgs := args[2:]
 
-	fmt.Printf("Invoking %s.%s(%s)...\n", contractID, function, strings.Join(funcArgs, ", "))
+	fmt.Printf("Invoking %s.%s(%s)...
+", contractID, function, strings.Join(funcArgs, ", "))
 
 	result, err := session.Invoke(ctx, contractID, function, funcArgs)
 	if err != nil {
@@ -234,20 +254,26 @@ func handleInvoke(ctx context.Context, session *shell.Session, args []string) er
 	// Display result
 	fmt.Println()
 	fmt.Println("Result:")
-	fmt.Printf("  Status: %s\n", result.Status)
+	fmt.Printf("  Status: %s
+", result.Status)
 	if result.Error != "" {
-		fmt.Printf("  Error: %s\n", result.Error)
+		fmt.Printf("  Error: %s
+", result.Error)
 	}
 	if len(result.Events) > 0 {
-		fmt.Printf("  Events: %d\n", len(result.Events))
+		fmt.Printf("  Events: %d
+", len(result.Events))
 		for i, event := range result.Events {
-			fmt.Printf("    [%d] %s\n", i, event)
+			fmt.Printf("    [%d] %s
+", i, event)
 		}
 	}
 	if len(result.Logs) > 0 {
-		fmt.Printf("  Logs: %d\n", len(result.Logs))
+		fmt.Printf("  Logs: %d
+", len(result.Logs))
 		for i, log := range result.Logs {
-			fmt.Printf("    [%d] %s\n", i, log)
+			fmt.Printf("    [%d] %s
+", i, log)
 		}
 	}
 	fmt.Println()
@@ -261,10 +287,14 @@ func handleState(session *shell.Session, args []string) error {
 		summary := session.GetStateSummary()
 		fmt.Println()
 		fmt.Println("Current Ledger State:")
-		fmt.Printf("  Entries: %d\n", summary.EntryCount)
-		fmt.Printf("  Sequence: %d\n", summary.LedgerSequence)
-		fmt.Printf("  Timestamp: %d\n", summary.Timestamp)
-		fmt.Printf("  Invocations: %d\n", summary.InvocationCount)
+		fmt.Printf("  Entries: %d
+", summary.EntryCount)
+		fmt.Printf("  Sequence: %d
+", summary.LedgerSequence)
+		fmt.Printf("  Timestamp: %d
+", summary.Timestamp)
+		fmt.Printf("  Invocations: %d
+", summary.InvocationCount)
 		fmt.Println()
 		return nil
 	}
@@ -279,7 +309,8 @@ func handleState(session *shell.Session, args []string) error {
 		if err := session.SaveState(filename); err != nil {
 			return fmt.Errorf("failed to save state: %w", err)
 		}
-		fmt.Printf("State saved to %s\n", filename)
+		fmt.Printf("State saved to %s
+", filename)
 		return nil
 
 	case "load":
@@ -290,7 +321,8 @@ func handleState(session *shell.Session, args []string) error {
 		if err := session.LoadState(filename); err != nil {
 			return fmt.Errorf("failed to load state: %w", err)
 		}
-		fmt.Printf("State loaded from %s\n", filename)
+		fmt.Printf("State loaded from %s
+", filename)
 		return nil
 
 	case "reset":

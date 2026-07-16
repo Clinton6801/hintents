@@ -1,5 +1,20 @@
-// Copyright 2026 Erst Users
 // SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 dotandev
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+// Copyright 2026 Erst Users
 
 #![allow(clippy::pedantic, clippy::nursery)]
 mod asset_tracker;
@@ -116,28 +131,40 @@ fn generate_lcov_report(coverage: &CoverageTracker, source_file: &str) -> String
     functions.sort_by_key(|&(a, _)| a);
 
     let mut report = String::new();
-    report.push_str("TN:simulator\n");
-    report.push_str(&format!("SF:{source_file}\n"));
+    report.push_str("TN:simulator
+");
+    report.push_str(&format!("SF:{source_file}
+"));
 
     for (idx, (name, _)) in functions.iter().enumerate() {
-        let sanitized = name.replace(['\n', ','], "_");
-        report.push_str(&format!("FN:{},{}\n", idx + 1, sanitized));
+        let sanitized = name.replace(['
+', ','], "_");
+        report.push_str(&format!("FN:{},{}
+", idx + 1, sanitized));
     }
     for (name, count) in &functions {
-        let sanitized = name.replace(['\n', ','], "_");
-        report.push_str(&format!("FNDA:{count},{sanitized}\n"));
+        let sanitized = name.replace(['
+', ','], "_");
+        report.push_str(&format!("FNDA:{count},{sanitized}
+"));
     }
 
     let fnf = functions.len();
     let fnh = functions.iter().filter(|(_, count)| *count > 0).count();
-    report.push_str(&format!("FNF:{fnf}\n"));
-    report.push_str(&format!("FNH:{fnh}\n"));
+    report.push_str(&format!("FNF:{fnf}
+"));
+    report.push_str(&format!("FNH:{fnh}
+"));
 
     // Keep a minimal line section so generic LCOV consumers can parse this file.
-    report.push_str("DA:1,1\n");
-    report.push_str("LF:1\n");
-    report.push_str("LH:1\n");
-    report.push_str("end_of_record\n");
+    report.push_str("DA:1,1
+");
+    report.push_str("LF:1
+");
+    report.push_str("LH:1
+");
+    report.push_str("end_of_record
+");
     report
 }
 
@@ -606,7 +633,9 @@ fn main() {
 
     let mut flamegraph_svg = None;
     if request.profile.unwrap_or(false) {
-        let folded_data = format!("Total;CPU {}\nTotal;Memory {}\n", cpu_insns, mem_bytes);
+        let folded_data = format!("Total;CPU {}
+Total;Memory {}
+", cpu_insns, mem_bytes);
         let mut result_vec = Vec::new();
         let mut options = inferno::flamegraph::Options::default();
         options.title = "Soroban Resource Consumption".to_string();
@@ -956,7 +985,8 @@ fn main() {
                 diagnostic_events: vec![],
                 categorized_events: vec![],
                 logs: {
-                    let mut logs = vec![format!("Stack trace:\n{}", trace_display)];
+                    let mut logs = vec![format!("Stack trace:
+{}", trace_display)];
                     logs.extend(harness_logs.clone());
                     logs
                 },

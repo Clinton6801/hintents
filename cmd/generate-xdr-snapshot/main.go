@@ -1,5 +1,20 @@
-// Copyright 2026 Erst Users
 // SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 dotandev
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+// Copyright 2026 Erst Users
 
 package main
 
@@ -94,7 +109,8 @@ func (eg *EntryGenerator) GenerateEntries() []snapshot.LedgerEntryTuple {
 	entries := make([]snapshot.LedgerEntryTuple, 0, eg.config.Count)
 
 	if eg.config.Verbose {
-		fmt.Printf("Generating %d randomized XDR entries...\n", eg.config.Count)
+		fmt.Printf("Generating %d randomized XDR entries...
+", eg.config.Count)
 	}
 
 	startTime := time.Now()
@@ -114,15 +130,18 @@ func (eg *EntryGenerator) GenerateEntries() []snapshot.LedgerEntryTuple {
 			elapsed := time.Since(startTime)
 			rate := float64(processed) / elapsed.Seconds()
 			eta := time.Duration(float64(eg.config.Count-processed)/rate) * time.Second
-			fmt.Printf("\rProgress: %d/%d (%.0f entries/sec, ETA: %v)",
+			fmt.Printf("Progress: %d/%d (%.0f entries/sec, ETA: %v)",
 				processed, eg.config.Count, rate, eta)
 			lastProgressUpdate = time.Now()
 		}
 	}
 
 	if eg.config.Verbose {
-		fmt.Printf("\nGeneration completed in %v\n", time.Since(startTime))
-		fmt.Printf("Sorting entries...\n")
+		fmt.Printf("
+Generation completed in %v
+", time.Since(startTime))
+		fmt.Printf("Sorting entries...
+")
 	}
 
 	// Sort entries by key for deterministic snapshot format
@@ -158,11 +177,17 @@ func main() {
 		log.Fatalf("Failed to create output directory: %v", err)
 	}
 
-	fmt.Printf("XDR Benchmark Snapshot Generator\n")
-	fmt.Printf("================================\n")
-	fmt.Printf("Entries to generate: %d\n", config.Count)
-	fmt.Printf("Output file: %s\n", config.OutputFile)
-	fmt.Printf("Seed: %d\n\n", config.SeedValue)
+	fmt.Printf("XDR Benchmark Snapshot Generator
+")
+	fmt.Printf("================================
+")
+	fmt.Printf("Entries to generate: %d
+", config.Count)
+	fmt.Printf("Output file: %s
+", config.OutputFile)
+	fmt.Printf("Seed: %d
+
+", config.SeedValue)
 
 	generator := NewEntryGenerator(config)
 
@@ -173,7 +198,8 @@ func main() {
 	snap := generator.GenerateSnapshot()
 
 	if config.Verbose {
-		fmt.Printf("Saving snapshot to %s\n", config.OutputFile)
+		fmt.Printf("Saving snapshot to %s
+", config.OutputFile)
 	}
 
 	if err := snapshot.Save(config.OutputFile, snap); err != nil {
@@ -190,11 +216,19 @@ func main() {
 	fileSizeMB := float64(fileSizeBytes) / (1024 * 1024)
 	avgEntrySize := float64(fileSizeBytes) / float64(config.Count)
 
-	fmt.Printf("\n=== Generation Statistics ===\n")
-	fmt.Printf("Total entries generated: %d\n", config.Count)
-	fmt.Printf("Total file size: %.2f MB (%.0f bytes)\n", fileSizeMB, float64(fileSizeBytes))
-	fmt.Printf("Average XDR value size: %.0f bytes\n", avgEntrySize)
-	fmt.Printf("Estimated overhead (keys + JSON): %.2f %%\n",
+	fmt.Printf("
+=== Generation Statistics ===
+")
+	fmt.Printf("Total entries generated: %d
+", config.Count)
+	fmt.Printf("Total file size: %.2f MB (%.0f bytes)
+", fileSizeMB, float64(fileSizeBytes))
+	fmt.Printf("Average XDR value size: %.0f bytes
+", avgEntrySize)
+	fmt.Printf("Estimated overhead (keys + JSON): %.2f %%
+",
 		(float64(fileSizeBytes)/float64(config.Count*1000))*100)
-	fmt.Printf("\nSnapshot saved successfully!\n")
+	fmt.Printf("
+Snapshot saved successfully!
+")
 }

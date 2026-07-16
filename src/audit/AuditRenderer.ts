@@ -1,5 +1,18 @@
+// SPDX-License-Identifier: Apache-2.0
 // Copyright (c) 2026 dotandev
-// SPDX-License-Identifier: MIT OR Apache-2.0
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 
 import { writeFileSync } from 'fs';
 import type { ExecutionTrace, SignedAuditLog, MultiSignedAuditLog } from './AuditLogger';
@@ -28,7 +41,8 @@ function renderKeyValueTable(data: Record<string, any>): string {
       const val = typeof v === 'object' ? JSON.stringify(v) : String(v);
       return `<tr><td class="key">${escapeHtml(k)}</td><td class="val"><code>${escapeHtml(val)}</code></td></tr>`;
     })
-    .join('\n');
+    .join('
+');
   return `<table><thead><tr><th>Key</th><th>Value</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
@@ -41,7 +55,8 @@ function renderEventsList(events: any[]): string {
       const label = typeof e === 'string' ? escapeHtml(e) : escapeHtml(JSON.stringify(e));
       return `<li><span class="event-index">${i + 1}</span>${label}</li>`;
     })
-    .join('\n');
+    .join('
+');
   return `<ol class="events-list">${items}</ol>`;
 }
 
@@ -75,7 +90,8 @@ function renderMultiSignatures(log: MultiSignedAuditLog): string {
           <td><code>${escapeHtml(truncatedKey)}</code></td>
         </tr>`;
     })
-    .join('\n');
+    .join('
+');
 
   return `
     <table>

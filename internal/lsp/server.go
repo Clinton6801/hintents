@@ -1,5 +1,20 @@
-// Copyright 2026 Erst Users
 // SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 dotandev
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+// Copyright 2026 Erst Users
 
 package lsp
 
@@ -302,7 +317,8 @@ func (s *Server) getDocument(uri protocol.DocumentURI) (string, bool) {
 // splitting the entire document. It scans forward using strings.IndexByte to
 // find newline boundaries, which avoids allocating a slice of all lines and
 // copying every sub-string — important for large documents where
-// strings.Split("\n") would produce O(n) heap allocations on every hover.
+// strings.Split("
+") would produce O(n) heap allocations on every hover.
 func lineAtPosition(text string, position protocol.Position) string {
 	if text == "" {
 		return ""
@@ -315,7 +331,8 @@ func lineAtPosition(text string, position protocol.Position) string {
 
 	start := 0
 	for i := 0; i < lineIndex; i++ {
-		idx := strings.IndexByte(text[start:], '\n')
+		idx := strings.IndexByte(text[start:], '
+')
 		if idx < 0 {
 			// Requested line is beyond the last line in the document.
 			return ""
@@ -325,7 +342,8 @@ func lineAtPosition(text string, position protocol.Position) string {
 
 	// start now points at the beginning of the target line.
 	rest := text[start:]
-	if end := strings.IndexByte(rest, '\n'); end >= 0 {
+	if end := strings.IndexByte(rest, '
+'); end >= 0 {
 		return rest[:end]
 	}
 	return rest
