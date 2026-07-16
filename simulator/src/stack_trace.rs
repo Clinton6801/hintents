@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 //! Enhanced WASM stack trace generation.
 //!
@@ -77,8 +62,7 @@ static RE_NUMBERED_FRAME: Lazy<Regex> = Lazy::new(|| {
     Regex::new(
         r"(?x)
         ^\s*\#?(?P<idx>\d+)\s*:\s*   # leading index
-        (?P<body>[^
-]+?)           # frame body
+        (?P<body>[^\r\n]+?)           # frame body
         \s*$",
     )
     .unwrap()
@@ -136,20 +120,16 @@ impl WasmStackTrace {
     /// Format the trace as a human-readable string.
     pub fn display(&self) -> String {
         let mut out = String::new();
-        out.push_str(&format!("Trap: {}
-", self.trap_kind_label()));
+        out.push_str(&format!("Trap: {}\n", self.trap_kind_label()));
 
         if self.soroban_wrapped {
-            out.push_str("  (error passed through Soroban Host layer)
-");
+            out.push_str("  (error passed through Soroban Host layer)\n");
         }
 
         if self.frames.is_empty() {
-            out.push_str("  <no frames captured>
-");
+            out.push_str("  <no frames captured>\n");
         } else {
-            out.push_str("  Call stack (most recent call last):
-");
+            out.push_str("  Call stack (most recent call last):\n");
             for frame in &self.frames {
                 out.push_str(&format!("    #{}: ", frame.index));
 
@@ -171,8 +151,7 @@ impl WasmStackTrace {
                     out.push_str(&format!(" @ 0x{:x}", offset));
                 }
 
-                out.push('
-');
+                out.push('\n');
             }
         }
 
@@ -410,9 +389,7 @@ mod tests {
 
     #[test]
     fn test_extract_numbered_frames() {
-        let input = "wasm backtrace:
-  0: func[42] @ 0xa3c
-  1: func[7] @ 0xb20";
+        let input = "wasm backtrace:\n  0: func[42] @ 0xa3c\n  1: func[7] @ 0xb20";
         let frames = extract_frames(input, None);
         assert_eq!(frames.len(), 2);
         assert_eq!(frames[0].index, 0);
@@ -426,9 +403,7 @@ mod tests {
     #[test]
     fn test_extract_named_frames() {
         let input =
-            "trace:
-  0: soroban_token::transfer @ 0x100
-  1: soroban_sdk::invoke @ 0x200";
+            "trace:\n  0: soroban_token::transfer @ 0x100\n  1: soroban_sdk::invoke @ 0x200";
         let frames = extract_frames(input, None);
         assert_eq!(frames.len(), 2);
         assert_eq!(
@@ -448,8 +423,7 @@ mod tests {
     #[test]
     fn test_from_host_error_soroban_wrapped() {
         let trace = WasmStackTrace::from_host_error(
-            "HostError: Error(WasmVm, InternalError)
-  0: func[5] @ 0x42",
+            "HostError: Error(WasmVm, InternalError)\n  0: func[5] @ 0x42",
             None,
         );
         assert!(trace.soroban_wrapped);
@@ -459,8 +433,7 @@ mod tests {
 
     #[test]
     fn test_from_host_error_not_soroban_wrapped() {
-        let trace = WasmStackTrace::from_host_error("wasm trap: unreachable
-  0: func[10]", None);
+        let trace = WasmStackTrace::from_host_error("wasm trap: unreachable\n  0: func[10]", None);
         assert!(!trace.soroban_wrapped);
         assert_eq!(trace.trap_kind, TrapKind::Unreachable);
     }
@@ -604,9 +577,7 @@ mod tests {
 
     #[test]
     fn test_regex_garbage_lines_skipped() {
-        let input = "random noise
-  0: func[1] @ 0x1
-more noise";
+        let input = "random noise\n  0: func[1] @ 0x1\nmore noise";
         let frames = extract_frames(input, None);
         assert_eq!(frames.len(), 1);
     }

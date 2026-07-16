@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 package cmd
 
@@ -62,22 +47,17 @@ func runRegressionTest(cmd *cobra.Command, args []string) error {
 		regressionMaxWorkers = 4
 	}
 
-	fmt.Printf("Starting regression test suite
-")
-	fmt.Printf("  Target count: %d transactions
-", regressionTestCount)
-	fmt.Printf("  Network: %s
-", networkFlag)
-	fmt.Printf("  Workers: %d
-", regressionMaxWorkers)
+	fmt.Printf("Starting regression test suite\n")
+	fmt.Printf("  Target count: %d transactions\n", regressionTestCount)
+	fmt.Printf("  Network: %s\n", networkFlag)
+	fmt.Printf("  Workers: %d\n", regressionMaxWorkers)
 
 	if regressionProtocolVersion > 0 {
 		// Validate protocol version
 		if err := simulator.Validate(regressionProtocolVersion); err != nil {
 			return fmt.Errorf("invalid protocol version: %w", err)
 		}
-		fmt.Printf("  Protocol version override: %d
-", regressionProtocolVersion)
+		fmt.Printf("  Protocol version override: %d\n", regressionProtocolVersion)
 	}
 
 	// Create RPC client
@@ -118,30 +98,24 @@ func runRegressionTest(cmd *cobra.Command, args []string) error {
 	}
 
 	// Print summary
-	fmt.Println("
-" + suite.Summary())
+	fmt.Println("\n" + suite.Summary())
 
 	// Print failed results if any
 	failed := suite.FailedResults()
 	if len(failed) > 0 {
-		fmt.Printf("
-%d test(s) failed:
-", len(failed))
+		fmt.Printf("\n%d test(s) failed:\n", len(failed))
 		for i, result := range failed {
 			if i < 10 { // Show first 10 failures
-				fmt.Printf("  [%d] %s: %s
-", i+1, result.TransactionHash, result.ErrorMessage)
+				fmt.Printf("  [%d] %s: %s\n", i+1, result.TransactionHash, result.ErrorMessage)
 			}
 		}
 		if len(failed) > 10 {
-			fmt.Printf("  ... and %d more failures
-", len(failed)-10)
+			fmt.Printf("  ... and %d more failures\n", len(failed)-10)
 		}
 		return fmt.Errorf("regression test failed with %d failures", len(failed))
 	}
 
-	fmt.Println("
-All regression tests passed!")
+	fmt.Println("\nAll regression tests passed!")
 	return nil
 }
 

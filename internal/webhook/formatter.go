@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 package webhook
 
@@ -95,9 +80,7 @@ func FormatSlackMessage(report ReportData) SlackMessage {
 		"text": map[string]interface{}{
 			"type": "mrkdwn",
 			"text": fmt.Sprintf(
-				"%s *Status:* %s
-*Network:* %s
-*Timestamp:* %s",
+				"%s *Status:* %s\n*Network:* %s\n*Timestamp:* %s",
 				statusIcon,
 				report.Status,
 				report.Network,
@@ -114,13 +97,11 @@ func FormatSlackMessage(report ReportData) SlackMessage {
 		"fields": []interface{}{
 			map[string]interface{}{
 				"type": "mrkdwn",
-				"text": fmt.Sprintf("*TX Hash:*
-`%s`", report.TxHash),
+				"text": fmt.Sprintf("*TX Hash:*\n`%s`", report.TxHash),
 			},
 			map[string]interface{}{
 				"type": "mrkdwn",
-				"text": fmt.Sprintf("*Trace ID:*
-`%s`", report.TraceID),
+				"text": fmt.Sprintf("*Trace ID:*\n`%s`", report.TraceID),
 			},
 		},
 	}
@@ -132,8 +113,7 @@ func FormatSlackMessage(report ReportData) SlackMessage {
 			"type": "section",
 			"text": map[string]interface{}{
 				"type": "mrkdwn",
-				"text": fmt.Sprintf("*Error:*
-```%s```", truncateString(report.Error, 500)),
+				"text": fmt.Sprintf("*Error:*\n```%s```", truncateString(report.Error, 500)),
 			},
 		}
 		blocks = append(blocks, errorBlock)
@@ -222,9 +202,7 @@ func FormatDiscordMessage(report ReportData) DiscordMessage {
 	if report.Error != "" {
 		fields = append(fields, DiscordEmbedField{
 			Name:   "Error",
-			Value:  fmt.Sprintf("```
-%s
-```", truncateString(report.Error, 400)),
+			Value:  fmt.Sprintf("```\n%s\n```", truncateString(report.Error, 400)),
 			Inline: false,
 		})
 	}
@@ -300,15 +278,13 @@ func formatSlackEventsText(events []simulator.DiagnosticEvent) string {
 	b.WriteString(strconv.Itoa(len(events)))
 	b.WriteString(" diagnostic events recorded")
 	if len(events) <= 3 {
-		b.WriteByte('
-')
+		b.WriteByte('\n')
 		for i, evt := range events {
 			b.WriteString("• ")
 			b.WriteString(evt.EventType)
 			b.WriteString(": ")
 			b.WriteString(truncateString(evt.Data, 100))
-			b.WriteByte('
-')
+			b.WriteByte('\n')
 			if i >= 2 {
 				break
 			}
@@ -323,15 +299,13 @@ func formatDiscordEventsValue(events []simulator.DiagnosticEvent) string {
 	b.WriteString(strconv.Itoa(len(events)))
 	b.WriteString(" diagnostic events")
 	if len(events) <= 3 {
-		b.WriteByte('
-')
+		b.WriteByte('\n')
 		for i, evt := range events {
 			b.WriteString("• `")
 			b.WriteString(evt.EventType)
 			b.WriteString("`: ")
 			b.WriteString(truncateString(evt.Data, 80))
-			b.WriteByte('
-')
+			b.WriteByte('\n')
 			if i >= 2 {
 				break
 			}

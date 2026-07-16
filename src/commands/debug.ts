@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
 // Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
+// SPDX-License-Identifier: MIT OR Apache-2.0
 
 import { Command } from 'commander';
 import { RPCConfigParser } from '../config/rpc-config';
@@ -54,16 +41,13 @@ export function registerDebugCommand(program: Command): void {
                 const rpcClient = new FallbackRPCClient(config);
 
                 // Standard output
-                logger.info(`
-[SEARCH] Debugging transaction: ${transaction}
-`);
+                logger.info(`\n[SEARCH] Debugging transaction: ${transaction}\n`);
 
                 // Verbose: Show configuration
                 logger.verbose(LogCategory.INFO, 'Configuration');
                 logger.verboseIndent(LogCategory.INFO, `RPC URL: ${options.rpc || 'Default'}`);
                 logger.verboseIndent(LogCategory.INFO, `Transaction hash: ${transaction}`);
-                logger.verboseIndent(LogCategory.INFO, `Verbose mode: enabled
-`);
+                logger.verboseIndent(LogCategory.INFO, `Verbose mode: enabled\n`);
 
                 // Make RPC request
                 logger.verbose(LogCategory.RPC, 'Initiating transaction fetch...');
@@ -116,9 +100,7 @@ export function registerDebugCommand(program: Command): void {
 
                 const status = rpcClient.getHealthStatus();
 
-                console.log('
-[STATS] RPC Endpoint Status:
-');
+                console.log('\n[STATS] RPC Endpoint Status:\n');
                 status.forEach((ep, idx) => {
                     const statusIcon = ep.healthy ? '' : '[FAIL]';
                     const circuit = ep.circuitOpen ? ' [CIRCUIT OPEN]' : '';

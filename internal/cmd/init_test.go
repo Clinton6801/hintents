@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 package cmd
 
@@ -64,8 +49,7 @@ func TestScaffoldErstProjectCreatesFilesAndDirs(t *testing.T) {
 func TestScaffoldErstProjectDoesNotOverwriteErstTomlWithoutForce(t *testing.T) {
 	root := t.TempDir()
 	path := filepath.Join(root, "erst.toml")
-	require.NoError(t, os.WriteFile(path, []byte("network = \"public\"
-"), 0644))
+	require.NoError(t, os.WriteFile(path, []byte("network = \"public\"\n"), 0644))
 
 	err := scaffoldErstProject(root, initScaffoldOptions{Network: "testnet"})
 	require.Error(t, err)
@@ -73,15 +57,13 @@ func TestScaffoldErstProjectDoesNotOverwriteErstTomlWithoutForce(t *testing.T) {
 
 	content, readErr := os.ReadFile(path)
 	require.NoError(t, readErr)
-	assert.Equal(t, "network = \"public\"
-", string(content))
+	assert.Equal(t, "network = \"public\"\n", string(content))
 }
 
 func TestEnsureGitignoreBlockIsIdempotent(t *testing.T) {
 	root := t.TempDir()
 	path := filepath.Join(root, ".gitignore")
-	initial := "node_modules/
-"
+	initial := "node_modules/\n"
 	require.NoError(t, os.WriteFile(path, []byte(initial), 0644))
 
 	block := renderProjectGitignoreBlock()
@@ -115,8 +97,7 @@ func TestRenderProjectErstTomlWithOverrides(t *testing.T) {
 }
 
 func TestPromptWithDefaultUsesDefaultOnEmptyInput(t *testing.T) {
-	reader := bufio.NewReader(strings.NewReader("
-"))
+	reader := bufio.NewReader(strings.NewReader("\n"))
 	out := &bytes.Buffer{}
 
 	value, err := promptWithDefault(reader, out, "Preferred Soroban RPC URL", "https://rpc.default")
@@ -126,8 +107,7 @@ func TestPromptWithDefaultUsesDefaultOnEmptyInput(t *testing.T) {
 }
 
 func TestPromptWithDefaultUsesUserInput(t *testing.T) {
-	reader := bufio.NewReader(strings.NewReader("https://rpc.custom
-"))
+	reader := bufio.NewReader(strings.NewReader("https://rpc.custom\n"))
 	out := &bytes.Buffer{}
 
 	value, err := promptWithDefault(reader, out, "Preferred Soroban RPC URL", "https://rpc.default")

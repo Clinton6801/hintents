@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 //! Software-based signer implementation using local cryptographic keys.
 
@@ -365,9 +350,7 @@ mod tests {
     fn test_incorrect_pem_label_fails_gracefully() {
         let begin_pub_header = ["-----BEGIN ", "PUBLIC KEY-----"].concat();
         let end_pub_footer = ["-----END ", "PUBLIC KEY-----"].concat();
-        let wrong_pem = format!("{}
-MC4CAQA=
-{}", begin_pub_header, end_pub_footer);
+        let wrong_pem = format!("{}\nMC4CAQA=\n{}", begin_pub_header, end_pub_footer);
         let result = SoftwareSigner::from_pem(&wrong_pem);
         assert!(result.is_err());
         if let Err(SignerError::Crypto(msg)) = result {
@@ -382,9 +365,7 @@ MC4CAQA=
         let begin_header = ["-----BEGIN ", "PRIVATE KEY-----"].concat();
         let end_footer = ["-----END ", "PRIVATE KEY-----"].concat();
         // Valid PEM format but payload does not start with 0x30 (it starts with 0x00)
-        let invalid_pem = format!("{}
-AAAA
-{}", begin_header, end_footer);
+        let invalid_pem = format!("{}\nAAAA\n{}", begin_header, end_footer);
         let result = SoftwareSigner::from_pem(&invalid_pem);
         assert!(result.is_err());
         if let Err(SignerError::Crypto(msg)) = result {
@@ -399,9 +380,7 @@ AAAA
         let begin_header = ["-----BEGIN ", "PRIVATE KEY-----"].concat();
         let end_footer = ["-----END ", "PRIVATE KEY-----"].concat();
         // Valid PEM format but empty payload
-        let empty_pem = format!("{}
-
-{}", begin_header, end_footer);
+        let empty_pem = format!("{}\n\n{}", begin_header, end_footer);
         let result = SoftwareSigner::from_pem(&empty_pem);
         assert!(result.is_err());
         if let Err(SignerError::Crypto(msg)) = result {

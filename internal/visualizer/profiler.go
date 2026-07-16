@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 package visualizer
 
@@ -34,7 +19,7 @@ var hostFunctionDocumentation = map[string]string{
 	"storage_get":     "storage_get(key): reads a value from contract storage.",
 }
 
-var hostFunctionMatcher = regexp.MustCompile(`(require_auth|create_contract|contract_call|invoke|storage_put|storage_get)`)
+var hostFunctionMatcher = regexp.MustCompile(`\b(require_auth|create_contract|contract_call|invoke|storage_put|storage_get)\b`)
 
 // DiagnosticHint represents a source-level hint for a diagnostics engine.
 type DiagnosticHint struct {
@@ -86,8 +71,7 @@ func DiagnosticsForSource(source string) []DiagnosticHint {
 		return nil
 	}
 
-	lines := strings.Split(source, "
-")
+	lines := strings.Split(source, "\n")
 	hints := make([]DiagnosticHint, 0)
 
 	for lineIndex, line := range lines {

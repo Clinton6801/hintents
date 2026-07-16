@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 package cmd
 
@@ -74,8 +59,7 @@ func FixSimulatorBinary(verbose bool) error {
 		return fmt.Errorf("binary not found after build: %s", binaryPath)
 	}
 
-	fmt.Printf("  [OK] Simulator built successfully at: %s
-", binaryPath)
+	fmt.Printf("  [OK] Simulator built successfully at: %s\n", binaryPath)
 	return nil
 }
 
@@ -105,8 +89,7 @@ func FixMissingCacheDir(verbose bool) error {
 		}
 	}
 
-	fmt.Printf("  [OK] Cache directory created at: %s
-", cacheDir)
+	fmt.Printf("  [OK] Cache directory created at: %s\n", cacheDir)
 	return nil
 }
 
@@ -145,11 +128,9 @@ func FixProtocolRegistration(verbose bool) error {
 			if err := os.WriteFile(backupFile, data, 0644); err != nil {
 				return fmt.Errorf("failed to backup corrupted registry: %w", err)
 			}
-			fmt.Printf("  ⚠ Corrupted registry backed up to: %s
-", backupFile)
+			fmt.Printf("  ⚠ Corrupted registry backed up to: %s\n", backupFile)
 		} else {
-			fmt.Printf("  [OK] Protocol registry already exists and is valid at: %s
-", registryFile)
+			fmt.Printf("  [OK] Protocol registry already exists and is valid at: %s\n", registryFile)
 			return nil
 		}
 	}
@@ -170,8 +151,7 @@ func FixProtocolRegistration(verbose bool) error {
 		return fmt.Errorf("failed to write registry file: %w", err)
 	}
 
-	fmt.Printf("  [OK] Protocol registry created at: %s
-", registryFile)
+	fmt.Printf("  [OK] Protocol registry created at: %s\n", registryFile)
 	return nil
 }
 

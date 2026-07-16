@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 package rpc
 
@@ -394,16 +379,11 @@ func newMockWSServer(t *testing.T, statuses []string) *httptest.Server {
 
 		// Write the 101 upgrade response manually.
 		_, _ = fmt.Fprintf(bufrw,
-			"HTTP/1.1 101 Switching Protocols
-"+
-				"Upgrade: websocket
-"+
-				"Connection: Upgrade
-"+
-				"Sec-WebSocket-Accept: %s
-"+
-				"
-",
+			"HTTP/1.1 101 Switching Protocols\r\n"+
+				"Upgrade: websocket\r\n"+
+				"Connection: Upgrade\r\n"+
+				"Sec-WebSocket-Accept: %s\r\n"+
+				"\r\n",
 			accept,
 		)
 		if err := bufrw.Flush(); err != nil {
@@ -632,16 +612,11 @@ func TestClientWatchTransaction_FallsBackWhenWebSocketStreamDrops(t *testing.T) 
 			defer func() { _ = conn.Close() }()
 
 			_, _ = fmt.Fprintf(bufrw,
-				"HTTP/1.1 101 Switching Protocols
-"+
-					"Upgrade: websocket
-"+
-					"Connection: Upgrade
-"+
-					"Sec-WebSocket-Accept: %s
-"+
-					"
-",
+				"HTTP/1.1 101 Switching Protocols\r\n"+
+					"Upgrade: websocket\r\n"+
+					"Connection: Upgrade\r\n"+
+					"Sec-WebSocket-Accept: %s\r\n"+
+					"\r\n",
 				accept,
 			)
 			if err := bufrw.Flush(); err != nil {
@@ -1080,16 +1055,11 @@ func newMockWSServerFull(t *testing.T) *httptest.Server {
 		defer func() { _ = conn.Close() }()
 
 		_, _ = fmt.Fprintf(bufrw,
-			"HTTP/1.1 101 Switching Protocols
-"+
-				"Upgrade: websocket
-"+
-				"Connection: Upgrade
-"+
-				"Sec-WebSocket-Accept: %s
-"+
-				"
-",
+			"HTTP/1.1 101 Switching Protocols\r\n"+
+				"Upgrade: websocket\r\n"+
+				"Connection: Upgrade\r\n"+
+				"Sec-WebSocket-Accept: %s\r\n"+
+				"\r\n",
 			accept,
 		)
 		if err := bufrw.Flush(); err != nil {

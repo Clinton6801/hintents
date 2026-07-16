@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 package cmd
 
@@ -51,17 +36,12 @@ var versionCmd = &cobra.Command{
 			output, _ := json.MarshalIndent(info, "", "  ")
 			fmt.Println(string(output))
 		} else {
-			fmt.Printf("Erst Version: %s
-", info.Version)
-			fmt.Printf("Commit SHA:   %s
-", info.CommitSHA)
-			fmt.Printf("Build Date:   %s
-", info.BuildDate)
-			fmt.Printf("Go Version:   %s
-", info.GoVersion)
+			fmt.Printf("Erst Version: %s\n", info.Version)
+			fmt.Printf("Commit SHA:   %s\n", info.CommitSHA)
+			fmt.Printf("Build Date:   %s\n", info.BuildDate)
+			fmt.Printf("Go Version:   %s\n", info.GoVersion)
 		}
-		fmt.Printf("erst version %s
-", version.Version)
+		fmt.Printf("erst version %s\n", version.Version)
 	},
 }
 

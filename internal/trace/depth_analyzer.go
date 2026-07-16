@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 package trace
 
@@ -171,14 +156,12 @@ func (da *DepthAnalyzer) FormatErrorPath(path *PathMatch) string {
 	}
 
 	var sb strings.Builder
-	fmt.Fprintf(&sb, "Error at depth %d:
-", path.ErrorDepth)
+	fmt.Fprintf(&sb, "Error at depth %d:\n", path.ErrorDepth)
 
 	for i, node := range path.Nodes {
 		indent := strings.Repeat("  ", i)
 		fmt.Fprintf(&sb, "%s[%d] %s", indent, i, da.formatNode(node))
-		sb.WriteString("
-")
+		sb.WriteString("\n")
 	}
 
 	return sb.String()
@@ -228,16 +211,11 @@ type DepthAnalysis struct {
 // Summary returns a summary of the analysis
 func (da *DepthAnalysis) Summary() string {
 	return fmt.Sprintf(
-		"Depth Analysis:
-"+
-			"  Max Depth: %d
-"+
-			"  Total Nodes: %d
-"+
-			"  Error Nodes: %d
-"+
-			"  Deep Nodes (>=%d): %d
-"+
+		"Depth Analysis:\n"+
+			"  Max Depth: %d\n"+
+			"  Total Nodes: %d\n"+
+			"  Error Nodes: %d\n"+
+			"  Deep Nodes (>=%d): %d\n"+
 			"  Cross-Contract Calls: %d",
 		da.MaxDepth,
 		da.TotalNodes,

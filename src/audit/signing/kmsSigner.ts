@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
 // Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
+// SPDX-License-Identifier: MIT OR Apache-2.0
 
 import type { AuditSigner, PublicKey, Signature } from "./types";
 
@@ -134,13 +121,9 @@ export class KmsSigner implements AuditSigner {
     const der = Buffer.from(response.PublicKey);
     const b64 = der
       .toString("base64")
-      .replace(/(.{64})/g, "$1
-")
+      .replace(/(.{64})/g, "$1\n")
       .trimEnd();
-    return `-----BEGIN PUBLIC KEY-----
-${b64}
------END PUBLIC KEY-----
-`;
+    return `-----BEGIN PUBLIC KEY-----\n${b64}\n-----END PUBLIC KEY-----\n`;
   }
 
   // ---- private helpers ----

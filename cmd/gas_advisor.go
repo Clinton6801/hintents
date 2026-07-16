@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 package cmd
 
@@ -58,25 +43,18 @@ var gasAdvisorSyncCmd = &cobra.Command{
 		provider := simulator.NewNetworkBaselineProvider(runner)
 		advisor := simulator.NewGasOptimizationAdvisor(provider)
 
-		fmt.Printf("Syncing baselines from %s network...
-", gasAdvisorNetwork)
+		fmt.Printf("Syncing baselines from %s network...\n", gasAdvisorNetwork)
 		if err := advisor.SyncBaselines(context.Background()); err != nil {
 			return fmt.Errorf("sync failed: %w", err)
 		}
 
 		bl := advisor.CurrentBaselines()
-		fmt.Printf("Baselines synced successfully!
-")
-		fmt.Printf("  Source:          %s
-", bl.Source)
-		fmt.Printf("  Avg CPU/op:      %d instructions
-", bl.AvgCPUPerOp)
-		fmt.Printf("  Avg Memory/op:   %d bytes
-", bl.AvgMemoryPerOp)
-		fmt.Printf("  Avg Fee:         %d stroops
-", bl.AvgFeeStroops)
-		fmt.Printf("  Synced at:       %s
-", bl.SyncedAt.Format("2006-01-02 15:04:05 UTC"))
+		fmt.Printf("Baselines synced successfully!\n")
+		fmt.Printf("  Source:          %s\n", bl.Source)
+		fmt.Printf("  Avg CPU/op:      %d instructions\n", bl.AvgCPUPerOp)
+		fmt.Printf("  Avg Memory/op:   %d bytes\n", bl.AvgMemoryPerOp)
+		fmt.Printf("  Avg Fee:         %d stroops\n", bl.AvgFeeStroops)
+		fmt.Printf("  Synced at:       %s\n", bl.SyncedAt.Format("2006-01-02 15:04:05 UTC"))
 		return nil
 	},
 }

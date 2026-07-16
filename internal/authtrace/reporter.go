@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 package authtrace
 
@@ -45,23 +30,14 @@ func (r *DetailedReporter) GenerateReport() string {
 		status = "FAILED"
 	}
 
-	sb.WriteString("=== MULTI-SIGNATURE AUTHORIZATION DEBUG REPORT ===
-
-")
-	fmt.Fprintf(&sb, "Authorization: %s
-", status)
-	fmt.Fprintf(&sb, "Account: %s
-", r.trace.AccountID)
-	fmt.Fprintf(&sb, "Total Signers: %d
-", r.trace.SignerCount)
-	fmt.Fprintf(&sb, "Valid Signatures: %d
-
-", r.trace.ValidSignatures)
+	sb.WriteString("=== MULTI-SIGNATURE AUTHORIZATION DEBUG REPORT ===\n\n")
+	fmt.Fprintf(&sb, "Authorization: %s\n", status)
+	fmt.Fprintf(&sb, "Account: %s\n", r.trace.AccountID)
+	fmt.Fprintf(&sb, "Total Signers: %d\n", r.trace.SignerCount)
+	fmt.Fprintf(&sb, "Valid Signatures: %d\n\n", r.trace.ValidSignatures)
 	r.writeMultiSigRequirement(&sb)
 	if expirationLedger, ok := r.findExpirationLedger(); ok {
-		fmt.Fprintf(&sb, "  Expiration Ledger: %d
-
-", expirationLedger)
+		fmt.Fprintf(&sb, "  Expiration Ledger: %d\n\n", expirationLedger)
 	}
 
 	if len(r.trace.Failures) > 0 {
@@ -119,13 +95,9 @@ func (r *DetailedReporter) writeMultiSigRequirement(sb *strings.Builder) {
 		missingSigs = 0
 	}
 
-	fmt.Fprintf(sb, "  Signatures: %d/%d (Missing: %d)
-", providedSigs, requiredSigs, missingSigs)
-	fmt.Fprintf(sb, "  Required Weight: %d
-", requiredWeight)
-	fmt.Fprintf(sb, "  Provided Weight: %d
-
-", providedWeight)
+	fmt.Fprintf(sb, "  Signatures: %d/%d (Missing: %d)\n", providedSigs, requiredSigs, missingSigs)
+	fmt.Fprintf(sb, "  Required Weight: %d\n", requiredWeight)
+	fmt.Fprintf(sb, "  Provided Weight: %d\n\n", providedWeight)
 }
 
 func (r *DetailedReporter) multiSigWeights() (uint32, uint32, bool) {
@@ -191,27 +163,18 @@ func minSignaturesForWeight(weights []KeyWeight, required uint32) int {
 }
 
 func (r *DetailedReporter) writeFailures(sb *strings.Builder) {
-	sb.WriteString("--- FAILURE DETAILS ---
-")
+	sb.WriteString("--- FAILURE DETAILS ---\n")
 	for i, failure := range r.trace.Failures {
-		fmt.Fprintf(sb, "
-Failure #%d:
-", i+1)
-		fmt.Fprintf(sb, "  Reason: %s
-", failure.FailureReason)
-		fmt.Fprintf(sb, "  Required Weight: %d
-", failure.RequiredWeight)
-		fmt.Fprintf(sb, "  Collected Weight: %d
-", failure.CollectedWeight)
-		fmt.Fprintf(sb, "  Missing Weight: %d
-", failure.MissingWeight)
+		fmt.Fprintf(sb, "\nFailure #%d:\n", i+1)
+		fmt.Fprintf(sb, "  Reason: %s\n", failure.FailureReason)
+		fmt.Fprintf(sb, "  Required Weight: %d\n", failure.RequiredWeight)
+		fmt.Fprintf(sb, "  Collected Weight: %d\n", failure.CollectedWeight)
+		fmt.Fprintf(sb, "  Missing Weight: %d\n", failure.MissingWeight)
 
 		if len(failure.FailedSigners) > 0 {
-			sb.WriteString("  Failed Signers:
-")
+			sb.WriteString("  Failed Signers:\n")
 			for _, signer := range failure.FailedSigners {
-				fmt.Fprintf(sb, "    - %s (weight: %d, type: %s)
-",
+				fmt.Fprintf(sb, "    - %s (weight: %d, type: %s)\n",
 					signer.SignerKey, signer.Weight, signer.SignerType)
 			}
 		}
@@ -219,49 +182,33 @@ Failure #%d:
 }
 
 func (r *DetailedReporter) writeEvents(sb *strings.Builder) {
-	sb.WriteString("
---- AUTHORIZATION TRACE ---
-")
+	sb.WriteString("\n--- AUTHORIZATION TRACE ---\n")
 	for i, event := range r.trace.AuthEvents {
-		fmt.Fprintf(sb, "
-[%d] %s
-", i+1, event.EventType)
+		fmt.Fprintf(sb, "\n[%d] %s\n", i+1, event.EventType)
 		if event.SignerKey != "" {
-			fmt.Fprintf(sb, "    Signer: %s
-", event.SignerKey)
+			fmt.Fprintf(sb, "    Signer: %s\n", event.SignerKey)
 		}
-		fmt.Fprintf(sb, "    Status: %s
-", event.Status)
+		fmt.Fprintf(sb, "    Status: %s\n", event.Status)
 		if event.Weight > 0 {
-			fmt.Fprintf(sb, "    Weight: %d
-", event.Weight)
+			fmt.Fprintf(sb, "    Weight: %d\n", event.Weight)
 		}
 		if event.Details != "" {
-			fmt.Fprintf(sb, "    Details: %s
-", event.Details)
+			fmt.Fprintf(sb, "    Details: %s\n", event.Details)
 		}
 		if event.ErrorReason != "" {
-			fmt.Fprintf(sb, "    Error: %s
-", event.ErrorReason)
+			fmt.Fprintf(sb, "    Error: %s\n", event.ErrorReason)
 		}
 	}
 }
 
 func (r *DetailedReporter) writeContracts(sb *strings.Builder) {
-	sb.WriteString("
---- CUSTOM CONTRACT AUTHORIZATIONS ---
-")
+	sb.WriteString("\n--- CUSTOM CONTRACT AUTHORIZATIONS ---\n")
 	for _, contract := range r.trace.CustomContracts {
-		fmt.Fprintf(sb, "
-Contract: %s
-", contract.ContractID)
-		fmt.Fprintf(sb, "  Method: %s
-", contract.Method)
-		fmt.Fprintf(sb, "  Result: %s
-", contract.Result)
+		fmt.Fprintf(sb, "\nContract: %s\n", contract.ContractID)
+		fmt.Fprintf(sb, "  Method: %s\n", contract.Method)
+		fmt.Fprintf(sb, "  Result: %s\n", contract.Result)
 		if contract.ErrorMsg != "" {
-			fmt.Fprintf(sb, "  Error: %s
-", contract.ErrorMsg)
+			fmt.Fprintf(sb, "  Error: %s\n", contract.ErrorMsg)
 		}
 	}
 }
@@ -279,9 +226,7 @@ func (r *DetailedReporter) writeSignatureWeightSummary(sb *strings.Builder) {
 		required = r.trace.Failures[0].RequiredWeight
 	}
 
-	fmt.Fprintf(sb, "
-Total Signature Weight: %d / Required: %d
-", totalProvided, required)
+	fmt.Fprintf(sb, "\nTotal Signature Weight: %d / Required: %d\n", totalProvided, required)
 }
 
 func (r *DetailedReporter) GenerateJSON() ([]byte, error) {

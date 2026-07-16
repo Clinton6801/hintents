@@ -1,19 +1,5 @@
+// Copyright (c) Hintents Authors.
 // SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 
 import { generateKeyPairSync, sign as nodeSign } from 'crypto';
 import type { AuditSigner, PublicKey, Signature, HardwareAttestation } from './types';
@@ -38,17 +24,13 @@ export class MockAuditSigner implements AuditSigner {
       this.mockAttestation = {
         certificates: [
           {
-            pem: '-----BEGIN CERTIFICATE-----
-MOCK_LEAF_CERT
------END CERTIFICATE-----',
+            pem: '-----BEGIN CERTIFICATE-----\nMOCK_LEAF_CERT\n-----END CERTIFICATE-----',
             subject: 'CN=MockHSM Attestation Key',
             issuer: 'CN=MockHSM Root CA',
             serial: 'deadbeef01',
           },
           {
-            pem: '-----BEGIN CERTIFICATE-----
-MOCK_ROOT_CERT
------END CERTIFICATE-----',
+            pem: '-----BEGIN CERTIFICATE-----\nMOCK_ROOT_CERT\n-----END CERTIFICATE-----',
             subject: 'CN=MockHSM Root CA',
             issuer: 'CN=MockHSM Root CA',
             serial: 'cafebabe02',

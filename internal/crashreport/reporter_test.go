@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 package crashreport
 
@@ -145,13 +130,11 @@ func TestSend_PostsPayloadWhenEnabled(t *testing.T) {
 	defer srv.Close()
 
 	reporter := New(Config{Enabled: true, Endpoint: srv.URL, Version: "1.2.3", CommitSHA: "abc123"})
-	err := reporter.Send(context.Background(), errors.New("boom"), []byte("goroutine 1
-..."), "erst debug")
+	err := reporter.Send(context.Background(), errors.New("boom"), []byte("goroutine 1\n..."), "erst debug")
 
 	require.NoError(t, err)
 	assert.Equal(t, "boom", received.ErrorMessage)
-	assert.Equal(t, "goroutine 1
-...", received.StackTrace)
+	assert.Equal(t, "goroutine 1\n...", received.StackTrace)
 	assert.Equal(t, "erst debug", received.Command)
 	assert.Equal(t, "1.2.3", received.Version)
 	assert.Equal(t, "abc123", received.CommitSHA)

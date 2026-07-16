@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 package rpc_test
 
@@ -56,18 +41,12 @@ func ExampleClient_GetLedgerHeader() {
 	}
 
 	// Use the ledger header information
-	fmt.Printf("Ledger %d:
-", header.Sequence)
-	fmt.Printf("  Hash: %s
-", header.Hash)
-	fmt.Printf("  Protocol Version: %d
-", header.ProtocolVersion)
-	fmt.Printf("  Close Time: %s
-", header.CloseTime)
-	fmt.Printf("  Base Fee: %d stroops
-", header.BaseFee)
-	fmt.Printf("  Transactions: %d successful, %d failed
-",
+	fmt.Printf("Ledger %d:\n", header.Sequence)
+	fmt.Printf("  Hash: %s\n", header.Hash)
+	fmt.Printf("  Protocol Version: %d\n", header.ProtocolVersion)
+	fmt.Printf("  Close Time: %s\n", header.CloseTime)
+	fmt.Printf("  Base Fee: %d stroops\n", header.BaseFee)
+	fmt.Printf("  Transactions: %d successful, %d failed\n",
 		header.SuccessfulTxCount, header.FailedTxCount)
 }
 
@@ -92,14 +71,12 @@ func ExampleClient_GetLedgerHeader_errorHandling() {
 			// Retry logic here
 		default:
 			// Other errors (network, etc.)
-			fmt.Printf("Error: %v
-", err)
+			fmt.Printf("Error: %v\n", err)
 		}
 		return
 	}
 
-	fmt.Printf("Ledger sequence: %d
-", header.Sequence)
+	fmt.Printf("Ledger sequence: %d\n", header.Sequence)
 }
 
 // ExampleClient_GetLedgerHeader_simulation demonstrates using ledger data for simulation
@@ -115,34 +92,26 @@ func ExampleClient_GetLedgerHeader_simulation() {
 	}
 
 	// Use ledger properties for simulation
-	fmt.Printf("Simulating transaction at ledger %d:
-", header.Sequence)
-	fmt.Printf("  Timestamp: %s
-", header.CloseTime)
-	fmt.Printf("  Protocol: v%d
-", header.ProtocolVersion)
-	fmt.Printf("  Network state: %s total coins
-", header.TotalCoins)
+	fmt.Printf("Simulating transaction at ledger %d:\n", header.Sequence)
+	fmt.Printf("  Timestamp: %s\n", header.CloseTime)
+	fmt.Printf("  Protocol: v%d\n", header.ProtocolVersion)
+	fmt.Printf("  Network state: %s total coins\n", header.TotalCoins)
 
 	// The HeaderXDR can be decoded for full ledger header details
-	fmt.Printf("  Header XDR available: %d bytes
-", len(header.HeaderXDR))
+	fmt.Printf("  Header XDR available: %d bytes\n", len(header.HeaderXDR))
 }
 
 // ExampleNewClient demonstrates creating clients for different networks
 func ExampleNewClient() {
 	// Create a testnet client
 	testnetClient, _ := rpc.NewClient(rpc.WithNetwork(rpc.Testnet))
-	fmt.Printf("Testnet client created: %v
-", testnetClient.Network)
+	fmt.Printf("Testnet client created: %v\n", testnetClient.Network)
 
 	// Create a mainnet client
 	mainnetClient, _ := rpc.NewClient(rpc.WithNetwork(rpc.Mainnet))
-	fmt.Printf("Mainnet client created: %v
-", mainnetClient.Network)
+	fmt.Printf("Mainnet client created: %v\n", mainnetClient.Network)
 
 	// Create a futurenet client
 	futurenetClient, _ := rpc.NewClient(rpc.WithNetwork(rpc.Futurenet))
-	fmt.Printf("Futurenet client created: %v
-", futurenetClient.Network)
+	fmt.Printf("Futurenet client created: %v\n", futurenetClient.Network)
 }

@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 package visualizer
 
@@ -40,9 +25,7 @@ type Trace struct {
 // ExportMarkdown renders a trace as a GitHub-friendly markdown table.
 func ExportMarkdown(trace Trace) string {
 	if len(trace.Steps) == 0 {
-		return "| Step | Contract | Function | Caller |
-|------|----------|----------|--------|
-"
+		return "| Step | Contract | Function | Caller |\n|------|----------|----------|--------|\n"
 	}
 
 	steps := make([]TraceStep, len(trace.Steps))
@@ -61,15 +44,12 @@ func ExportMarkdown(trace Trace) string {
 	})
 
 	var b strings.Builder
-	b.WriteString("| Step | Contract | Function | Caller |
-")
-	b.WriteString("|------|----------|----------|--------|
-")
+	b.WriteString("| Step | Contract | Function | Caller |\n")
+	b.WriteString("|------|----------|----------|--------|\n")
 	for _, step := range steps {
 		fmt.Fprintf(
 			&b,
-			"| %d | %s | %s | %s |
-",
+			"| %d | %s | %s | %s |\n",
 			step.Step,
 			escapeMarkdownCell(step.Contract),
 			escapeMarkdownCell(step.Function),
@@ -81,6 +61,6 @@ func ExportMarkdown(trace Trace) string {
 }
 
 func escapeMarkdownCell(v string) string {
-	escaped := strings.ReplaceAll(v, "|", "\|")
+	escaped := strings.ReplaceAll(v, "|", "\\|")
 	return strings.TrimSpace(escaped)
 }

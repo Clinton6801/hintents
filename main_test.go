@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 package main
 
@@ -32,8 +17,7 @@ func TestRun_Interrupted(t *testing.T) {
 	if code != cmd.InterruptExitCode {
 		t.Fatalf("expected %d, got %d", cmd.InterruptExitCode, code)
 	}
-	if got := stderr.String(); got != "Interrupted. Shutting down...
-" {
+	if got := stderr.String(); got != "Interrupted. Shutting down...\n" {
 		t.Fatalf("unexpected stderr: %q", got)
 	}
 }
@@ -44,8 +28,7 @@ func TestRun_GenericError(t *testing.T) {
 	if code != 1 {
 		t.Fatalf("expected 1, got %d", code)
 	}
-	if got := stderr.String(); got != "Error: boom
-" {
+	if got := stderr.String(); got != "Error: boom\n" {
 		t.Fatalf("unexpected stderr: %q", got)
 	}
 }

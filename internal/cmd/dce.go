@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 package cmd
 
@@ -54,20 +39,15 @@ func dceExec(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	fmt.Printf("Total functions:    %d
-", stats.TotalFunctions)
-	fmt.Printf("Removed functions:  %d
-", stats.RemovedFunctions)
-	fmt.Printf("Original size:      %d bytes
-", stats.OriginalSize)
-	fmt.Printf("Optimized size:     %d bytes
-", stats.OptimizedSize)
+	fmt.Printf("Total functions:    %d\n", stats.TotalFunctions)
+	fmt.Printf("Removed functions:  %d\n", stats.RemovedFunctions)
+	fmt.Printf("Original size:      %d bytes\n", stats.OriginalSize)
+	fmt.Printf("Optimized size:     %d bytes\n", stats.OptimizedSize)
 
 	if stats.OriginalSize > 0 {
 		saved := stats.OriginalSize - stats.OptimizedSize
 		pct := float64(saved) / float64(stats.OriginalSize) * 100
-		fmt.Printf("Saved:              %d bytes (%.1f%%)
-", saved, pct)
+		fmt.Printf("Saved:              %d bytes (%.1f%%)\n", saved, pct)
 	}
 
 	if dceOutput == "" {
@@ -77,8 +57,7 @@ func dceExec(cmd *cobra.Command, args []string) error {
 	if err := os.WriteFile(dceOutput, out, 0644); err != nil {
 		return fmt.Errorf("writing output: %w", err)
 	}
-	fmt.Printf("Written to:         %s
-", dceOutput)
+	fmt.Printf("Written to:         %s\n", dceOutput)
 
 	return nil
 }

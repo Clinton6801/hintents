@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 package trace
 
@@ -72,8 +57,7 @@ func TestWrapField_LongContractID(t *testing.T) {
 	// A 56-character Stellar contract ID at a 30-wide terminal must wrap.
 	id := "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC"
 	result := wrapField("Contract", id, 30)
-	lines := strings.Split(result, "
-")
+	lines := strings.Split(result, "\n")
 	if len(lines) < 2 {
 		t.Fatalf("expected wrapped lines, got %d line(s): %q", len(lines), result)
 	}
@@ -99,8 +83,7 @@ func TestWrapField_LongXDR(t *testing.T) {
 	// XDR hashes are hex strings that can be 64+ chars — must reflow.
 	xdr := strings.Repeat("a1b2c3d4", 12) // 96 chars
 	result := wrapField("Code Hash", xdr, 40)
-	lines := strings.Split(result, "
-")
+	lines := strings.Split(result, "\n")
 	if len(lines) < 2 {
 		t.Fatalf("expected XDR to wrap, got %d line(s): %q", len(lines), result)
 	}

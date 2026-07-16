@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 package abi
 
@@ -31,70 +16,55 @@ func FormatText(spec *ContractSpec) string {
 	var b strings.Builder
 
 	if len(spec.Functions) > 0 {
-		fmt.Fprintf(&b, "Functions (%d):
-", len(spec.Functions))
+		fmt.Fprintf(&b, "Functions (%d):\n", len(spec.Functions))
 		for _, fn := range spec.Functions {
-			fmt.Fprintf(&b, "  %s
-", formatFunction(fn))
+			fmt.Fprintf(&b, "  %s\n", formatFunction(fn))
 		}
 	}
 
 	if len(spec.Structs) > 0 {
 		if b.Len() > 0 {
-			b.WriteString("
-")
+			b.WriteString("\n")
 		}
-		fmt.Fprintf(&b, "Structs (%d):
-", len(spec.Structs))
+		fmt.Fprintf(&b, "Structs (%d):\n", len(spec.Structs))
 		for _, s := range spec.Structs {
-			fmt.Fprintf(&b, "  %s
-", s.Name)
+			fmt.Fprintf(&b, "  %s\n", s.Name)
 			for _, f := range s.Fields {
-				fmt.Fprintf(&b, "    %s: %s
-", f.Name, FormatTypeDef(f.Type))
+				fmt.Fprintf(&b, "    %s: %s\n", f.Name, FormatTypeDef(f.Type))
 			}
 		}
 	}
 
 	if len(spec.Enums) > 0 {
 		if b.Len() > 0 {
-			b.WriteString("
-")
+			b.WriteString("\n")
 		}
-		fmt.Fprintf(&b, "Enums (%d):
-", len(spec.Enums))
+		fmt.Fprintf(&b, "Enums (%d):\n", len(spec.Enums))
 		for _, e := range spec.Enums {
-			fmt.Fprintf(&b, "  %s
-", e.Name)
+			fmt.Fprintf(&b, "  %s\n", e.Name)
 			for _, c := range e.Cases {
-				fmt.Fprintf(&b, "    %s = %d
-", c.Name, c.Value)
+				fmt.Fprintf(&b, "    %s = %d\n", c.Name, c.Value)
 			}
 		}
 	}
 
 	if len(spec.Unions) > 0 {
 		if b.Len() > 0 {
-			b.WriteString("
-")
+			b.WriteString("\n")
 		}
-		fmt.Fprintf(&b, "Unions (%d):
-", len(spec.Unions))
+		fmt.Fprintf(&b, "Unions (%d):\n", len(spec.Unions))
 		for _, u := range spec.Unions {
-			fmt.Fprintf(&b, "  %s
-", u.Name)
+			fmt.Fprintf(&b, "  %s\n", u.Name)
 			for _, c := range u.Cases {
 				switch c.Kind {
 				case xdr.ScSpecUdtUnionCaseV0KindScSpecUdtUnionCaseVoidV0:
-					fmt.Fprintf(&b, "    %s
-", c.VoidCase.Name)
+					fmt.Fprintf(&b, "    %s\n", c.VoidCase.Name)
 				case xdr.ScSpecUdtUnionCaseV0KindScSpecUdtUnionCaseTupleV0:
 					types := make([]string, len(c.TupleCase.Type))
 					for i, t := range c.TupleCase.Type {
 						types[i] = FormatTypeDef(t)
 					}
-					fmt.Fprintf(&b, "    %s(%s)
-", c.TupleCase.Name, strings.Join(types, ", "))
+					fmt.Fprintf(&b, "    %s(%s)\n", c.TupleCase.Name, strings.Join(types, ", "))
 				}
 			}
 		}
@@ -102,38 +72,30 @@ func FormatText(spec *ContractSpec) string {
 
 	if len(spec.ErrorEnums) > 0 {
 		if b.Len() > 0 {
-			b.WriteString("
-")
+			b.WriteString("\n")
 		}
-		fmt.Fprintf(&b, "Error Enums (%d):
-", len(spec.ErrorEnums))
+		fmt.Fprintf(&b, "Error Enums (%d):\n", len(spec.ErrorEnums))
 		for _, e := range spec.ErrorEnums {
-			fmt.Fprintf(&b, "  %s
-", e.Name)
+			fmt.Fprintf(&b, "  %s\n", e.Name)
 			for _, c := range e.Cases {
-				fmt.Fprintf(&b, "    %s = %d
-", c.Name, c.Value)
+				fmt.Fprintf(&b, "    %s = %d\n", c.Name, c.Value)
 			}
 		}
 	}
 
 	if len(spec.Events) > 0 {
 		if b.Len() > 0 {
-			b.WriteString("
-")
+			b.WriteString("\n")
 		}
-		fmt.Fprintf(&b, "Events (%d):
-", len(spec.Events))
+		fmt.Fprintf(&b, "Events (%d):\n", len(spec.Events))
 		for _, ev := range spec.Events {
-			fmt.Fprintf(&b, "  %s
-", string(ev.Name))
+			fmt.Fprintf(&b, "  %s\n", string(ev.Name))
 			for _, p := range ev.Params {
 				loc := "data"
 				if p.Location == xdr.ScSpecEventParamLocationV0ScSpecEventParamLocationTopicList {
 					loc = "topic"
 				}
-				fmt.Fprintf(&b, "    %s: %s (%s)
-", p.Name, FormatTypeDef(p.Type), loc)
+				fmt.Fprintf(&b, "    %s: %s (%s)\n", p.Name, FormatTypeDef(p.Type), loc)
 			}
 		}
 	}

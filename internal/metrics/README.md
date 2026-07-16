@@ -95,3 +95,25 @@ go test -tags=integration ./internal/metrics
 - **Labels**: `status`
 - **Updates**: On every simulation execution
 - **Purpose**: Track overall system throughput
+
+## Integration Points
+
+The metrics are automatically recorded at:
+
+1. **RPC Client** (`internal/rpc/client.go`):
+   - `GetTransaction` - Records metrics for Horizon API calls
+   - `GetLedgerEntries` - Records metrics for Soroban RPC calls
+
+2. **Simulator Runner** (`internal/simulator/runner.go`):
+   - `Run` - Records metrics for every simulation execution
+
+3. **Daemon Server** (`internal/daemon/server.go`):
+   - Exposes `/metrics` endpoint via `promhttp.Handler()`
+
+## Alerting
+
+See [docs/PROMETHEUS_METRICS.md](../../docs/PROMETHEUS_METRICS.md) for:
+- Example PromQL queries
+- Alerting rule configurations
+- Grafana dashboard examples
+- Troubleshooting guide

@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 package main
 
@@ -60,12 +45,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("   Transaction Hash: %s
-", auditLog.TransactionHash)
-	fmt.Printf("   Trace Hash: %s
-", auditLog.TraceHash)
-	fmt.Printf("   Signature: %s...
-", auditLog.Signature[:32])
+	fmt.Printf("   Transaction Hash: %s\n", auditLog.TransactionHash)
+	fmt.Printf("   Trace Hash: %s\n", auditLog.TraceHash)
+	fmt.Printf("   Signature: %s...\n", auditLog.Signature[:32])
 	fmt.Println()
 
 	// Example 2: Verify the audit log
@@ -110,8 +92,7 @@ func main() {
 
 	if allSame {
 		fmt.Println("   [OK] All 5 hashes are identical (deterministic)")
-		fmt.Printf("   Hash: %s
-", hashes[0])
+		fmt.Printf("   Hash: %s\n", hashes[0])
 	} else {
 		fmt.Println("   [FAIL] Hashes differ (non-deterministic)")
 	}
@@ -128,8 +109,7 @@ func main() {
 
 	// Standard JSON (may vary)
 	standardJSON, _ := json.Marshal(payload)
-	fmt.Printf("   Standard JSON: %s
-", string(standardJSON))
+	fmt.Printf("   Standard JSON: %s\n", string(standardJSON))
 
 	// Note: In practice, Go's json.Marshal is stable within a process,
 	// but canonical JSON guarantees cross-platform consistency
@@ -149,8 +129,7 @@ func main() {
 
 	err = cmd.Verify(&tamperedLog)
 	if err != nil {
-		fmt.Printf("   [OK] Tampering detected: %v
-", err)
+		fmt.Printf("   [OK] Tampering detected: %v\n", err)
 	} else {
 		fmt.Println("   [FAIL] Tampering not detected (unexpected)")
 	}
@@ -178,8 +157,7 @@ func main() {
 
 	if log1.TraceHash == log2.TraceHash {
 		fmt.Println("   [OK] Same data produces same hash regardless of field order")
-		fmt.Printf("   Hash: %s
-", log1.TraceHash)
+		fmt.Printf("   Hash: %s\n", log1.TraceHash)
 	}
 	fmt.Println()
 

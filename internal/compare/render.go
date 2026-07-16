@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 package compare
 
@@ -88,8 +73,7 @@ func printHeader() {
 	if pad < 0 {
 		pad = 0
 	}
-	fmt.Printf(visualizer.Colorize("║", "cyan")+"%s"+strings.Repeat(" ", pad)+visualizer.Colorize("║", "cyan")+"
-", title)
+	fmt.Printf(visualizer.Colorize("║", "cyan")+"%s"+strings.Repeat(" ", pad)+visualizer.Colorize("║", "cyan")+"\n", title)
 	fmt.Println(visualizer.Colorize("╚"+strings.Repeat("═", len(sep))+"╝", "cyan"))
 	fmt.Println()
 }
@@ -102,22 +86,18 @@ func sectionTitle(title string) string {
 func renderStatus(sd StatusDiff) {
 	leftLabel := "LOCAL"
 	rightLabel := "ON-CHAIN"
-	fmt.Printf("  %-*s%s%-*s
-", colWidth, leftLabel, columnSep, colWidth, rightLabel)
-	fmt.Printf("  %s
-", strings.Repeat("-", colWidth*2+len(columnSep)))
+	fmt.Printf("  %-*s%s%-*s\n", colWidth, leftLabel, columnSep, colWidth, rightLabel)
+	fmt.Printf("  %s\n", strings.Repeat("-", colWidth*2+len(columnSep)))
 
 	localStatus := statusLine(sd.LocalStatus, sd.LocalError)
 	onChainStatus := statusLine(sd.OnChainStatus, sd.OnChainError)
 
 	if sd.Match {
-		fmt.Printf("  %-*s%s%-*s  %s
-",
+		fmt.Printf("  %-*s%s%-*s  %s\n",
 			colWidth, localStatus, columnSep, colWidth, onChainStatus,
 			visualizer.Colorize("[MATCH]", "green"))
 	} else {
-		fmt.Printf("  %-*s%s%-*s  %s
-",
+		fmt.Printf("  %-*s%s%-*s  %s\n",
 			colWidth, localStatus, columnSep, colWidth, onChainStatus,
 			visualizer.Colorize("[DIFF]", "red"))
 	}
@@ -132,31 +112,24 @@ func statusLine(status, errMsg string) string {
 }
 
 func renderBudget(bd *BudgetDiff) {
-	fmt.Printf("  %-22s  %-15s  %-15s  %s
-", "Metric", "Local", "On-Chain", "Delta")
-	fmt.Printf("  %s
-", strings.Repeat("-", 70))
+	fmt.Printf("  %-22s  %-15s  %-15s  %s\n", "Metric", "Local", "On-Chain", "Delta")
+	fmt.Printf("  %s\n", strings.Repeat("-", 70))
 
 	cpuDeltaStr := formatDelta(bd.CPUDelta)
 	memDeltaStr := formatDelta(bd.MemoryDelta)
 	opsDeltaStr := formatDeltaInt(bd.OpsDelta)
 
-	fmt.Printf("  %-22s  %-15d  %-15d  %s
-",
+	fmt.Printf("  %-22s  %-15d  %-15d  %s\n",
 		"CPU Instructions", bd.LocalCPU, bd.OnChainCPU, colorizeDelta(cpuDeltaStr, bd.CPUDelta))
-	fmt.Printf("  %-22s  %-15d  %-15d  %s
-",
+	fmt.Printf("  %-22s  %-15d  %-15d  %s\n",
 		"Memory Bytes", bd.LocalMem, bd.OnChainMem, colorizeDelta(memDeltaStr, bd.MemoryDelta))
-	fmt.Printf("  %-22s  %-15d  %-15d  %s
-",
+	fmt.Printf("  %-22s  %-15d  %-15d  %s\n",
 		"Operations", bd.LocalOps, bd.OnChainOps, colorizeDelta(opsDeltaStr, int64(bd.OpsDelta)))
 }
 
 func renderEventDiffs(diffs []EventDiff) {
-	fmt.Printf("  %-6s  %-*s%s%-*s
-", "#", colWidth, "LOCAL", columnSep, colWidth, "ON-CHAIN")
-	fmt.Printf("  %s
-", strings.Repeat("-", colWidth*2+len(columnSep)+8))
+	fmt.Printf("  %-6s  %-*s%s%-*s\n", "#", colWidth, "LOCAL", columnSep, colWidth, "ON-CHAIN")
+	fmt.Printf("  %s\n", strings.Repeat("-", colWidth*2+len(columnSep)+8))
 
 	for _, d := range diffs {
 		localEvt := truncate(d.LocalEvent, colWidth)
@@ -167,17 +140,14 @@ func renderEventDiffs(diffs []EventDiff) {
 		} else {
 			marker = visualizer.Colorize("[=]", "dim") + " "
 		}
-		fmt.Printf("%s[%3d]  %-*s%s%-*s
-",
+		fmt.Printf("%s[%3d]  %-*s%s%-*s\n",
 			marker, d.Index+1, colWidth, localEvt, columnSep, colWidth, onChainEvt)
 	}
 }
 
 func renderDiagnosticDiffs(diffs []DiagnosticDiff) {
-	fmt.Printf("  %-6s  %-*s%s%-*s
-", "#", colWidth, "LOCAL", columnSep, colWidth, "ON-CHAIN")
-	fmt.Printf("  %s
-", strings.Repeat("-", colWidth*2+len(columnSep)+8))
+	fmt.Printf("  %-6s  %-*s%s%-*s\n", "#", colWidth, "LOCAL", columnSep, colWidth, "ON-CHAIN")
+	fmt.Printf("  %s\n", strings.Repeat("-", colWidth*2+len(columnSep)+8))
 
 	for _, d := range diffs {
 		localDesc := diagnosticSummary(d.Local)
@@ -193,8 +163,7 @@ func renderDiagnosticDiffs(diffs []DiagnosticDiff) {
 			marker = visualizer.Colorize("[=]   ", "dim") + " "
 		}
 
-		fmt.Printf("%s[%3d]  %-*s%s%-*s
-",
+		fmt.Printf("%s[%3d]  %-*s%s%-*s\n",
 			marker, d.Index+1, colWidth, truncate(localDesc, colWidth),
 			columnSep, colWidth, truncate(onChainDesc, colWidth))
 
@@ -219,8 +188,7 @@ func renderTopicDiff(local, onChain []string) {
 			ot = onChain[i]
 		}
 		if lt != ot {
-			fmt.Printf("        %s topic[%d]: %q  →  %q
-",
+			fmt.Printf("        %s topic[%d]: %q  →  %q\n",
 				visualizer.Colorize("↳", "yellow"), i, lt, ot)
 		}
 	}
@@ -228,15 +196,11 @@ func renderTopicDiff(local, onChain []string) {
 
 func renderCallPaths(divs []CallPathDivergence) {
 	for i, div := range divs {
-		fmt.Printf("  %s  Divergence #%d at event [%d]
-",
+		fmt.Printf("  %s  Divergence #%d at event [%d]\n",
 			visualizer.Colorize("[PATH]", "red"), i+1, div.EventIndex+1)
-		fmt.Printf("       Reason    : %s
-", div.Reason)
-		fmt.Printf("       Local     : %s
-", visualizer.Colorize(div.LocalSummary, "cyan"))
-		fmt.Printf("       On-Chain  : %s
-", visualizer.Colorize(div.OnChainSummary, "magenta"))
+		fmt.Printf("       Reason    : %s\n", div.Reason)
+		fmt.Printf("       Local     : %s\n", visualizer.Colorize(div.LocalSummary, "cyan"))
+		fmt.Printf("       On-Chain  : %s\n", visualizer.Colorize(div.OnChainSummary, "magenta"))
 		fmt.Println()
 	}
 }
@@ -246,34 +210,26 @@ func renderSummary(result *DiffResult) {
 	fmt.Println()
 
 	if !result.HasDivergence {
-		fmt.Printf("  %s  Local and on-chain execution are IDENTICAL
-", visualizer.Success())
+		fmt.Printf("  %s  Local and on-chain execution are IDENTICAL\n", visualizer.Success())
 	} else {
-		fmt.Printf("  %s  Divergence detected between local and on-chain execution
-", visualizer.Warning())
+		fmt.Printf("  %s  Divergence detected between local and on-chain execution\n", visualizer.Warning())
 	}
 
 	fmt.Println()
-	fmt.Printf("  %-30s  %d
-", "Total events compared:", result.TotalEvents)
-	fmt.Printf("  %-30s  %s
-", "Identical events:",
+	fmt.Printf("  %-30s  %d\n", "Total events compared:", result.TotalEvents)
+	fmt.Printf("  %-30s  %s\n", "Identical events:",
 		visualizer.Colorize(fmt.Sprintf("%d", result.IdenticalEvents), "green"))
-	fmt.Printf("  %-30s  %s
-", "Divergent events:",
+	fmt.Printf("  %-30s  %s\n", "Divergent events:",
 		colorizeDivergentCount(result.DivergentEvents))
-	fmt.Printf("  %-30s  %s
-", "Call-path divergences:",
+	fmt.Printf("  %-30s  %s\n", "Call-path divergences:",
 		colorizeDivergentCount(len(result.CallPathDivergences)))
 
 	if result.BudgetDiff != nil {
 		fmt.Println()
 		cpuPct := budgetDeltaPct(result.BudgetDiff.CPUDelta, result.BudgetDiff.OnChainCPU)
 		memPct := budgetDeltaPct(result.BudgetDiff.MemoryDelta, result.BudgetDiff.OnChainMem)
-		fmt.Printf("  %-30s  %s
-", "CPU delta vs on-chain:", colorizePct(cpuPct))
-		fmt.Printf("  %-30s  %s
-", "Memory delta vs on-chain:", colorizePct(memPct))
+		fmt.Printf("  %-30s  %s\n", "CPU delta vs on-chain:", colorizePct(cpuPct))
+		fmt.Printf("  %-30s  %s\n", "Memory delta vs on-chain:", colorizePct(memPct))
 	}
 
 	fmt.Println()

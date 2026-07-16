@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 package decoder
 
@@ -360,12 +345,8 @@ func FormatSuggestions(suggestions []Suggestion) string {
 	}
 
 	var output strings.Builder
-	output.WriteString("
-=== Potential Fixes (Heuristic Analysis) ===
-")
-	output.WriteString("⚠️  These are suggestions based on common error patterns. Always verify before applying.
-
-")
+	output.WriteString("\n=== Potential Fixes (Heuristic Analysis) ===\n")
+	output.WriteString("⚠️  These are suggestions based on common error patterns. Always verify before applying.\n\n")
 
 	for i, suggestion := range suggestions {
 		confidenceIcon := "⚪"
@@ -382,13 +363,10 @@ func FormatSuggestions(suggestions []Suggestion) string {
 		if len(conf) > 0 {
 			conf = strings.ToUpper(conf[:1]) + conf[1:]
 		}
-		fmt.Fprintf(&output, "%d. %s [Confidence: %s]
-", i+1, confidenceIcon, conf)
-		fmt.Fprintf(&output, "   %s
-", suggestion.Description)
+		fmt.Fprintf(&output, "%d. %s [Confidence: %s]\n", i+1, confidenceIcon, conf)
+		fmt.Fprintf(&output, "   %s\n", suggestion.Description)
 		if i < len(suggestions)-1 {
-			output.WriteString("
-")
+			output.WriteString("\n")
 		}
 	}
 

@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 package cache
 
@@ -230,21 +215,17 @@ func (m *Manager) Clean(force bool) (*CleanupStatus, error) {
 	originalSizeStr := formatBytes(originalSize)
 
 	if originalSize == 0 {
-		fmt.Printf("Cache is empty (0 B)
-")
+		fmt.Printf("Cache is empty (0 B)\n")
 		status.FinalSize = 0
 		return status, nil
 	}
 
 	// Show warning and get confirmation
-	fmt.Printf("Cache size: %s
-", originalSizeStr)
-	fmt.Printf("Maximum size: %s
-", formatBytes(m.config.MaxSizeBytes))
+	fmt.Printf("Cache size: %s\n", originalSizeStr)
+	fmt.Printf("Maximum size: %s\n", formatBytes(m.config.MaxSizeBytes))
 
 	if !force {
-		fmt.Print("
-This will delete the oldest cached files. Continue? (yes/no): ")
+		fmt.Print("\nThis will delete the oldest cached files. Continue? (yes/no): ")
 		var response string
 		if _, scanErr := fmt.Scanln(&response); scanErr != nil {
 			return status, fmt.Errorf("failed to read input: %w", scanErr)
@@ -256,8 +237,7 @@ This will delete the oldest cached files. Continue? (yes/no): ")
 		}
 	}
 
-	fmt.Println("
-Cleaning cache (Least Recently Used files first)...")
+	fmt.Println("\nCleaning cache (Least Recently Used files first)...")
 
 	// Get list of cached files
 	files, err := m.ListCachedFiles()
@@ -300,15 +280,10 @@ Cleaning cache (Least Recently Used files first)...")
 	status.FinalSize = currentSize
 
 	// Print summary
-	fmt.Printf("
-Cleanup complete!
-")
-	fmt.Printf("Files deleted: %d
-", status.FilesDeleted)
-	fmt.Printf("Space freed: %s
-", formatBytes(status.SpaceFreed))
-	fmt.Printf("Final cache size: %s
-", formatBytes(status.FinalSize))
+	fmt.Printf("\nCleanup complete!\n")
+	fmt.Printf("Files deleted: %d\n", status.FilesDeleted)
+	fmt.Printf("Space freed: %s\n", formatBytes(status.SpaceFreed))
+	fmt.Printf("Final cache size: %s\n", formatBytes(status.FinalSize))
 
 	return status, nil
 }

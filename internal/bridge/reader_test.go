@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 package bridge
 
@@ -32,9 +17,7 @@ func TestReadFrames_SnapshotsAndFinal(t *testing.T) {
 		`{"type":"snapshot","seq":0,"data":{"entries":1}}`,
 		`{"type":"snapshot","seq":1,"data":{"entries":2}}`,
 		`{"type":"final","seq":2,"data":{"status":"success","events":[]}}`,
-	}, "
-") + "
-"
+	}, "\n") + "\n"
 
 	reader := NewFrameReader(strings.NewReader(ndjson))
 	frames := make(chan StreamFrame, 10)
@@ -73,8 +56,7 @@ func TestReadFrames_SnapshotsAndFinal(t *testing.T) {
 }
 
 func TestReadFrames_FinalOnly(t *testing.T) {
-	ndjson := `{"type":"final","seq":0,"data":{"status":"success","events":[]}}` + "
-"
+	ndjson := `{"type":"final","seq":0,"data":{"status":"success","events":[]}}` + "\n"
 
 	reader := NewFrameReader(strings.NewReader(ndjson))
 	frames := make(chan StreamFrame, 10)
@@ -100,8 +82,7 @@ func TestReadFrames_FinalOnly(t *testing.T) {
 
 func TestReadFrames_LegacyNonStreamingResponse(t *testing.T) {
 	// Simulator that hasn't been updated yet emits a plain JSON object.
-	legacy := `{"status":"success","events":["e1"]}` + "
-"
+	legacy := `{"status":"success","events":["e1"]}` + "\n"
 
 	reader := NewFrameReader(strings.NewReader(legacy))
 	frames := make(chan StreamFrame, 10)
@@ -128,8 +109,7 @@ func TestReadFrames_LegacyNonStreamingResponse(t *testing.T) {
 }
 
 func TestReadFrames_EOFWithoutFinal(t *testing.T) {
-	ndjson := `{"type":"snapshot","seq":0,"data":{}}` + "
-"
+	ndjson := `{"type":"snapshot","seq":0,"data":{}}` + "\n"
 	// No final frame.
 
 	reader := NewFrameReader(strings.NewReader(ndjson))
@@ -166,14 +146,9 @@ func TestReadFrames_ContextCancellation(t *testing.T) {
 }
 
 func TestReadFrames_EmptyLinesSkipped(t *testing.T) {
-	ndjson := "
-
-" +
-		`{"type":"snapshot","seq":0,"data":{}}` + "
-
-" +
-		`{"type":"final","seq":1,"data":{"status":"ok"}}` + "
-"
+	ndjson := "\n\n" +
+		`{"type":"snapshot","seq":0,"data":{}}` + "\n\n" +
+		`{"type":"final","seq":1,"data":{"status":"ok"}}` + "\n"
 
 	reader := NewFrameReader(strings.NewReader(ndjson))
 	frames := make(chan StreamFrame, 10)

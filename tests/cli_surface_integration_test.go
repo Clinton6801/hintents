@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 package tests
 
@@ -61,13 +46,7 @@ func buildErstBinary(t *testing.T, repoRoot string) string {
 		lsCmd.Dir = repoRoot
 		lsOut, _ := lsCmd.CombinedOutput()
 
-		t.Fatalf("failed to build erst binary: %v
-stderr:
-%s
-go env:
-%s
-ls internal/cmd:
-%s", err, stderr.String(), string(debugOut), string(lsOut))
+		t.Fatalf("failed to build erst binary: %v\nstderr:\n%s\ngo env:\n%s\nls internal/cmd:\n%s", err, stderr.String(), string(debugOut), string(lsOut))
 	}
 	return binPath
 }
@@ -82,12 +61,7 @@ func runBinary(t *testing.T, binPath, cwd string, env []string, args ...string) 
 	cmd.Stderr = &stderr
 	if err := cmd.Run(); err != nil {
 		t.Fatalf(
-			"command failed: %s %v
-err: %v
-stdout:
-%s
-stderr:
-%s",
+			"command failed: %s %v\nerr: %v\nstdout:\n%s\nstderr:\n%s",
 			binPath,
 			args,
 			err,

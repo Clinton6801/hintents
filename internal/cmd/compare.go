@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 package cmd
 
@@ -167,14 +152,10 @@ func runCompare(cmd *cobra.Command, cmdArgs []string) error {
 		visualizer.SetTheme(visualizer.DetectTheme())
 	}
 
-	fmt.Printf("%s  Compare Replay
-", visualizer.Symbol("chart"))
-	fmt.Printf("Transaction : %s
-", txHash)
-	fmt.Printf("Network     : %s
-", cmpNetworkFlag)
-	fmt.Printf("Local WASM  : %s
-", cmpLocalWasmFlag)
+	fmt.Printf("%s  Compare Replay\n", visualizer.Symbol("chart"))
+	fmt.Printf("Transaction : %s\n", txHash)
+	fmt.Printf("Network     : %s\n", cmpNetworkFlag)
+	fmt.Printf("Local WASM  : %s\n", cmpLocalWasmFlag)
 	if cmpOptimizeFlag {
 		printOptimizationReport(report)
 	}
@@ -220,15 +201,12 @@ func runCompare(cmd *cobra.Command, cmdArgs []string) error {
 	}
 
 	// ── Fetch transaction ───────────────────────────────────────────────────
-	fmt.Printf("%s Fetching transaction from %s...
-", visualizer.Symbol("pin"), cmpNetworkFlag)
+	fmt.Printf("%s Fetching transaction from %s...\n", visualizer.Symbol("pin"), cmpNetworkFlag)
 	txResp, err := client.GetTransaction(ctx, txHash)
 	if err != nil {
 		return errors.WrapRPCConnectionFailed(err)
 	}
-	fmt.Printf("%s Fetched (envelope: %d bytes)
-
-", visualizer.Success(), len(txResp.EnvelopeXdr))
+	fmt.Printf("%s Fetched (envelope: %d bytes)\n\n", visualizer.Success(), len(txResp.EnvelopeXdr))
 
 	// ── Extract ledger keys & entries ───────────────────────────────────────
 	keys, err := extractLedgerKeys(txResp.ResultMetaXdr)
@@ -272,13 +250,9 @@ func runCompare(cmd *cobra.Command, cmdArgs []string) error {
 	}
 
 	// ── Run two simulation passes in parallel ────────────────────────────────
-	fmt.Printf("%s Running two simulation passes in parallel...
-", visualizer.Symbol("play"))
-	fmt.Printf("   Pass A – local WASM  : %s
-", localWasmPath)
-	fmt.Printf("   Pass B – on-chain WASM: (using network ledger state)
-
-")
+	fmt.Printf("%s Running two simulation passes in parallel...\n", visualizer.Symbol("play"))
+	fmt.Printf("   Pass A – local WASM  : %s\n", localWasmPath)
+	fmt.Printf("   Pass B – on-chain WASM: (using network ledger state)\n\n")
 
 	localResult, onChainResult, runErr := runBothPasses(ctx, runner, txResp, localLedgerEntries, replayLedgerEntries, localWasmPath)
 	if runErr != nil {
@@ -365,27 +339,19 @@ func buildSimRequest(
 
 // printVerboseResponse prints the full simulation JSON for a named pass.
 func printVerboseResponse(label string, resp *simulator.SimulationResponse) {
-	fmt.Printf("
-──── VERBOSE: %s ────
-", label)
-	fmt.Printf("  Status : %s
-", resp.Status)
+	fmt.Printf("\n──── VERBOSE: %s ────\n", label)
+	fmt.Printf("  Status : %s\n", resp.Status)
 	if resp.Error != "" {
-		fmt.Printf("  Error  : %s
-", resp.Error)
+		fmt.Printf("  Error  : %s\n", resp.Error)
 	}
-	fmt.Printf("  Events : %d
-", len(resp.Events))
-	fmt.Printf("  DiagEvt: %d
-", len(resp.DiagnosticEvents))
+	fmt.Printf("  Events : %d\n", len(resp.Events))
+	fmt.Printf("  DiagEvt: %d\n", len(resp.DiagnosticEvents))
 	for _, e := range resp.Events {
-		fmt.Printf("    • %s
-", e)
+		fmt.Printf("    • %s\n", e)
 	}
 	if resp.BudgetUsage != nil {
 		b := resp.BudgetUsage
-		fmt.Printf("  Budget : CPU=%d  Mem=%d  Ops=%d
-",
+		fmt.Printf("  Budget : CPU=%d  Mem=%d  Ops=%d\n",
 			b.CPUInstructions, b.MemoryBytes, b.OperationsCount)
 	}
 	fmt.Println()

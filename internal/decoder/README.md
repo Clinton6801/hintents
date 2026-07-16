@@ -143,11 +143,35 @@ Run the test suite:
 go test ./internal/decoder/...
 ```
 
+Expected output:
+```
+PASS
+ok      github.com/dotandev/hintents/internal/decoder    0.123s
+```
+
+## Future Enhancements
+
+- [ ] Add more operation-specific decoders (ManageOffer, ChangeTrust, etc.)
+- [ ] Include links to Stellar documentation for each error
+- [ ] Add suggested fixes/remediation steps
+- [ ] Support for Soroban-specific error codes
+- [ ] Localization support for multiple languages
+
 ## References
 
 - [Stellar XDR Documentation](https://developers.stellar.org/docs/encyclopedia/xdr)
 - [Transaction Result Codes](https://developers.stellar.org/docs/encyclopedia/error-codes)
 - [Stellar Go SDK](https://github.com/stellar/go)
+
+## Contributing
+
+When adding new error code mappings:
+
+1. Add the mapping to the appropriate function in `result_codes.go`
+2. Include a clear description and actionable explanation
+3. Add test cases in `result_codes_test.go`
+4. Update this README with the new codes
+5. Run tests to ensure everything works
 
 ## License
 

@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 package updater
 
@@ -233,8 +218,7 @@ func (c *Checker) compareVersions(current, latest string) (bool, error) {
 // displayNotification prints the update message to stderr (small one-line banner)
 func (c *Checker) displayNotification(latestVersion string) {
 	message := fmt.Sprintf(
-		"Upgrade available: %s — run 'go install github.com/dotandev/hintents/cmd/erst@latest' to update
-",
+		"Upgrade available: %s — run 'go install github.com/dotandev/hintents/cmd/erst@latest' to update\n",
 		latestVersion,
 	)
 	fmt.Fprint(os.Stderr, message)
@@ -258,8 +242,7 @@ func (c *Checker) PerformUpdate(ctx context.Context, version string) error {
 		target = fmt.Sprintf("github.com/dotandev/hintents/cmd/erst@%s", version)
 	}
 
-	fmt.Printf("Updating to %s via 'go install'...
-", target)
+	fmt.Printf("Updating to %s via 'go install'...\n", target)
 
 	// Prepare go install command
 	cmd := exec.CommandContext(ctx, "go", "install", target)
@@ -375,8 +358,7 @@ func checkConfigFile(configPath string) bool {
 
 	// Simple YAML parsing - look for "check_for_updates: false"
 	// This is a basic implementation that avoids adding a YAML dependency
-	lines := strings.Split(string(data), "
-")
+	lines := strings.Split(string(data), "\n")
 	for _, line := range lines {
 		line = strings.TrimSpace(line)
 		// Check for "check_for_updates: false" or "check_for_updates:false"

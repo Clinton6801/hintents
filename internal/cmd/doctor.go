@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 package cmd
 
@@ -153,10 +138,10 @@ func runDoctor(cmd *cobra.Command, args []string) error {
 	fixableCount := 0
 	for _, dep := range dependencies {
 		status := "[OK]"
-		statusColor := "[32m" // Green
+		statusColor := "\033[32m" // Green
 		if !dep.Installed {
 			status = "[FAIL]"
-			statusColor = "[31m" // Red
+			statusColor = "\033[31m" // Red
 			allOK = false
 			if dep.Fixable {
 				fixableCount++
@@ -164,20 +149,18 @@ func runDoctor(cmd *cobra.Command, args []string) error {
 			}
 		}
 
-		fmt.Printf("%s%s[0m %s", statusColor, status, dep.Name)
+		fmt.Printf("%s%s\033[0m %s", statusColor, status, dep.Name)
 		if dep.Installed && dep.Version != "" {
 			fmt.Printf(" (%s)", dep.Version)
 		}
 		fmt.Println()
 
 		if verbose && dep.Path != "" {
-			fmt.Printf("  Path: %s
-", FriendlyPath(dep.Path))
+			fmt.Printf("  Path: %s\n", FriendlyPath(dep.Path))
 		}
 
 		if !dep.Installed && dep.FixHint != "" {
-			fmt.Printf("  [33m→ %s[0m
-", dep.FixHint)
+			fmt.Printf("  \033[33m→ %s\033[0m\n", dep.FixHint)
 		}
 	}
 
@@ -185,15 +168,13 @@ func runDoctor(cmd *cobra.Command, args []string) error {
 
 	// Summary
 	if allOK {
-		fmt.Println("[32m[OK] All dependencies are installed and ready![0m")
+		fmt.Println("\033[32m[OK] All dependencies are installed and ready!\033[0m")
 		return nil
 	}
 
 	// NEW: Handle --fix mode
 	if fix {
-		fmt.Printf("
-[36m[FIX MODE][0m Attempting to fix %d issue(s)
-", fixableCount)
+		fmt.Printf("\n\033[36m[FIX MODE]\033[0m Attempting to fix %d issue(s)\n", fixableCount)
 		if yes {
 			fmt.Println("(Running in non-interactive mode)")
 		}
@@ -201,11 +182,9 @@ func runDoctor(cmd *cobra.Command, args []string) error {
 		return runFixers(dependencies, yes, verbose)
 	}
 
-	fmt.Println("[33m⚠ Some dependencies are missing. Follow the hints above to fix.[0m")
+	fmt.Println("\033[33m⚠ Some dependencies are missing. Follow the hints above to fix.\033[0m")
 	if fixableCount > 0 {
-		fmt.Printf("
-Tip: Run 'erst doctor --fix' to attempt automatic fixes for %d issue(s).
-", fixableCount)
+		fmt.Printf("\nTip: Run 'erst doctor --fix' to attempt automatic fixes for %d issue(s).\n", fixableCount)
 	}
 	return nil
 }
@@ -241,8 +220,7 @@ func checkGo(verbose bool) DependencyStatus {
 	// compare against go.mod requirement if available
 	if dep.Installed && dep.Version != "" {
 		if data, err := os.ReadFile("go.mod"); err == nil {
-			for _, line := range strings.Split(string(data), "
-") {
+			for _, line := range strings.Split(string(data), "\n") {
 				if strings.HasPrefix(line, "go ") {
 					req := strings.TrimSpace(strings.TrimPrefix(line, "go "))
 					if req != "" && !strings.HasPrefix(dep.Version, req) {
@@ -529,8 +507,7 @@ func checkConfigTOML(verbose bool) DependencyStatus {
 		}
 
 		// simple syntax sniff: non-empty, non-comment lines must contain 'key = value'
-		for ln, line := range strings.Split(string(data), "
-") {
+		for ln, line := range strings.Split(string(data), "\n") {
 			trim := strings.TrimSpace(line)
 			if trim == "" || strings.HasPrefix(trim, "#") || strings.HasPrefix(trim, "[") {
 				continue
@@ -658,8 +635,7 @@ func runFixers(deps []DependencyStatus, skipConfirm, verbose bool) error {
 			// Prompt user for confirmation
 			fmt.Printf("Fix %s? [y/N]: ", dep.Name)
 			reader := bufio.NewReader(os.Stdin)
-			response, _ := reader.ReadString('
-')
+			response, _ := reader.ReadString('\n')
 			shouldFix = strings.HasPrefix(strings.ToLower(response), "y")
 		}
 
@@ -690,29 +666,24 @@ func runFixers(deps []DependencyStatus, skipConfirm, verbose bool) error {
 	}
 
 	// Summary
-	fmt.Println("
-=== Fix Summary ===")
+	fmt.Println("\n=== Fix Summary ===")
 	if len(successFixes) > 0 {
-		fmt.Printf("[32m[OK] Fixed (%d):[0m
-", len(successFixes))
+		fmt.Printf("\033[32m[OK] Fixed (%d):\033[0m\n", len(successFixes))
 		for _, fix := range successFixes {
-			fmt.Printf("  [OK] %s
-", fix)
+			fmt.Printf("  [OK] %s\n", fix)
 		}
 	}
 
 	if len(failedFixes) > 0 {
-		fmt.Printf("[31m[FAIL] Failed (%d):[0m
-", len(failedFixes))
+		fmt.Printf("\033[31m[FAIL] Failed (%d):\033[0m\n", len(failedFixes))
 		for _, fix := range failedFixes {
-			fmt.Printf("  [FAIL] %s
-", fix)
+			fmt.Printf("  [FAIL] %s\n", fix)
 		}
 		return fmt.Errorf("some fixes failed")
 	}
 
 	if len(successFixes) > 0 {
-		fmt.Println("[32m[OK] All fixes applied successfully![0m")
+		fmt.Println("\033[32m[OK] All fixes applied successfully!\033[0m")
 	} else {
 		fmt.Println("[OK] No fixes needed")
 	}

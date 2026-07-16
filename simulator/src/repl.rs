@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 use serde::Deserialize;
 use std::collections::{BTreeMap, HashMap};
@@ -171,8 +156,7 @@ impl DebuggerSession {
             "  step-inst | si     Execute one instruction and print opcode, stack, and source info",
             "  quit | exit        Leave the REPL",
         ]
-        .join("
-")
+        .join("\n")
     }
 
     fn list_functions(&self) -> String {
@@ -188,8 +172,7 @@ impl DebuggerSession {
                 )
             })
             .collect::<Vec<_>>()
-            .join("
-")
+            .join("\n")
     }
 
     fn current_function(&self) -> &FunctionInfo {
@@ -271,8 +254,7 @@ impl DebuggerSession {
             lines.push("source <unavailable>".to_string());
         }
 
-        Ok(lines.join("
-"))
+        Ok(lines.join("\n"))
     }
 
     fn format_stack(stack: &[String]) -> String {

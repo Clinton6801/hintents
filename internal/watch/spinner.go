@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 package watch
 
@@ -41,7 +26,7 @@ func NewSpinner() *Spinner {
 
 func NewSpinnerWithWriter(w io.Writer) *Spinner {
 	return &Spinner{
-		frames: []string{"|", "/", "-", "\"},
+		frames: []string{"|", "/", "-", "\\"},
 		done:   make(chan struct{}),
 		out:    w,
 	}
@@ -63,11 +48,11 @@ func (s *Spinner) Start(message string) {
 		for {
 			select {
 			case <-s.done:
-				_, _ = fmt.Fprint(s.out, "[K")
+				_, _ = fmt.Fprint(s.out, "\r\033[K")
 				return
 			case <-ticker.C:
 				s.mu.Lock()
-				_, _ = fmt.Fprintf(s.out, "%s %s", s.frames[s.current], message)
+				_, _ = fmt.Fprintf(s.out, "\r%s %s", s.frames[s.current], message)
 				s.current = (s.current + 1) % len(s.frames)
 				s.mu.Unlock()
 			}
@@ -99,12 +84,10 @@ func (s *Spinner) Stop() {
 
 func (s *Spinner) StopWithMessage(message string) {
 	s.Stop()
-	_, _ = fmt.Fprintf(s.out, "[OK] %s
-", message)
+	_, _ = fmt.Fprintf(s.out, "\r[OK] %s\n", message)
 }
 
 func (s *Spinner) StopWithError(message string) {
 	s.Stop()
-	_, _ = fmt.Fprintf(s.out, "[ERROR] %s
-", message)
+	_, _ = fmt.Fprintf(s.out, "\r[ERROR] %s\n", message)
 }

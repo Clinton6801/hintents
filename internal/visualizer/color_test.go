@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 package visualizer
 
@@ -33,7 +18,7 @@ func TestNoColorDisablesColors(t *testing.T) {
 	}
 
 	out := Colorize("hello", "red")
-	if strings.Contains(out, "") {
+	if strings.Contains(out, "\033") {
 		t.Errorf("Colorize should not contain ANSI when NO_COLOR set, got: %q", out)
 	}
 	if out != "hello" {
@@ -74,7 +59,7 @@ func TestSuccessWarningErrorNoEscapeWhenDisabled(t *testing.T) {
 	defer func() { _ = os.Unsetenv("NO_COLOR") }()
 
 	for _, s := range []string{Success(), Warning(), Error()} {
-		if strings.Contains(s, "") {
+		if strings.Contains(s, "\033") {
 			t.Errorf("Output contains ANSI escape when disabled: %q", s)
 		}
 	}
@@ -107,7 +92,7 @@ func TestForceColorEnablesColorsWhenSet(t *testing.T) {
 		t.Error("ColorEnabled() should be true when FORCE_COLOR=1 and NO_COLOR unset")
 	}
 	out := Colorize("hello", "red")
-	if !strings.Contains(out, "") {
+	if !strings.Contains(out, "\033") {
 		t.Errorf("FORCE_COLOR=1: Colorize should emit ANSI, got plain: %q", out)
 	}
 }
@@ -121,7 +106,7 @@ func TestContractBoundaryPlainText(t *testing.T) {
 	if out != expected {
 		t.Errorf("ContractBoundary() = %q, want %q", out, expected)
 	}
-	if strings.Contains(out, "") {
+	if strings.Contains(out, "\033") {
 		t.Errorf("ContractBoundary should not contain ANSI when NO_COLOR set, got: %q", out)
 	}
 }
@@ -135,7 +120,7 @@ func TestContractBoundaryWithColor(t *testing.T) {
 	if !strings.Contains(out, "CABC") || !strings.Contains(out, "CXYZ") {
 		t.Errorf("ContractBoundary should contain both contract IDs, got: %q", out)
 	}
-	if !strings.Contains(out, "") {
+	if !strings.Contains(out, "\033") {
 		t.Errorf("ContractBoundary should contain ANSI codes when colors enabled, got: %q", out)
 	}
 }

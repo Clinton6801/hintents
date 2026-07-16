@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 package cmd
 
@@ -146,9 +131,7 @@ func runSimulationProfile(cmd *cobra.Command) error {
 		if err := os.WriteFile(profileOutJSON, data, 0644); err != nil {
 			return fmt.Errorf("failed to write JSON report: %w", err)
 		}
-		fmt.Printf("
-[OK] Optimization report exported to: %s
-", profileOutJSON)
+		fmt.Printf("\n[OK] Optimization report exported to: %s\n", profileOutJSON)
 	}
 
 	return nil
@@ -165,10 +148,8 @@ func runTraceProfile(filename string) error {
 		return fmt.Errorf("failed to parse trace: %w", err)
 	}
 
-	fmt.Printf("Analyzing trace: %s
-", filename)
-	fmt.Printf("Steps: %d
-", len(executionTrace.States))
+	fmt.Printf("Analyzing trace: %s\n", filename)
+	fmt.Printf("Steps: %d\n", len(executionTrace.States))
 
 	f, err := os.Create(profileOutput)
 	if err != nil {
@@ -180,55 +161,40 @@ func runTraceProfile(filename string) error {
 		return fmt.Errorf("failed to generate pprof profile: %w", err)
 	}
 
-	fmt.Printf("[OK] Profile saved to: %s
-", profileOutput)
+	fmt.Printf("[OK] Profile saved to: %s\n", profileOutput)
 	fmt.Println("Use 'go tool pprof' to analyze the output.")
 	return nil
 }
 
 func displayOptimizationReport(report *simulator.OptimizationReport, budget *simulator.BudgetUsage) {
-	fmt.Printf("
-=== Gas optimization report ===
-")
-	fmt.Printf("Overall Efficiency: %.1f%%
-", report.OverallEfficiency*100)
-	fmt.Printf("Status: %s
-", report.ComparisonToBaseline)
+	fmt.Printf("\n=== Gas optimization report ===\n")
+	fmt.Printf("Overall Efficiency: %.1f%%\n", report.OverallEfficiency*100)
+	fmt.Printf("Status: %s\n", report.ComparisonToBaseline)
 
 	if budget != nil {
-		fmt.Printf("
-Resource Usage:
-")
-		fmt.Printf("  CPU Instructions: %d (%.1f%% of limit)
-", budget.CPUInstructions, budget.CPUUsagePercent)
-		fmt.Printf("  Memory Bytes:     %d (%.1f%% of limit)
-", budget.MemoryBytes, budget.MemoryUsagePercent)
-		fmt.Printf("  Operations:       %d
-", budget.OperationsCount)
+		fmt.Printf("\nResource Usage:\n")
+		fmt.Printf("  CPU Instructions: %d (%.1f%% of limit)\n", budget.CPUInstructions, budget.CPUUsagePercent)
+		fmt.Printf("  Memory Bytes:     %d (%.1f%% of limit)\n", budget.MemoryBytes, budget.MemoryUsagePercent)
+		fmt.Printf("  Operations:       %d\n", budget.OperationsCount)
 	}
 
 	if len(report.BudgetBreakdown) > 0 {
-		fmt.Printf("
-Budget Breakdown:
-")
+		fmt.Printf("\nBudget Breakdown:\n")
 		w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-		fmt.Fprintln(w, "Category	Cost (Instructions)	Percentage")
+		fmt.Fprintln(w, "Category\tCost (Instructions)\tPercentage")
 		var total float64
 		for _, v := range report.BudgetBreakdown {
 			total += v
 		}
 		for cat, cost := range report.BudgetBreakdown {
 			pct := (cost / total) * 100
-			fmt.Fprintf(w, "%s	%.0f	%.1f%%
-", cat, cost, pct)
+			fmt.Fprintf(w, "%s\t%.0f\t%.1f%%\n", cat, cost, pct)
 		}
 		w.Flush()
 	}
 
 	if len(report.Tips) > 0 {
-		fmt.Printf("
-[INFO] Optimization Tips:
-")
+		fmt.Printf("\n[INFO] Optimization Tips:\n")
 		for _, tip := range report.Tips {
 			severity := tip.Severity
 			icon := "🟢 "
@@ -238,20 +204,15 @@ Budget Breakdown:
 			case "Medium":
 				icon = "🟡 "
 			}
-			fmt.Printf("
-[%s%s] %s: %s
-", icon, severity, tip.Category, tip.Message)
+			fmt.Printf("\n[%s%s] %s: %s\n", icon, severity, tip.Category, tip.Message)
 			if tip.EstimatedSavings != "" {
-				fmt.Printf("   Estimated Savings: %s
-", tip.EstimatedSavings)
+				fmt.Printf("   Estimated Savings: %s\n", tip.EstimatedSavings)
 			}
 			if tip.CodeLocation != nil {
-				fmt.Printf("   Location: %s
-", *tip.CodeLocation)
+				fmt.Printf("   Location: %s\n", *tip.CodeLocation)
 			}
 		}
 	} else {
-		fmt.Println("
-[OK] No specific optimizations identified. Your contract seems gas-efficient!")
+		fmt.Println("\n[OK] No specific optimizations identified. Your contract seems gas-efficient!")
 	}
 }

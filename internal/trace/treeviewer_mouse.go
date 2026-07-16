@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 package trace
 
@@ -126,10 +111,10 @@ func (tv *TreeViewerWithMouse) handleInput() bool {
 	input := string(buf[:n])
 
 	// Handle mouse events
-	if strings.HasPrefix(input, "[<") || strings.HasPrefix(input, "[M") {
+	if strings.HasPrefix(input, "\x1b[<") || strings.HasPrefix(input, "\x1b[M") {
 		// Extract mouse sequence
 		var sequence string
-		if strings.HasPrefix(input, "[<") {
+		if strings.HasPrefix(input, "\x1b[<") {
 			// SGR format
 			end := strings.Index(input[3:], "M")
 			if end == -1 {
@@ -157,17 +142,17 @@ func (tv *TreeViewerWithMouse) handleInput() bool {
 		tv.renderView()
 		return false
 
-	case "[A", "k": // Up arrow or k
+	case "\x1b[A", "k": // Up arrow or k
 		tv.renderer.SelectUp()
 		tv.renderView()
 		return false
 
-	case "[B", "j": // Down arrow or j
+	case "\x1b[B", "j": // Down arrow or j
 		tv.renderer.SelectDown()
 		tv.renderView()
 		return false
 
-	case " ", "": // Space or Enter - toggle expand
+	case " ", "\r": // Space or Enter - toggle expand
 		node := tv.renderer.GetSelectedNode()
 		if node != nil && !node.IsLeaf() {
 			node.ToggleExpanded()
@@ -192,7 +177,7 @@ func (tv *TreeViewerWithMouse) handleInput() bool {
 		}
 		return false
 
-	case "q", "": // q or Ctrl+C - quit
+	case "q", "\x03": // q or Ctrl+C - quit
 		return true
 
 	case "h": // Help
@@ -233,25 +218,19 @@ func (tv *TreeViewerWithMouse) getTraceRoot() *TraceNode {
 // renderView clears and renders the current view
 func (tv *TreeViewerWithMouse) renderView() {
 	// Clear screen
-	_, _ = fmt.Print("[2J[H") //nolint:errcheck // Terminal output, write failure is non-critical
+	_, _ = fmt.Print("\x1b[2J\x1b[H") //nolint:errcheck // Terminal output, write failure is non-critical
 
 	// Render header
-	_, _ = fmt.Printf("ERST Interactive Trace Tree Viewer (Mouse Support Enabled)
-")                  //nolint:errcheck // Terminal output, write failure is non-critical
-	_, _ = fmt.Printf("Transaction: %s | Steps: %d
-", tv.trace.TransactionHash, len(tv.trace.States)) //nolint:errcheck // Terminal output, write failure is non-critical
-	_, _ = fmt.Print("─────────────────────────────────────────────────────────
-")                    //nolint:errcheck // Terminal output, write failure is non-critical
+	_, _ = fmt.Printf("ERST Interactive Trace Tree Viewer (Mouse Support Enabled)\n")                  //nolint:errcheck // Terminal output, write failure is non-critical
+	_, _ = fmt.Printf("Transaction: %s | Steps: %d\n", tv.trace.TransactionHash, len(tv.trace.States)) //nolint:errcheck // Terminal output, write failure is non-critical
+	_, _ = fmt.Print("─────────────────────────────────────────────────────────\n")                    //nolint:errcheck // Terminal output, write failure is non-critical
 
 	// Render tree
 	_, _ = fmt.Print(tv.renderer.Render()) //nolint:errcheck // Terminal output, write failure is non-critical
 
 	// Render footer
-	_, _ = fmt.Print("
-─────────────────────────────────────────────────────────
-")                                                   //nolint:errcheck // Terminal output, write failure is non-critical
-	_, _ = fmt.Print("Controls: n=next-step | ↑↓/kj=navigate | Space/Enter=expand | e=expand-all | c=collapse-all | h=help | q=quit
-") //nolint:errcheck // Terminal output, write failure is non-critical
+	_, _ = fmt.Print("\n─────────────────────────────────────────────────────────\n")                                                   //nolint:errcheck // Terminal output, write failure is non-critical
+	_, _ = fmt.Print("Controls: n=next-step | ↑↓/kj=navigate | Space/Enter=expand | e=expand-all | c=collapse-all | h=help | q=quit\n") //nolint:errcheck // Terminal output, write failure is non-critical
 	_, _ = fmt.Print(tv.renderCurrentStateView())                                                                                       //nolint:errcheck // Terminal output, write failure is non-critical
 }
 
@@ -311,14 +290,12 @@ func (tv *TreeViewerWithMouse) NextStep() {
 
 func (tv *TreeViewerWithMouse) renderCurrentStateView() string {
 	if tv.trace == nil || len(tv.trace.States) == 0 {
-		return "State: no trace loaded
-"
+		return "State: no trace loaded\n"
 	}
 
 	state, err := tv.trace.GetCurrentState()
 	if err != nil {
-		return "State: unavailable
-"
+		return "State: unavailable\n"
 	}
 
 	operation := state.Operation
@@ -335,8 +312,7 @@ func (tv *TreeViewerWithMouse) renderCurrentStateView() string {
 	}
 
 	return fmt.Sprintf(
-		"State: step=%d/%d op=%s event=%s fn=%s
-",
+		"State: step=%d/%d op=%s event=%s fn=%s\n",
 		state.Step,
 		len(tv.trace.States)-1,
 		operation,
@@ -356,13 +332,13 @@ func (tv *TreeViewerWithMouse) saveTerminalState() (string, error) {
 func (tv *TreeViewerWithMouse) restoreTerminalState(state string) error {
 	// Restore terminal settings
 	// In production, would use stty
-	_, _ = fmt.Print("[?25h") // Show cursor
+	_, _ = fmt.Print("\x1b[?25h") // Show cursor
 	return nil
 }
 
 func (tv *TreeViewerWithMouse) enableRawMode() error {
 	// Enable raw mode using stty-like behavior
 	// Hide cursor
-	_, _ = fmt.Print("[?25l") //nolint:errcheck // Terminal output, write failure is non-critical
+	_, _ = fmt.Print("\x1b[?25l") //nolint:errcheck // Terminal output, write failure is non-critical
 	return nil
 }

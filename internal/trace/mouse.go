@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 package trace
 
@@ -61,9 +46,9 @@ func (mt *MouseTracker) Enable() error {
 
 	// Enable mouse tracking: report button presses and release
 	// SGR1006 mode for better compatibility
-	_, _ = fmt.Fprint(os.Stdout, "[?1000h") // Enable basic mouse reporting
-	_, _ = fmt.Fprint(os.Stdout, "[?1006h") // Enable SGR mode (extended coordinates)
-	_, _ = fmt.Fprint(os.Stdout, "[?1015h") // Enable URXVT mode
+	_, _ = fmt.Fprint(os.Stdout, "\x1b[?1000h") // Enable basic mouse reporting
+	_, _ = fmt.Fprint(os.Stdout, "\x1b[?1006h") // Enable SGR mode (extended coordinates)
+	_, _ = fmt.Fprint(os.Stdout, "\x1b[?1015h") // Enable URXVT mode
 
 	mt.enabled = true
 	return nil
@@ -76,9 +61,9 @@ func (mt *MouseTracker) Disable() error {
 	}
 
 	// Disable all mouse tracking modes
-	_, _ = fmt.Fprint(os.Stdout, "[?1000l") // Disable basic mouse reporting
-	_, _ = fmt.Fprint(os.Stdout, "[?1006l") // Disable SGR mode
-	_, _ = fmt.Fprint(os.Stdout, "[?1015l") // Disable URXVT mode
+	_, _ = fmt.Fprint(os.Stdout, "\x1b[?1000l") // Disable basic mouse reporting
+	_, _ = fmt.Fprint(os.Stdout, "\x1b[?1006l") // Disable SGR mode
+	_, _ = fmt.Fprint(os.Stdout, "\x1b[?1015l") // Disable URXVT mode
 
 	mt.enabled = false
 	return nil
@@ -91,18 +76,18 @@ func ParseMouseEvent(sequence string) (*MouseEvent, error) {
 		return nil, fmt.Errorf("invalid mouse sequence")
 	}
 
-	// SGR1006 format: [<buttons;col;row;M|m
+	// SGR1006 format: \x1b[<buttons;col;row;M|m
 	if sequence[0] == '<' {
 		return parseSGRMouseEvent(sequence)
 	}
 
-	// Basic format: [Mcxy (where x, y are column and row)
+	// Basic format: \x1b[Mcxy (where x, y are column and row)
 	return parseBasicMouseEvent(sequence)
 }
 
 // parseSGRMouseEvent parses SGR1006 format mouse events
 func parseSGRMouseEvent(sequence string) (*MouseEvent, error) {
-	// Format: [<button;col;row;M|m
+	// Format: \x1b[<button;col;row;M|m
 	parts := make([]int, 0)
 	current := ""
 

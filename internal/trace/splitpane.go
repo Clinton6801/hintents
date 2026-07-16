@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 package trace
 
@@ -159,12 +144,10 @@ func (p *SplitPane) renderTracePane(w io.Writer, node *TraceNode, width int) {
 	lines := nodeDisplayLines(node)
 	for i, line := range lines {
 		if i >= limit {
-			_, _ = fmt.Fprintf(w, "  %s
-", visualizer.Colorize(fmt.Sprintf("... (%d more)", len(lines)-limit), "dim"))
+			_, _ = fmt.Fprintf(w, "  %s\n", visualizer.Colorize(fmt.Sprintf("... (%d more)", len(lines)-limit), "dim"))
 			break
 		}
-		_, _ = fmt.Fprintf(w, "  %s
-", line)
+		_, _ = fmt.Fprintf(w, "  %s\n", line)
 	}
 	for i := len(lines); i < limit; i++ {
 		_, _ = fmt.Fprintln(w)
@@ -190,8 +173,7 @@ func (p *SplitPane) renderDivider(w io.Writer, width int, src *SourceContext) {
 func (p *SplitPane) renderSourcePane(w io.Writer, src *SourceContext, width int) {
 	limit := paneRows(p.SrcRows, defaultSrcRows)
 	if src == nil || len(src.Lines) == 0 {
-		_, _ = fmt.Fprintf(w, "  %s
-", visualizer.Colorize("No source mapping available for this node.", "dim"))
+		_, _ = fmt.Fprintf(w, "  %s\n", visualizer.Colorize("No source mapping available for this node.", "dim"))
 		for i := 1; i < limit; i++ {
 			_, _ = fmt.Fprintln(w)
 		}
@@ -204,18 +186,15 @@ func (p *SplitPane) renderSourcePane(w io.Writer, src *SourceContext, width int)
 	}
 	for i, line := range src.Lines {
 		if i >= limit {
-			_, _ = fmt.Fprintf(w, "  %s
-", visualizer.Colorize(fmt.Sprintf("... (%d more)", len(src.Lines)-limit), "dim"))
+			_, _ = fmt.Fprintf(w, "  %s\n", visualizer.Colorize(fmt.Sprintf("... (%d more)", len(src.Lines)-limit), "dim"))
 			break
 		}
 		lineNum := startLine + i
 		numStr := fmt.Sprintf("%4d", lineNum)
 		if i == src.FocusIndex {
-			_, _ = fmt.Fprintf(w, "%s | %s
-", visualizer.Colorize(numStr, "yellow"), visualizer.Colorize(line, "bold"))
+			_, _ = fmt.Fprintf(w, "%s | %s\n", visualizer.Colorize(numStr, "yellow"), visualizer.Colorize(line, "bold"))
 		} else {
-			_, _ = fmt.Fprintf(w, "%s | %s
-", visualizer.Colorize(numStr, "dim"), line)
+			_, _ = fmt.Fprintf(w, "%s | %s\n", visualizer.Colorize(numStr, "dim"), line)
 		}
 	}
 	for i := len(src.Lines); i < limit; i++ {

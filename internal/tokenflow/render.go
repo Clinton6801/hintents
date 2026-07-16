@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 package tokenflow
 
@@ -39,8 +24,7 @@ func (r *Report) SummaryLines() []string {
 // MermaidFlowchart renders a Mermaid flowchart (text) that can be pasted into Markdown.
 func (r *Report) MermaidFlowchart() string {
 	var b strings.Builder
-	b.WriteString("flowchart LR
-")
+	b.WriteString("flowchart LR\n")
 
 	nodeID := map[string]string{}
 	next := 0
@@ -51,8 +35,7 @@ func (r *Report) MermaidFlowchart() string {
 		next++
 		id := fmt.Sprintf("n%d", next)
 		nodeID[label] = id
-		fmt.Fprintf(&b, "  %s[\"%s\"]
-", id, escapeMermaidLabel(label))
+		fmt.Fprintf(&b, "  %s[\"%s\"]\n", id, escapeMermaidLabel(label))
 		return id
 	}
 
@@ -60,8 +43,7 @@ func (r *Report) MermaidFlowchart() string {
 		from := getNode(t.From)
 		to := getNode(t.To)
 		label := fmt.Sprintf("%s %s", formatAmount(t), t.Token.Display())
-		fmt.Fprintf(&b, "  %s -->|\"%s\"| %s
-", from, escapeMermaidLabel(label), to)
+		fmt.Fprintf(&b, "  %s -->|\"%s\"| %s\n", from, escapeMermaidLabel(label), to)
 	}
 
 	return b.String()
@@ -108,6 +90,6 @@ var mermaidUnsafe = regexp.MustCompile(`[]"]`)
 
 func escapeMermaidLabel(s string) string {
 	return mermaidUnsafe.ReplaceAllStringFunc(s, func(m string) string {
-		return "\" + m
+		return "\\" + m
 	})
 }

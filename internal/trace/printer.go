@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 package trace
 
@@ -152,19 +137,15 @@ func PrintExecutionTrace(t *ExecutionTrace, opts PrintOptions) {
 	// ── header ───────────────────────────────────────────────────────────────
 	_, _ = fmt.Fprintln(out)
 	_, _ = p.header.Fprintln(out, " Transaction Execution Trace")
-	_, _ = fmt.Fprintf(out, " Hash  : %s
-", truncateHash(t.TransactionHash, maxW-10))
+	_, _ = fmt.Fprintf(out, " Hash  : %s\n", truncateHash(t.TransactionHash, maxW-10))
 	if !t.StartTime.IsZero() {
-		_, _ = fmt.Fprintf(out, " Start : %s
-", t.StartTime.UTC().Format(time.RFC3339))
+		_, _ = fmt.Fprintf(out, " Start : %s\n", t.StartTime.UTC().Format(time.RFC3339))
 	}
-	_, _ = fmt.Fprintf(out, " Steps : %d
-", len(t.States))
+	_, _ = fmt.Fprintf(out, " Steps : %d\n", len(t.States))
 	_, _ = p.separator.Fprintln(out, sep)
 
 	// ── root node ────────────────────────────────────────────────────────────
-	_, _ = p.txRoot.Fprintf(out, "▸ TX  %s
-", truncateHash(t.TransactionHash, maxW-6))
+	_, _ = p.txRoot.Fprintf(out, "▸ TX  %s\n", truncateHash(t.TransactionHash, maxW-6))
 
 	// ── state nodes ──────────────────────────────────────────────────────────
 	total := len(t.States)
@@ -208,8 +189,7 @@ func PrintExecutionTrace(t *ExecutionTrace, opts PrintOptions) {
 			returnPart = "  → " + p.returnVal.Sprint(rv)
 		}
 
-		_, _ = fmt.Fprintf(out, "%s%s %s%s%s%s%s
-",
+		_, _ = fmt.Fprintf(out, "%s%s %s%s%s%s%s\n",
 			connector,
 			p.stepNum.Sprintf("[%d]", state.Step),
 			p.opLabel.Sprint(icon+" "+opName),
@@ -223,18 +203,15 @@ func PrintExecutionTrace(t *ExecutionTrace, opts PrintOptions) {
 		if state.Error != "" {
 			errorCount++
 			errLine := wrapText(state.Error, maxW-len(continuation)-6)
-			for j, line := range strings.Split(errLine, "
-") {
+			for j, line := range strings.Split(errLine, "\n") {
 				if j == 0 {
-					_, _ = fmt.Fprintf(out, "%s  %s %s
-",
+					_, _ = fmt.Fprintf(out, "%s  %s %s\n",
 						continuation,
 						p.errorFn.Sprint("[FAIL]"),
 						p.errorMsg.Sprint(line),
 					)
 				} else {
-					_, _ = fmt.Fprintf(out, "%s    %s
-", continuation, p.errorMsg.Sprint(line))
+					_, _ = fmt.Fprintf(out, "%s    %s\n", continuation, p.errorMsg.Sprint(line))
 				}
 			}
 		}
@@ -348,24 +325,20 @@ func printTreeNode(out io.Writer, p palette, node *TraceNode, prefix string, isL
 		sb.WriteString(p.returnVal.Sprint("→ " + ev))
 	}
 
-	_, _ = fmt.Fprintf(out, "%s%s%s
-", prefix, connector, sb.String())
+	_, _ = fmt.Fprintf(out, "%s%s%s\n", prefix, connector, sb.String())
 
 	// ── error sub-line ────────────────────────────────────────────────────────
 	if node.Error != "" {
 		errLine := wrapText(node.Error, maxW-len(childPrefix)-6)
-		for j, line := range strings.Split(errLine, "
-") {
+		for j, line := range strings.Split(errLine, "\n") {
 			if j == 0 {
-				_, _ = fmt.Fprintf(out, "%s  %s %s
-",
+				_, _ = fmt.Fprintf(out, "%s  %s %s\n",
 					childPrefix,
 					p.errorFn.Sprint("[FAIL]"),
 					p.errorMsg.Sprint(line),
 				)
 			} else {
-				_, _ = fmt.Fprintf(out, "%s    %s
-", childPrefix, p.errorMsg.Sprint(line))
+				_, _ = fmt.Fprintf(out, "%s    %s\n", childPrefix, p.errorMsg.Sprint(line))
 			}
 		}
 	}
@@ -397,8 +370,7 @@ func printTreeNode(out io.Writer, p palette, node *TraceNode, prefix string, isL
 		}
 	} else if len(node.Children) > 0 {
 		// collapsed indicator
-		_, _ = fmt.Fprintf(out, "%s  %s
-",
+		_, _ = fmt.Fprintf(out, "%s  %s\n",
 			childPrefix,
 			p.dimmed.Sprintf("… %d children collapsed", len(node.Children)),
 		)
@@ -566,8 +538,7 @@ func wrapText(text string, maxW int) string {
 		}
 		runes = runes[next:]
 	}
-	return strings.Join(lines, "
-")
+	return strings.Join(lines, "\n")
 }
 
 // formatNum formats a uint64 with comma separators.

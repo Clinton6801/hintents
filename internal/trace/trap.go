@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2026 dotandev
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
 // Copyright 2026 Erst Users
+// SPDX-License-Identifier: Apache-2.0
 
 package trace
 
@@ -347,36 +332,29 @@ func FormatTrapInfo(trap *TrapInfo) string {
 	sb.WriteString(visualizer.Error() + " ")
 	sb.WriteString("Trap Detected: ")
 	sb.WriteString(string(trap.Type))
-	sb.WriteString("
-")
+	sb.WriteString("\n")
 
 	// Error message
-	sb.WriteString("
-" + visualizer.Symbol("warn") + " Error: ")
+	sb.WriteString("\n" + visualizer.Symbol("warn") + " Error: ")
 	sb.WriteString(trap.Message)
-	sb.WriteString("
-")
+	sb.WriteString("\n")
 
 	// Source location
 	if trap.SourceLocation != nil {
-		sb.WriteString("
-" + visualizer.Symbol("pin") + " Location: ")
+		sb.WriteString("\n" + visualizer.Symbol("pin") + " Location: ")
 		if trap.SourceLocation.File != "" {
 			sb.WriteString(trap.SourceLocation.File)
 			sb.WriteString(":")
 		}
 		fmt.Fprintf(&sb, "%d", trap.SourceLocation.Line)
-		sb.WriteString("
-")
+		sb.WriteString("\n")
 	}
 
 	// Function
 	if trap.Function != "" {
-		sb.WriteString("
-" + visualizer.Symbol("wrench") + " Function: ")
+		sb.WriteString("\n" + visualizer.Symbol("wrench") + " Function: ")
 		sb.WriteString(trap.Function)
-		sb.WriteString("
-")
+		sb.WriteString("\n")
 	}
 
 	// Inlined call chain – only shown when the fault occurred inside inlined code.
@@ -384,9 +362,7 @@ func FormatTrapInfo(trap *TrapInfo) string {
 	// the developer can trace the path from their written call-site down to the
 	// precise inlined instruction that faulted.
 	if len(trap.InlinedChain) > 0 {
-		sb.WriteString("
-" + visualizer.Symbol("list") + " Inlined Call Chain (outermost to fault site):
-")
+		sb.WriteString("\n" + visualizer.Symbol("list") + " Inlined Call Chain (outermost to fault site):\n")
 		for i, frame := range trap.InlinedChain {
 			fmt.Fprintf(&sb, "  %d: %s", i, frame.Function)
 			// Show where inside the caller the inlining was requested.
@@ -397,16 +373,13 @@ func FormatTrapInfo(trap *TrapInfo) string {
 			if frame.InlinedAt.File != "" || frame.InlinedAt.Line != 0 {
 				fmt.Fprintf(&sb, " [inlined at %s:%d]", frame.InlinedAt.File, frame.InlinedAt.Line)
 			}
-			sb.WriteString("
-")
+			sb.WriteString("\n")
 		}
 	}
 
 	// Local variables
 	if len(trap.LocalVars) > 0 {
-		sb.WriteString("
-" + visualizer.Symbol("list") + " Local Variables at Trap Point:
-")
+		sb.WriteString("\n" + visualizer.Symbol("list") + " Local Variables at Trap Point:\n")
 		for _, v := range trap.LocalVars {
 			sb.WriteString("  - ")
 			sb.WriteString(v.DemangledName)
@@ -420,23 +393,19 @@ func FormatTrapInfo(trap *TrapInfo) string {
 				sb.WriteString(" = ")
 				sb.WriteString(formatVarValue(v.Value))
 			}
-			sb.WriteString("
-")
+			sb.WriteString("\n")
 		}
 	}
 
 	// Call stack
 	if len(trap.CallStack) > 0 {
-		sb.WriteString("
-" + visualizer.Symbol("list") + " Call Stack:
-")
+		sb.WriteString("\n" + visualizer.Symbol("list") + " Call Stack:\n")
 		for i, frame := range trap.CallStack {
 			sb.WriteString("  ")
 			fmt.Fprintf(&sb, "%d", i)
 			sb.WriteString(": ")
 			sb.WriteString(frame)
-			sb.WriteString("
-")
+			sb.WriteString("\n")
 		}
 	}
 
