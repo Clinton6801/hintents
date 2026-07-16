@@ -6,6 +6,8 @@
 package visualizer
 
 import (
+	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -51,7 +53,15 @@ func DiffLedgerEntries(before, after map[string]string) []LedgerDiffEntry {
 	for k := range allKeys {
 		keys = append(keys, k)
 	}
-	sort.Strings(keys)
+	sort.Slice(keys, func(i, j int) bool {
+		decI, errI := base64.StdEncoding.DecodeString(keys[i])
+		decJ, errJ := base64.StdEncoding.DecodeString(keys[j])
+		if errI == nil && errJ == nil {
+			return bytes.Compare(decI, decJ) < 0
+		}
+		// Fallback to string sort if not valid base64
+		return keys[i] < keys[j]
+	})
 
 	entries := make([]LedgerDiffEntry, 0, len(keys))
 	for _, k := range keys {
