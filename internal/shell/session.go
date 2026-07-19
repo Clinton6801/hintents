@@ -11,6 +11,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/dotandev/hintents/internal/errors"
 	"github.com/dotandev/hintents/internal/pipeline"
 	"github.com/dotandev/hintents/internal/rpc"
 	"github.com/dotandev/hintents/internal/simulator"
@@ -80,7 +81,7 @@ func (s *Session) Invoke(ctx context.Context, contractID, function string, args 
 	// Build transaction envelope for the invocation
 	envelopeXDR, err := s.buildInvocationEnvelope(contractID, function, args)
 	if err != nil {
-		return nil, fmt.Errorf("failed to build envelope: %w", err)
+		return nil, errors.WrapValidationError(fmt.Sprintf("failed to build envelope: %v", err))
 	}
 
 	// Create simulation request with snapshots enabled so updateLedgerState
@@ -97,7 +98,7 @@ func (s *Session) Invoke(ctx context.Context, contractID, function string, args 
 	// Execute simulation
 	resp, err := s.runner.Run(ctx, req)
 	if err != nil {
-		return nil, fmt.Errorf("simulation failed: %w", err)
+		return nil, errors.WrapSimulationFailed(err, "simulation failed")
 	}
 
 	// Update ledger state based on simulation result
@@ -128,7 +129,7 @@ func (s *Session) RunPipeline(ctx context.Context, p *pipeline.Pipeline) ([]*Inv
 
 		res, err := s.Invoke(ctx, cmd.Target, cmd.Type, resolvedArgs) // Use Type as function name for simplicity
 		if err != nil {
-			return results, fmt.Errorf("pipeline aborted at command %s: %w", cmd.Type, err)
+			return results, errors.WrapSimulationFailed(err, fmt.Sprintf("pipeline aborted at command %s", cmd.Type))
 		}
 		results = append(results, res)
 	}
@@ -143,14 +144,14 @@ func (s *Session) buildInvocationEnvelope(contractID, function string, args []st
 	if len(contractID) > 0 && contractID[0] == 'C' {
 		decoded, err := strkey.Decode(strkey.VersionByteContract, contractID)
 		if err != nil {
-			return "", fmt.Errorf("decode contract id: %w", err)
+			return "", errors.WrapValidationError(fmt.Sprintf("decode contract id: %v", err))
 		}
 		if len(decoded) != 32 {
-			return "", fmt.Errorf("contract id must be 32 bytes, got %d", len(decoded))
+			return "", errors.WrapValidationError(fmt.Sprintf("contract id must be 32 bytes, got %d", len(decoded)))
 		}
 		copy(cid[:], decoded)
 	} else {
-		return "", fmt.Errorf("contract id must be a strkey C... address")
+		return "", errors.WrapValidationError("contract id must be a strkey C... address")
 	}
 
 	// Build ScVal arguments from string representations
@@ -214,7 +215,7 @@ func (s *Session) buildInvocationEnvelope(contractID, function string, args []st
 
 	envBytes, err := envelope.MarshalBinary()
 	if err != nil {
-		return "", fmt.Errorf("marshal envelope: %w", err)
+		return "", errors.WrapMarshalFailed(err)
 	}
 
 	return base64.StdEncoding.EncodeToString(envBytes), nil
@@ -270,11 +271,11 @@ func (s *Session) SaveState(filename string) error {
 
 	data, err := json.MarshalIndent(state, "", "  ")
 	if err != nil {
-		return fmt.Errorf("failed to marshal state: %w", err)
+		return errors.WrapMarshalFailed(err)
 	}
 
 	if err := os.WriteFile(filename, data, 0644); err != nil {
-		return fmt.Errorf("failed to write file: %w", err)
+		return errors.WrapConfigError("failed to write file", err)
 	}
 
 	return nil
@@ -284,12 +285,12 @@ func (s *Session) SaveState(filename string) error {
 func (s *Session) LoadState(filename string) error {
 	data, err := os.ReadFile(filename)
 	if err != nil {
-		return fmt.Errorf("failed to read file: %w", err)
+		return errors.WrapConfigError("failed to read file", err)
 	}
 
 	var state LedgerState
 	if err := json.Unmarshal(data, &state); err != nil {
-		return fmt.Errorf("failed to unmarshal state: %w", err)
+		return errors.WrapUnmarshalFailed(err, "failed to unmarshal state")
 	}
 
 	// Update session state
