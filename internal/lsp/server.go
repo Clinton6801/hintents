@@ -79,6 +79,9 @@ func (s *Server) handler() jsonrpc2.Handler {
 	)
 
 	return func(ctx context.Context, reply jsonrpc2.Replier, req jsonrpc2.Request) error {
+		ctx, cancel := context.WithTimeout(ctx, 2*time.Second)
+		defer cancel()
+
 		start := time.Now()
 		defer func() {
 			latencyHist.Record(ctx, time.Since(start).Seconds(), metric.WithAttributes(
@@ -134,6 +137,22 @@ func (s *Server) handler() jsonrpc2.Handler {
 			if err := dec.Decode(&params); err != nil {
 				return reply(ctx, nil, fmt.Errorf("%w: %v", jsonrpc2.ErrParse, err))
 			}
+
+			// Detect full document sync (fallback) by checking raw JSON for "range" field.
+			// If missing, clear the document so the incremental apply acts as a full replace.
+			var raw map[string]interface{}
+			if err := json.Unmarshal(req.Params(), &raw); err == nil {
+				if changes, ok := raw["contentChanges"].([]interface{}); ok && len(changes) > 0 {
+					if changeMap, ok := changes[0].(map[string]interface{}); ok {
+						if _, hasRange := changeMap["range"]; !hasRange {
+							s.mu.Lock()
+							s.documents[params.TextDocument.URI] = ""
+							s.mu.Unlock()
+						}
+					}
+				}
+			}
+
 			return reply(ctx, nil, s.DidChange(ctx, &params))
 
 		case protocol.MethodTextDocumentDidClose:
@@ -191,7 +210,7 @@ func (s *Server) Initialize(ctx context.Context, params *protocol.InitializePara
 			HoverProvider: true,
 			TextDocumentSync: protocol.TextDocumentSyncOptions{
 				OpenClose: true,
-				Change:    protocol.TextDocumentSyncKindFull,
+				Change:    protocol.TextDocumentSyncKindIncremental,
 			},
 		},
 	}, nil
@@ -236,11 +255,42 @@ func (s *Server) DidChange(ctx context.Context, params *protocol.DidChangeTextDo
 		return nil
 	}
 
-	text := params.ContentChanges[0].Text
 	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	text, ok := s.documents[params.TextDocument.URI]
+	if !ok {
+		text = ""
+	}
+
+	for _, change := range params.ContentChanges {
+		start := offsetForPosition(text, change.Range.Start)
+		end := offsetForPosition(text, change.Range.End)
+		if start > end {
+			start, end = end, start // Safety check
+		}
+		text = text[:start] + change.Text + text[end:]
+	}
+
 	s.documents[params.TextDocument.URI] = text
-	s.mu.Unlock()
 	return nil
+}
+
+func offsetForPosition(text string, pos protocol.Position) int {
+	offset := 0
+	for i := 0; i < int(pos.Line); i++ {
+		idx := strings.IndexByte(text[offset:], '\n')
+		if idx < 0 {
+			return len(text)
+		}
+		offset += idx + 1
+	}
+	remaining := len(text) - offset
+	charOffset := int(pos.Character)
+	if charOffset > remaining {
+		charOffset = remaining
+	}
+	return offset + charOffset
 }
 
 // DidClose handles textDocument/didClose.
