@@ -12,10 +12,14 @@ import (
 	"io"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/dotandev/hintents/internal/visualizer"
 	"go.lsp.dev/jsonrpc2"
 	"go.lsp.dev/protocol"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 )
 
 // Server provides a minimal LSP backend for Soroban hinting.
@@ -67,7 +71,21 @@ func (s *Server) Run(ctx context.Context, r io.Reader, w io.Writer) error {
 }
 
 func (s *Server) handler() jsonrpc2.Handler {
+	meter := otel.Meter("erst/lsp")
+	latencyHist, _ := meter.Float64Histogram(
+		"lsp.request.latency",
+		metric.WithDescription("Latency of LSP requests"),
+		metric.WithUnit("s"),
+	)
+
 	return func(ctx context.Context, reply jsonrpc2.Replier, req jsonrpc2.Request) error {
+		start := time.Now()
+		defer func() {
+			latencyHist.Record(ctx, time.Since(start).Seconds(), metric.WithAttributes(
+				attribute.String("method", req.Method()),
+			))
+		}()
+
 		if ctx.Err() != nil {
 			return reply(ctx, nil, protocol.ErrRequestCancelled)
 		}
