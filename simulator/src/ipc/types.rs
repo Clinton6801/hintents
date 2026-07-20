@@ -92,6 +92,7 @@ pub struct CommandFrame {
     pub batch_size: u32,
 }
 
+#[allow(dead_code)]
 fn default_batch_size() -> u32 {
     1
 }

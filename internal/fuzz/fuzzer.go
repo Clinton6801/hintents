@@ -289,7 +289,7 @@ func (f *CoverageGuidedFuzzer) Run(ctx context.Context, seedInput *simulator.Fuz
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			
+
 			var workerCoveragePath string
 			if f.config.EnableCoverage {
 				tmpFile, err := os.CreateTemp("", "erst-fuzz-worker-*.lcov")
@@ -645,14 +645,14 @@ func (p *LCOVCoverageParser) Parse(report string) *CoverageMap {
 func (f *CoverageGuidedFuzzer) computeInputHash(input *simulator.FuzzerInput) uint64 {
 	h := fnv.New64a()
 	h.Write([]byte(input.EnvelopeXdr[:min(32, len(input.EnvelopeXdr))]))
-	
+
 	var buf [8]byte
 	binary.LittleEndian.PutUint64(buf[:], uint64(input.Timestamp))
 	h.Write(buf[:])
-	
+
 	binary.LittleEndian.PutUint64(buf[:], uint64(len(input.LedgerEntries)))
 	h.Write(buf[:])
-	
+
 	return h.Sum64()
 }
 
