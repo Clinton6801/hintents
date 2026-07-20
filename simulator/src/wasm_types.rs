@@ -188,7 +188,7 @@ impl TypeSection {
                     // RecGroup contains SubType entries
                     for sub_type in rec_group.types() {
                         let func_type = sub_type.composite_type.unwrap_func();
-                        
+
                         let params = func_type
                             .params()
                             .iter()

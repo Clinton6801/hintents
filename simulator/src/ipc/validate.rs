@@ -20,8 +20,10 @@ use serde_json::Value;
 pub fn validate_request(input: &str) -> Result<Value, String> {
     // include the schema at compile-time
     let schema_json = include_str!("../../../docs/schema/simulation-request.schema.json");
-    let schema: Value = serde_json::from_str(schema_json).map_err(|e| format!("invalid schema JSON: {}", e))?;
-    let compiled = jsonschema::validator_for(&schema).map_err(|e| format!("schema compilation failed: {}", e))?;
+    let schema: Value =
+        serde_json::from_str(schema_json).map_err(|e| format!("invalid schema JSON: {}", e))?;
+    let compiled = jsonschema::validator_for(&schema)
+        .map_err(|e| format!("schema compilation failed: {}", e))?;
 
     // parse the incoming JSON
     let instance: Value = serde_json::from_str(input).map_err(|e| e.to_string())?;

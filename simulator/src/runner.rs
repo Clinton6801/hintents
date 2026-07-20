@@ -44,7 +44,13 @@ impl SimHost {
         } else if let Some(mem) = memory_limit {
             // soroban sdk uses u32::MAX for no limit but casted to u64, or u64::MAX.
             let _ = budget.reset_unlimited();
-            let _ = budget.reset_limits(budget.get_cpu_insns_consumed().unwrap_or(0).saturating_add(u32::MAX as u64), mem);
+            let _ = budget.reset_limits(
+                budget
+                    .get_cpu_insns_consumed()
+                    .unwrap_or(0)
+                    .saturating_add(u32::MAX as u64),
+                mem,
+            );
         }
 
         // Host::with_storage_and_budget is available in recent versions
@@ -76,9 +82,15 @@ impl SimHost {
             let _ = budget.reset_limits(cpu, mem);
         } else if let Some(mem) = memory_limit {
             let _ = budget.reset_unlimited();
-            let _ = budget.reset_limits(budget.get_cpu_insns_consumed().unwrap_or(0).saturating_add(u32::MAX as u64), mem);
+            let _ = budget.reset_limits(
+                budget
+                    .get_cpu_insns_consumed()
+                    .unwrap_or(0)
+                    .saturating_add(u32::MAX as u64),
+                mem,
+            );
         }
-        
+
         let storage = Self::storage_from_snapshot(snapshot, &budget)?;
         let host = Host::with_storage_and_budget(storage, budget);
         host.set_diagnostic_level(DiagnosticLevel::Debug)?;
