@@ -440,7 +440,7 @@ mod tests {
             created_at: 1_234_567_890,
         };
 
-        cache.store(entry).unwrap();
+        cache.store_sync(entry).unwrap();
 
         let entries = cache.list_cached().unwrap();
         assert_eq!(entries.len(), 1);

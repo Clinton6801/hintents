@@ -101,7 +101,7 @@ pub struct SourceMapCacheEntry {
     pub created_at: u64,
 }
 
-/// Source map cache manager
+#[derive(Clone)]
 pub struct SourceMapCache {
     cache_dir: PathBuf,
     max_cache_size: Option<u64>,
@@ -318,10 +318,20 @@ impl SourceMapCache {
         result
     }
 
-    /// Stores a source map entry in the cache.
+    pub fn store(&self, entry: SourceMapCacheEntry) -> Result<(), String> {
+        let cache_clone = self.clone();
+        std::thread::spawn(move || {
+            if let Err(e) = cache_clone.store_sync(entry) {
+                eprintln!("Failed to store source map in background: {}", e);
+            }
+        });
+        Ok(())
+    }
+
+    /// Synchronously stores a source map entry in the cache.
     /// Uses an exclusive OS-level file lock and atomic write (temp file + rename)
     /// to prevent data corruption when multiple processes write concurrently.
-    pub fn store(&self, entry: SourceMapCacheEntry) -> Result<(), String> {
+    pub fn store_sync(&self, entry: SourceMapCacheEntry) -> Result<(), String> {
         // Ensure cache directory exists.
         // On Windows, concurrent calls to create_dir_all can race and return
         // AlreadyExists (os error 183) even though the directory now exists —
@@ -623,7 +633,7 @@ mod tests {
             created_at: 1_234_567_890,
         };
 
-        cache.store(entry).unwrap();
+        cache.store_sync(entry).unwrap();
 
         assert!(cache
             .get_with_mtime(&cache_key, Some(mtime1), false)
@@ -666,7 +676,7 @@ mod tests {
         };
 
         // Store the entry
-        cache.store(entry.clone()).unwrap();
+        cache.store_sync(entry.clone()).unwrap();
 
         // Retrieve the entry — no_cache=false so cache is used normally
         let retrieved = cache.get(&wasm_hash, false).unwrap();
@@ -702,7 +712,7 @@ mod tests {
         };
 
         // Store an entry so it exists on disk
-        cache.store(entry).unwrap();
+        cache.store_sync(entry).unwrap();
         assert!(cache.get(&wasm_hash, false).is_some());
 
         // With no_cache=true, it should return None even though cache exists
@@ -725,7 +735,7 @@ mod tests {
             created_at: 1_234_567_890,
         };
 
-        cache.store(entry).unwrap();
+        cache.store_sync(entry).unwrap();
         assert!(cache.get(&wasm_hash, false).is_some());
 
         let count = cache.clear().unwrap();
@@ -763,7 +773,7 @@ mod tests {
             created_at: 1_234_567_890,
         };
 
-        cache.store(entry).unwrap();
+        cache.store_sync(entry).unwrap();
 
         let size = cache.get_cache_size().unwrap();
         assert!(size > 0);
@@ -787,7 +797,7 @@ mod tests {
             created_at: 1_234_567_890,
         };
 
-        cache.store(entry).unwrap();
+        cache.store_sync(entry).unwrap();
 
         let list = cache.list_cached().unwrap();
         assert_eq!(list.len(), 1);
@@ -824,7 +834,7 @@ mod tests {
             created_at: 1000,
         };
 
-        cache.store(entry1).unwrap();
+        cache.store_sync(entry1).unwrap();
 
         let size1 = cache.get_cache_size().unwrap();
         assert!(size1 > 0, "Cache should have some size");
@@ -854,7 +864,7 @@ mod tests {
             created_at: 2000,
         };
 
-        cache.store(entry2).unwrap();
+        cache.store_sync(entry2).unwrap();
 
         let list = cache.list_cached().unwrap();
         assert!(
@@ -899,7 +909,7 @@ mod tests {
                 created_at: 1000 + i,
             };
 
-            cache.store(entry).unwrap();
+            cache.store_sync(entry).unwrap();
         }
 
         let list = cache.list_cached().unwrap();
@@ -932,7 +942,7 @@ mod tests {
             created_at: 1_234_567_890,
         };
 
-        cache.store(entry).unwrap();
+        cache.store_sync(entry).unwrap();
 
         let list = cache.list_cached().unwrap();
         assert_eq!(list.len(), 1);
@@ -967,7 +977,7 @@ mod tests {
                 created_at: 1000 + i,
             };
 
-            cache.store(entry).unwrap();
+            cache.store_sync(entry).unwrap();
         }
 
         let list = cache.list_cached().unwrap();
