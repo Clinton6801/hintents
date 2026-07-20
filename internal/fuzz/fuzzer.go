@@ -96,6 +96,7 @@ type FuzzerConfig struct {
 	MutationStrategies []MutationStrategy
 	EnableCoverage     bool
 	CoverageParser     CoverageParser
+	Concurrency        int
 	TargetContractID   string
 	Seed               int64
 	VerboseLogging     bool
@@ -221,6 +222,9 @@ func NewCoverageGuidedFuzzer(runner simulator.RunnerInterface, config FuzzerConf
 	if config.CoverageSampleRate == 0 {
 		config.CoverageSampleRate = 0.1 // 10% default
 	}
+	if config.Concurrency <= 0 {
+		config.Concurrency = 1
+	}
 	if len(config.MutationStrategies) == 0 {
 		baseStrategies := []MutationStrategy{
 			&BitflipStrategy{},
@@ -274,48 +278,90 @@ func (f *CoverageGuidedFuzzer) Run(ctx context.Context, seedInput *simulator.Fuz
 	// Add seed input to corpus
 	f.addToCorpus(ctx, seedInput, nil)
 
-	// Main fuzzing loop
-	for i := uint64(0); i < f.config.MaxIterations && ctx.Err() == nil; i++ {
-		// Select corpus entry for mutation (favor entries with recent coverage gains)
-		entry := f.selectCorpusEntry()
-		if entry == nil {
-			break
-		}
+	var wg sync.WaitGroup
+	var crashCount uint64
+	var newCoverageCount uint64
+	errChan := make(chan error, f.config.Concurrency)
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
 
-		if err := validateSimulatorInput(entry.Input); err != nil {
-			return nil, fmt.Errorf("invalid corpus input: %w", err)
-		}
+	for i := 0; i < f.config.Concurrency; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for ctx.Err() == nil {
+				currentIt := atomic.AddUint64(&f.executionCount, 1)
+				if currentIt > f.config.MaxIterations {
+					break
+				}
 
-		// Mutate the selected input
-		mutated := f.mutateInput(entry.Input)
-		if err := validateSimulatorInput(&mutated); err != nil {
-			return nil, fmt.Errorf("invalid mutated input: %w", err)
-		}
+				// Select corpus entry for mutation (favor entries with recent coverage gains)
+				entry := f.selectCorpusEntry()
+				if entry == nil {
+					break
+				}
 
-		// Run the simulator
-		result, coverage := f.executeInput(ctx, &mutated)
+				if err := validateSimulatorInput(entry.Input); err != nil {
+					select {
+					case errChan <- fmt.Errorf("invalid corpus input: %w", err):
+					default:
+					}
+					cancel()
+					break
+				}
 
-		// Track crashes
-		if result.Status == "crash" {
-			f.mu.Lock()
-			f.crashingInputs = append(f.crashingInputs, &mutated)
-			f.mu.Unlock()
-			stats.CrashCount++
-		}
+				// Mutate the selected input
+				mutated := f.mutateInput(entry.Input)
+				if err := validateSimulatorInput(&mutated); err != nil {
+					select {
+					case errChan <- fmt.Errorf("invalid mutated input: %w", err):
+					default:
+					}
+					cancel()
+					break
+				}
 
-		// Update corpus if new coverage found
-		newCoverage := f.addToCorpus(ctx, &mutated, coverage)
-		if newCoverage {
-			stats.NewCoverageCount++
-			f.lastCoverageGrow = time.Now()
-		}
+				// Run the simulator
+				result, coverage := f.executeInput(ctx, &mutated)
 
-		stats.ExecutionCount = atomic.AddUint64(&f.executionCount, 1)
+				// Track crashes
+				if result.Status == "crash" {
+					f.mu.Lock()
+					f.crashingInputs = append(f.crashingInputs, &mutated)
+					f.mu.Unlock()
+					atomic.AddUint64(&crashCount, 1)
+				}
 
-		// Log progress periodically
-		if f.config.VerboseLogging && (i+1)%100 == 0 {
-			f.logProgress(i + 1)
-		}
+				// Update corpus if new coverage found
+				newCoverage := f.addToCorpus(ctx, &mutated, coverage)
+				if newCoverage {
+					atomic.AddUint64(&newCoverageCount, 1)
+					f.mu.Lock()
+					f.lastCoverageGrow = time.Now()
+					f.mu.Unlock()
+				}
+
+				// Log progress periodically
+				if f.config.VerboseLogging && currentIt%100 == 0 {
+					f.logProgress(currentIt)
+				}
+			}
+		}()
+	}
+
+	wg.Wait()
+
+	select {
+	case err := <-errChan:
+		return nil, err
+	default:
+	}
+
+	stats.CrashCount = crashCount
+	stats.NewCoverageCount = newCoverageCount
+	stats.ExecutionCount = atomic.LoadUint64(&f.executionCount)
+	if stats.ExecutionCount > f.config.MaxIterations {
+		stats.ExecutionCount = f.config.MaxIterations
 	}
 
 	stats.EndTime = time.Now()
