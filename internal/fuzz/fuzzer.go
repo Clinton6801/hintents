@@ -95,9 +95,15 @@ type FuzzerConfig struct {
 	CoverageSampleRate float64 // 0.0-1.0: probability of recording coverage
 	MutationStrategies []MutationStrategy
 	EnableCoverage     bool
+	CoverageParser     CoverageParser
 	TargetContractID   string
 	Seed               int64
 	VerboseLogging     bool
+}
+
+// CoverageParser parses coverage data returned by the simulator.
+type CoverageParser interface {
+	Parse(report string) *CoverageMap
 }
 
 // MutationStrategy defines how inputs are mutated
@@ -141,6 +147,9 @@ func NewCoverageGuidedFuzzer(runner simulator.RunnerInterface, config FuzzerConf
 			StrategyInteresting,
 			StrategyHavoc,
 		}
+	}
+	if config.CoverageParser == nil {
+		config.CoverageParser = &LCOVCoverageParser{}
 	}
 
 	seed := config.Seed
@@ -584,20 +593,23 @@ func (f *CoverageGuidedFuzzer) extractCoverageFromResponse(resp *simulator.Simul
 	}
 
 	if resp.LCOVReport != "" {
-		return f.parseLCOVReport(resp.LCOVReport)
+		return f.config.CoverageParser.Parse(resp.LCOVReport)
 	}
 
 	if resp.LCOVReportPath != "" {
 		content, err := os.ReadFile(resp.LCOVReportPath)
 		if err == nil {
-			return f.parseLCOVReport(string(content))
+			return f.config.CoverageParser.Parse(string(content))
 		}
 	}
 
 	return &CoverageMap{coveredLines: make(map[string]bool), timestamp: time.Now()}
 }
 
-func (f *CoverageGuidedFuzzer) parseLCOVReport(report string) *CoverageMap {
+// LCOVCoverageParser parses LCOV format coverage reports.
+type LCOVCoverageParser struct{}
+
+func (p *LCOVCoverageParser) Parse(report string) *CoverageMap {
 	coverage := &CoverageMap{
 		coveredLines: make(map[string]bool),
 		timestamp:    time.Now(),
