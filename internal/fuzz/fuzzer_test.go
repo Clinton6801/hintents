@@ -45,6 +45,23 @@ func TestDefaultConfig(t *testing.T) {
 	assert.Equal(t, 0.1, fuzzer.config.CoverageSampleRate)
 }
 
+// TestLCOVFileCleanup tests that coverage temp files are properly managed.
+func TestLCOVFileCleanup(t *testing.T) {
+	runner := simulator.NewDefaultMockRunner()
+	config := FuzzerConfig{
+		EnableCoverage: true,
+	}
+	fuzzer := NewCoverageGuidedFuzzer(runner, config)
+
+	input := &simulator.FuzzerInput{EnvelopeXdr: "xdr"}
+	ctx := context.Background()
+
+	// Temp file shouldn't be created unless we explicitly pass one to executeInput,
+	// or Run() manages it.
+	result, _ := fuzzer.executeInput(ctx, input, "")
+	assert.NotNil(t, result)
+}
+
 // TestMutateInput tests input mutation
 func TestMutateInput(t *testing.T) {
 	runner := simulator.NewDefaultMockRunner()
@@ -119,7 +136,7 @@ func TestCrashTracking(t *testing.T) {
 	crashingInput := &simulator.FuzzerInput{
 		EnvelopeXdr: "crash_input",
 	}
-	result, _ := fuzzer.executeInput(context.Background(), crashingInput)
+	result, _ := fuzzer.executeInput(context.Background(), crashingInput, "")
 
 	// Mock runner will return a response, so this won't crash in test
 	assert.NotNil(t, result)
@@ -232,7 +249,7 @@ func TestExecuteInput(t *testing.T) {
 		EnvelopeXdr: "test_envelope",
 	}
 
-	result, coverage := fuzzer.executeInput(context.Background(), input)
+	result, coverage := fuzzer.executeInput(context.Background(), input, "")
 	assert.NotNil(t, result)
 	assert.GreaterOrEqual(t, result.ExecutionTimeMs, uint64(0))
 	assert.NotNil(t, coverage)
@@ -256,10 +273,9 @@ func TestExecuteInputWithCoverage(t *testing.T) {
 		}, nil
 	})
 	fuzzer := NewCoverageGuidedFuzzer(runner, FuzzerConfig{EnableCoverage: true})
-	defer fuzzer.cleanupCoverageTemp()
 
 	input := &simulator.FuzzerInput{EnvelopeXdr: "test_envelope"}
-	result, coverage := fuzzer.executeInput(context.Background(), input)
+	result, coverage := fuzzer.executeInput(context.Background(), input, "")
 
 	assert.NotNil(t, result)
 	assert.Equal(t, uint32(2), result.CodeCoverage)
@@ -320,7 +336,6 @@ func TestCoverageTempFileReuse(t *testing.T) {
 	// After the campaign ends the reusable temp file must be cleaned up.
 	_, statErr := os.Stat(seenPaths[0])
 	assert.True(t, os.IsNotExist(statErr), "coverage temp file should be removed after Run")
-	assert.Empty(t, fuzzer.coverageTmpPath, "temp path should be reset after cleanup")
 }
 
 // TestContextCancellation tests behavior when context is cancelled

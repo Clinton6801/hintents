@@ -83,11 +83,6 @@ type CoverageGuidedFuzzer struct {
 	mu               sync.RWMutex
 	executionCount   uint64
 	lastCoverageGrow time.Time
-
-	// coverageTmpMu guards the lazily-created LCOV temp file that is shared
-	// across every fuzzing iteration of this instance.
-	coverageTmpMu   sync.Mutex
-	coverageTmpPath string // path of the reusable LCOV temp file ("" until created)
 }
 
 // FuzzerConfig contains configuration for the coverage-guided fuzzer
@@ -275,9 +270,6 @@ func (f *CoverageGuidedFuzzer) Run(ctx context.Context, seedInput *simulator.Fuz
 	if err := validateSimulatorInput(seedInput); err != nil {
 		return nil, err
 	}
-	// The reusable LCOV temp file lives for the duration of the campaign and is
-	// removed once it ends, regardless of how the loop terminates.
-	defer f.cleanupCoverageTemp()
 
 	stats := &FuzzingStats{
 		StartTime: time.Now(),
@@ -297,6 +289,17 @@ func (f *CoverageGuidedFuzzer) Run(ctx context.Context, seedInput *simulator.Fuz
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
+			
+			var workerCoveragePath string
+			if f.config.EnableCoverage {
+				tmpFile, err := os.CreateTemp("", "erst-fuzz-worker-*.lcov")
+				if err == nil {
+					workerCoveragePath = tmpFile.Name()
+					tmpFile.Close()
+					defer os.Remove(workerCoveragePath)
+				}
+			}
+
 			for ctx.Err() == nil {
 				currentIt := atomic.AddUint64(&f.executionCount, 1)
 				if currentIt > f.config.MaxIterations {
@@ -330,7 +333,7 @@ func (f *CoverageGuidedFuzzer) Run(ctx context.Context, seedInput *simulator.Fuz
 				}
 
 				// Run the simulator
-				result, coverage := f.executeInput(ctx, &mutated)
+				result, coverage := f.executeInput(ctx, &mutated, workerCoveragePath)
 
 				// Track crashes
 				if result.Status == "crash" {
@@ -508,7 +511,7 @@ func (f *CoverageGuidedFuzzer) mutateInput(base *simulator.FuzzerInput) simulato
 }
 
 // executeInput runs a single input through the simulator
-func (f *CoverageGuidedFuzzer) executeInput(ctx context.Context, input *simulator.FuzzerInput) (*simulator.FuzzingResult, *CoverageMap) {
+func (f *CoverageGuidedFuzzer) executeInput(ctx context.Context, input *simulator.FuzzerInput, coveragePath string) (*simulator.FuzzingResult, *CoverageMap) {
 	result := &simulator.FuzzingResult{
 		Seed:   input.Seed,
 		Status: "pass",
@@ -524,19 +527,7 @@ func (f *CoverageGuidedFuzzer) executeInput(ctx context.Context, input *simulato
 
 	if f.config.EnableCoverage {
 		simReq.EnableCoverage = true
-		if simReq.CoverageLCOVPath == nil {
-			// Reuse a single temp file for the whole campaign instead of
-			// creating and deleting one on every iteration. The simulator
-			// overwrites the file each run, so a single per-instance file is
-			// sufficient and avoids per-iteration disk I/O. It is removed by
-			// cleanupCoverageTemp when the campaign ends.
-			coveragePath, err := f.coverageOutputPath()
-			if err != nil {
-				result.Status = "error"
-				result.ErrorMessage = fmt.Sprintf("failed to create coverage temp file: %v", err)
-				result.ExecutionTimeMs = 0
-				return result, nil
-			}
+		if simReq.CoverageLCOVPath == nil && coveragePath != "" {
 			simReq.CoverageLCOVPath = &coveragePath
 		}
 	}
@@ -568,45 +559,6 @@ func (f *CoverageGuidedFuzzer) executeInput(ctx context.Context, input *simulato
 	}
 
 	return result, coverage
-}
-
-// coverageOutputPath returns the path of this fuzzer's reusable LCOV temp file,
-// creating it lazily on first use. The same file is handed to the simulator on
-// every iteration (the simulator overwrites it each run), which eliminates the
-// per-iteration os.CreateTemp/os.Remove churn that previously dominated disk I/O.
-func (f *CoverageGuidedFuzzer) coverageOutputPath() (string, error) {
-	f.coverageTmpMu.Lock()
-	defer f.coverageTmpMu.Unlock()
-
-	if f.coverageTmpPath != "" {
-		return f.coverageTmpPath, nil
-	}
-
-	tmpFile, err := os.CreateTemp("", "erst-fuzz-*.lcov")
-	if err != nil {
-		return "", err
-	}
-	path := tmpFile.Name()
-	if cerr := tmpFile.Close(); cerr != nil {
-		_ = os.Remove(path)
-		return "", cerr
-	}
-
-	f.coverageTmpPath = path
-	return path, nil
-}
-
-// cleanupCoverageTemp removes the reusable LCOV temp file, if one was created.
-// It is safe to call multiple times and resets the path so a subsequent Run
-// lazily recreates the file.
-func (f *CoverageGuidedFuzzer) cleanupCoverageTemp() {
-	f.coverageTmpMu.Lock()
-	defer f.coverageTmpMu.Unlock()
-
-	if f.coverageTmpPath != "" {
-		_ = os.Remove(f.coverageTmpPath)
-		f.coverageTmpPath = ""
-	}
 }
 
 // extractCoverage extracts coverage information from an input when explicit coverage is not available.
