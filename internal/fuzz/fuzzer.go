@@ -7,8 +7,10 @@ import (
 	"bufio"
 	"bytes"
 	"context"
+	"encoding/binary"
 	"encoding/hex"
 	"fmt"
+	"hash/fnv"
 	"math/rand"
 	"os"
 	"sort"
@@ -609,8 +611,9 @@ func (f *CoverageGuidedFuzzer) extractCoverage(input *simulator.FuzzerInput) *Co
 	}
 
 	hash := f.computeInputHash(input)
-	coverage.totalCoverage = uint32(len(hash)) * 8
-	coverage.coveredLines[hash] = true
+	hashStr := strconv.FormatUint(hash, 16)
+	coverage.totalCoverage = uint32(len(hashStr)) * 8
+	coverage.coveredLines[hashStr] = true
 
 	return coverage
 }
@@ -680,10 +683,19 @@ func (p *LCOVCoverageParser) Parse(report string) *CoverageMap {
 	return coverage
 }
 
-// computeInputHash creates a simple hash of the input
-func (f *CoverageGuidedFuzzer) computeInputHash(input *simulator.FuzzerInput) string {
-	return fmt.Sprintf("%s_%d_%d", input.EnvelopeXdr[:min(32, len(input.EnvelopeXdr))],
-		input.Timestamp, len(input.LedgerEntries))
+// computeInputHash creates a fast non-cryptographic hash of the input
+func (f *CoverageGuidedFuzzer) computeInputHash(input *simulator.FuzzerInput) uint64 {
+	h := fnv.New64a()
+	h.Write([]byte(input.EnvelopeXdr[:min(32, len(input.EnvelopeXdr))]))
+	
+	var buf [8]byte
+	binary.LittleEndian.PutUint64(buf[:], uint64(input.Timestamp))
+	h.Write(buf[:])
+	
+	binary.LittleEndian.PutUint64(buf[:], uint64(len(input.LedgerEntries)))
+	h.Write(buf[:])
+	
+	return h.Sum64()
 }
 
 // min returns the minimum of two integers
