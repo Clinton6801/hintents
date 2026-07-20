@@ -7,6 +7,7 @@ import (
 	"bufio"
 	"bytes"
 	"context"
+	crypto_rand "crypto/rand"
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
@@ -246,7 +247,12 @@ func NewCoverageGuidedFuzzer(runner simulator.RunnerInterface, config FuzzerConf
 
 	seed := config.Seed
 	if seed == 0 {
-		seed = time.Now().UnixNano()
+		var b [8]byte
+		if _, err := crypto_rand.Read(b[:]); err == nil {
+			seed = int64(binary.LittleEndian.Uint64(b[:]))
+		} else {
+			seed = time.Now().UnixNano()
+		}
 	}
 
 	return &CoverageGuidedFuzzer{
