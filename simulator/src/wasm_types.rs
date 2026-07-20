@@ -23,20 +23,38 @@ pub enum ValueType {
     ExternRef,
 }
 
-impl ValueType {
-    /// Convert from wasmparser's ValType
-    fn from_valtype(vt: ValType) -> Self {
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum TypeError {
+    UnsupportedValType(String),
+}
+
+impl std::fmt::Display for TypeError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            TypeError::UnsupportedValType(s) => write!(f, "Unsupported value type: {}", s),
+        }
+    }
+}
+
+impl std::error::Error for TypeError {}
+
+impl TryFrom<ValType> for ValueType {
+    type Error = TypeError;
+
+    fn try_from(vt: ValType) -> Result<Self, Self::Error> {
         match vt {
-            ValType::I32 => ValueType::I32,
-            ValType::I64 => ValueType::I64,
-            ValType::F32 => ValueType::F32,
-            ValType::F64 => ValueType::F64,
-            ValType::V128 => ValueType::V128,
+            ValType::I32 => Ok(ValueType::I32),
+            ValType::I64 => Ok(ValueType::I64),
+            ValType::F32 => Ok(ValueType::F32),
+            ValType::F64 => Ok(ValueType::F64),
+            ValType::V128 => Ok(ValueType::V128),
             ValType::Ref(rt) => {
                 if rt.is_func_ref() {
-                    ValueType::FuncRef
+                    Ok(ValueType::FuncRef)
+                } else if rt.is_extern_ref() {
+                    Ok(ValueType::ExternRef)
                 } else {
-                    ValueType::ExternRef
+                    Err(TypeError::UnsupportedValType(format!("{:?}", vt)))
                 }
             }
         }
@@ -170,17 +188,20 @@ impl TypeSection {
                     // RecGroup contains SubType entries
                     for sub_type in rec_group.types() {
                         let func_type = sub_type.composite_type.unwrap_func();
+                        
                         let params = func_type
                             .params()
                             .iter()
-                            .map(|vt| ValueType::from_valtype(*vt))
-                            .collect();
+                            .map(|vt| ValueType::try_from(*vt))
+                            .collect::<Result<Vec<_>, TypeError>>()
+                            .map_err(|e| e.to_string())?;
 
                         let results = func_type
                             .results()
                             .iter()
-                            .map(|vt| ValueType::from_valtype(*vt))
-                            .collect();
+                            .map(|vt| ValueType::try_from(*vt))
+                            .collect::<Result<Vec<_>, TypeError>>()
+                            .map_err(|e| e.to_string())?;
 
                         types.push(FunctionSignature::new(params, results));
                     }
