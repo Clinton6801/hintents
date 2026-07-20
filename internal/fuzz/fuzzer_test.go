@@ -6,6 +6,7 @@ package fuzz
 import (
 	"context"
 	"encoding/hex"
+	"fmt"
 	"os"
 	"sync"
 	"testing"
@@ -170,14 +171,14 @@ func TestMutationStrategies(t *testing.T) {
 	runner := simulator.NewDefaultMockRunner()
 
 	strategies := []MutationStrategy{
-		StrategyBitflip,
-		StrategyByteFlip,
-		StrategyInteresting,
-		StrategyHavoc,
+		&BitflipStrategy{},
+		&ByteflipStrategy{},
+		&InterestingStrategy{},
+		&HavocStrategy{Strategies: []MutationStrategy{&BitflipStrategy{}}},
 	}
 
 	for _, strategy := range strategies {
-		t.Run(string(strategy), func(t *testing.T) {
+		t.Run(fmt.Sprintf("%T", strategy), func(t *testing.T) {
 			config := FuzzerConfig{
 				MutationStrategies: []MutationStrategy{strategy},
 			}

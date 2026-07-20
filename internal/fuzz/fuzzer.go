@@ -107,24 +107,105 @@ type CoverageParser interface {
 }
 
 // MutationStrategy defines how inputs are mutated
-type MutationStrategy string
+type MutationStrategy interface {
+	Mutate(input *simulator.FuzzerInput, rng *rand.Rand)
+}
 
-const (
-	// Bitflip mutations flip random bits
-	StrategyBitflip MutationStrategy = "bitflip"
+// BitflipStrategy flips random bits
+type BitflipStrategy struct{}
 
-	// ByteFlip mutations alter entire bytes
-	StrategyByteFlip MutationStrategy = "byteflip"
+func (s *BitflipStrategy) Mutate(input *simulator.FuzzerInput, rng *rand.Rand) {
+	if len(input.EnvelopeXdr) > 0 {
+		data, _ := hex.DecodeString(input.EnvelopeXdr)
+		if len(data) > 0 {
+			flipCount := 1 + rng.Intn(4)
+			for i := 0; i < flipCount; i++ {
+				pos := rng.Intn(len(data))
+				bit := uint8(1 << (rng.Intn(8)))
+				data[pos] ^= bit
+			}
+			input.EnvelopeXdr = hex.EncodeToString(data)
+		}
+	}
 
-	// Interesting mutations use interesting byte values
-	StrategyInteresting MutationStrategy = "interesting"
+	// Mutate ledger entries
+	for k, v := range input.LedgerEntries {
+		if rng.Float64() < 0.5 {
+			input.LedgerEntries[k] = bitflipHexString(v, rng)
+		}
+	}
+}
 
-	// Dictionary mutations use known keywords
-	StrategyDictionary MutationStrategy = "dictionary"
+func bitflipHexString(hexStr string, rng *rand.Rand) string {
+	data, err := hex.DecodeString(hexStr)
+	if err != nil {
+		return hexStr
+	}
 
-	// Havoc performs random mutations
-	StrategyHavoc MutationStrategy = "havoc"
-)
+	flipCount := 1 + rng.Intn(3)
+	for i := 0; i < flipCount; i++ {
+		if len(data) == 0 {
+			break
+		}
+		pos := rng.Intn(len(data))
+		bit := uint8(1 << (rng.Intn(8)))
+		data[pos] ^= bit
+	}
+
+	return hex.EncodeToString(data)
+}
+
+// ByteflipStrategy flips entire bytes
+type ByteflipStrategy struct{}
+
+func (s *ByteflipStrategy) Mutate(input *simulator.FuzzerInput, rng *rand.Rand) {
+	if len(input.EnvelopeXdr) > 0 {
+		data, _ := hex.DecodeString(input.EnvelopeXdr)
+		if len(data) > 0 {
+			flipCount := 1 + rng.Intn(3)
+			for i := 0; i < flipCount; i++ {
+				pos := rng.Intn(len(data))
+				data[pos] = byte(rng.Intn(256))
+			}
+			input.EnvelopeXdr = hex.EncodeToString(data)
+		}
+	}
+}
+
+// InterestingStrategy uses interesting byte values
+type InterestingStrategy struct{}
+
+func (s *InterestingStrategy) Mutate(input *simulator.FuzzerInput, rng *rand.Rand) {
+	interestingBytes := []byte{
+		0x00, 0x01, 0x7f, 0x80, 0xff, // Common edge cases
+		0x42, 0x43, // Useful for strings
+	}
+
+	if len(input.EnvelopeXdr) > 0 {
+		data, _ := hex.DecodeString(input.EnvelopeXdr)
+		if len(data) > 0 {
+			pos := rng.Intn(len(data))
+			data[pos] = interestingBytes[rng.Intn(len(interestingBytes))]
+			input.EnvelopeXdr = hex.EncodeToString(data)
+		}
+	}
+}
+
+// HavocStrategy applies random mutations using a set of provided strategies
+type HavocStrategy struct {
+	Strategies []MutationStrategy
+}
+
+func (s *HavocStrategy) Mutate(input *simulator.FuzzerInput, rng *rand.Rand) {
+	if len(s.Strategies) == 0 {
+		return
+	}
+	mutationCount := 1 + rng.Intn(5)
+	for i := 0; i < mutationCount; i++ {
+		strategy := s.Strategies[rng.Intn(len(s.Strategies))]
+		strategy.Mutate(input, rng)
+	}
+}
 
 // NewCoverageGuidedFuzzer creates a new coverage-guided fuzzer
 func NewCoverageGuidedFuzzer(runner simulator.RunnerInterface, config FuzzerConfig) *CoverageGuidedFuzzer {
@@ -141,11 +222,16 @@ func NewCoverageGuidedFuzzer(runner simulator.RunnerInterface, config FuzzerConf
 		config.CoverageSampleRate = 0.1 // 10% default
 	}
 	if len(config.MutationStrategies) == 0 {
+		baseStrategies := []MutationStrategy{
+			&BitflipStrategy{},
+			&ByteflipStrategy{},
+			&InterestingStrategy{},
+		}
 		config.MutationStrategies = []MutationStrategy{
-			StrategyBitflip,
-			StrategyByteFlip,
-			StrategyInteresting,
-			StrategyHavoc,
+			&BitflipStrategy{},
+			&ByteflipStrategy{},
+			&InterestingStrategy{},
+			&HavocStrategy{Strategies: baseStrategies},
 		}
 	}
 	if config.CoverageParser == nil {
@@ -358,116 +444,13 @@ func (f *CoverageGuidedFuzzer) mutateInput(base *simulator.FuzzerInput) simulato
 	}
 	copy(mutated.Args, base.Args)
 
-	// Select a random mutation strategy
-	strategy := f.config.MutationStrategies[rng.Intn(len(f.config.MutationStrategies))]
-
 	// Apply mutations
-	switch strategy {
-	case StrategyBitflip:
-		f.applyBitflipMutation(&mutated, rng)
-	case StrategyByteFlip:
-		f.applyByteflipMutation(&mutated, rng)
-	case StrategyInteresting:
-		f.applyInterestingMutation(&mutated, rng)
-	case StrategyHavoc:
-		f.applyHavocMutation(&mutated, rng)
-	default:
-		f.applyBitflipMutation(&mutated, rng)
+	if len(f.config.MutationStrategies) > 0 {
+		strategy := f.config.MutationStrategies[rng.Intn(len(f.config.MutationStrategies))]
+		strategy.Mutate(&mutated, rng)
 	}
 
 	return mutated
-}
-
-// applyBitflipMutation flips random bits in the input
-func (f *CoverageGuidedFuzzer) applyBitflipMutation(input *simulator.FuzzerInput, rng *rand.Rand) {
-	if len(input.EnvelopeXdr) > 0 {
-		data, _ := hex.DecodeString(input.EnvelopeXdr)
-		if len(data) > 0 {
-			flipCount := 1 + rng.Intn(4)
-			for i := 0; i < flipCount; i++ {
-				pos := rng.Intn(len(data))
-				bit := uint8(1 << (rng.Intn(8)))
-				data[pos] ^= bit
-			}
-			input.EnvelopeXdr = hex.EncodeToString(data)
-		}
-	}
-
-	// Mutate ledger entries
-	for k, v := range input.LedgerEntries {
-		if rng.Float64() < 0.5 {
-			input.LedgerEntries[k] = f.bitflipHexString(v, rng)
-		}
-	}
-}
-
-// applyByteflipMutation flips entire bytes in the input
-func (f *CoverageGuidedFuzzer) applyByteflipMutation(input *simulator.FuzzerInput, rng *rand.Rand) {
-	if len(input.EnvelopeXdr) > 0 {
-		data, _ := hex.DecodeString(input.EnvelopeXdr)
-		if len(data) > 0 {
-			flipCount := 1 + rng.Intn(3)
-			for i := 0; i < flipCount; i++ {
-				pos := rng.Intn(len(data))
-				data[pos] = byte(rng.Intn(256))
-			}
-			input.EnvelopeXdr = hex.EncodeToString(data)
-		}
-	}
-}
-
-// applyInterestingMutation uses known interesting byte values
-func (f *CoverageGuidedFuzzer) applyInterestingMutation(input *simulator.FuzzerInput, rng *rand.Rand) {
-	interestingBytes := []byte{
-		0x00, 0x01, 0x7f, 0x80, 0xff, // Common edge cases
-		0x42, 0x43, // Useful for strings
-	}
-
-	if len(input.EnvelopeXdr) > 0 {
-		data, _ := hex.DecodeString(input.EnvelopeXdr)
-		if len(data) > 0 {
-			pos := rng.Intn(len(data))
-			data[pos] = interestingBytes[rng.Intn(len(interestingBytes))]
-			input.EnvelopeXdr = hex.EncodeToString(data)
-		}
-	}
-}
-
-// applyHavocMutation applies random mutations
-func (f *CoverageGuidedFuzzer) applyHavocMutation(input *simulator.FuzzerInput, rng *rand.Rand) {
-	// Apply 1-5 random mutations
-	mutationCount := 1 + rng.Intn(5)
-	for i := 0; i < mutationCount; i++ {
-		choice := rng.Intn(3)
-		switch choice {
-		case 0:
-			f.applyBitflipMutation(input, rng)
-		case 1:
-			f.applyByteflipMutation(input, rng)
-		case 2:
-			f.applyInterestingMutation(input, rng)
-		}
-	}
-}
-
-// bitflipHexString applies bitflip mutations to a hex string
-func (f *CoverageGuidedFuzzer) bitflipHexString(hexStr string, rng *rand.Rand) string {
-	data, err := hex.DecodeString(hexStr)
-	if err != nil {
-		return hexStr
-	}
-
-	flipCount := 1 + rng.Intn(3)
-	for i := 0; i < flipCount; i++ {
-		if len(data) == 0 {
-			break
-		}
-		pos := rng.Intn(len(data))
-		bit := uint8(1 << (rng.Intn(8)))
-		data[pos] ^= bit
-	}
-
-	return hex.EncodeToString(data)
 }
 
 // executeInput runs a single input through the simulator
