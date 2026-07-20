@@ -38,22 +38,13 @@ impl SimHost {
         memory_limit: Option<u64>,
     ) -> Self {
         let budget = Budget::default();
-        let _ = budget.reset_limits(0, 0);
 
-        // If the caller requested a custom resource calibration, explicitly
-        // fail early rather than silently ignoring the setting. This avoids
-        // surprising behaviour where the provided calibration is ignored due
-        // to version incompatibilities with `soroban_env_host`.
-        if let Some(ref calib) = calibration {
-            panic!(
-                "Unsupported: custom resource calibration requested ({:?}). The simulator does not support applying custom calibrations with the current soroban_env_host version.",
-                calib
-            );
-        }
-
-        if let Some((_cpu, _mem)) = budget_limits {
-            // Budget customization requires testutils feature or extended API
-            // Using default mainnet budget settings
+        if let Some((cpu, mem)) = budget_limits {
+            let _ = budget.reset_limits(cpu, mem);
+        } else if let Some(mem) = memory_limit {
+            // soroban sdk uses u32::MAX for no limit but casted to u64, or u64::MAX.
+            let _ = budget.reset_unlimited();
+            let _ = budget.reset_limits(budget.get_cpu_insns_consumed().unwrap_or(0).saturating_add(u32::MAX as u64), mem);
         }
 
         // Host::with_storage_and_budget is available in recent versions
@@ -80,6 +71,14 @@ impl SimHost {
         snapshot: &LedgerSnapshot,
     ) -> Result<Self, SimHostError> {
         let budget = Budget::default();
+
+        if let Some((cpu, mem)) = budget_limits {
+            let _ = budget.reset_limits(cpu, mem);
+        } else if let Some(mem) = memory_limit {
+            let _ = budget.reset_unlimited();
+            let _ = budget.reset_limits(budget.get_cpu_insns_consumed().unwrap_or(0).saturating_add(u32::MAX as u64), mem);
+        }
+        
         let storage = Self::storage_from_snapshot(snapshot, &budget)?;
         let host = Host::with_storage_and_budget(storage, budget);
         host.set_diagnostic_level(DiagnosticLevel::Debug)?;
