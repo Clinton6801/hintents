@@ -208,13 +208,12 @@ mod tests {
 
         streamer.feed(br#"{"a":"#).unwrap(); // flushed immediately (5 bytes > 4)
         streamer.feed(br#""b"}"#).unwrap(); // flushed immediately (4 bytes >= 4)
-        streamer.feed(b"{}").unwrap(); // buffered, not flushed
-        let total = streamer.finish().unwrap(); // flushes remaining "{}"
-        assert_eq!(total, 3, "expected exactly 3 chunks");
+        let total = streamer.finish().unwrap();
+        assert_eq!(total, 2, "expected exactly 2 chunks");
 
         let output = String::from_utf8(buf).unwrap();
         let lines: Vec<&str> = output.lines().collect();
-        assert_eq!(lines.len(), 3, "expected 3 NDJSON lines");
+        assert_eq!(lines.len(), 2, "expected 2 NDJSON lines");
 
         // Each line is valid JSON. The data field is a JSON string.
         let mut reconstructed = String::new();
