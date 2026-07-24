@@ -175,7 +175,10 @@ impl<W: Write> ResponseStreamer<W> {
 
 /// Create a `ResponseStreamer` wrapping `std::io::stdout().lock()`.
 #[allow(dead_code)]
-pub fn stream_to_stdout(total_chunks: u32, chunk_target: usize) -> ResponseStreamer<std::io::StdoutLock<'static>> {
+pub fn stream_to_stdout(
+    total_chunks: u32,
+    chunk_target: usize,
+) -> ResponseStreamer<std::io::StdoutLock<'static>> {
     ResponseStreamer::new(std::io::stdout().lock(), total_chunks, chunk_target)
 }
 
