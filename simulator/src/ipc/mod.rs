@@ -5,8 +5,7 @@ pub mod decompress;
 pub mod types;
 pub mod validate;
 
-pub use types::IpcError;
-pub use types::{ResponseStreamer, emit_chunk_frame, emit_chunk_raw};
+pub use types::{emit_chunk_frame, emit_chunk_raw, IpcError, ResponseStreamer};
 
 /// Default chunk target size (64 KiB) for streaming large simulation responses.
 pub const DEFAULT_CHUNK_TARGET: usize = 64 * 1024;
@@ -188,7 +187,10 @@ mod tests {
         assert!(output.contains(r#""type":"chunk""#));
         assert!(output.contains(r#""seq":0"#));
         assert!(output.contains(r#""total":1"#));
-        assert!(output.ends_with("}\n"), "output should end with newline: {output:?}");
+        assert!(
+            output.ends_with("}\n"),
+            "output should end with newline: {output:?}"
+        );
 
         // Data field should be a JSON string containing "{}"
         let parsed: StreamFrame = serde_json::from_str(output.trim()).unwrap();
@@ -201,9 +203,9 @@ mod tests {
         // Use a tiny chunk_target so each feed triggers a flush
         let mut streamer = ResponseStreamer::new(&mut buf, 3, 4);
 
-        streamer.feed(br#"{"a":"#).unwrap();  // flushed immediately (5 bytes > 4)
-        streamer.feed(br#""b"}"#).unwrap();    // flushed immediately (4 bytes >= 4)
-        streamer.feed(b"{}").unwrap();         // buffered, not flushed
+        streamer.feed(br#"{"a":"#).unwrap(); // flushed immediately (5 bytes > 4)
+        streamer.feed(br#""b"}"#).unwrap(); // flushed immediately (4 bytes >= 4)
+        streamer.feed(b"{}").unwrap(); // buffered, not flushed
         let total = streamer.finish().unwrap(); // flushes remaining "{}"
         assert_eq!(total, 3, "expected exactly 3 chunks");
 
@@ -219,14 +221,16 @@ mod tests {
             assert_eq!(parsed.seq, i as u32);
             assert_eq!(parsed.total, Some(3));
             // The data is a JSON string containing a raw JSON fragment
-            let fragment = parsed.data.as_str()
+            let fragment = parsed
+                .data
+                .as_str()
                 .unwrap_or_else(|| panic!("chunk {i} data is not a string"));
             reconstructed.push_str(fragment);
         }
 
         // The reconstructed string should be valid JSON
-        let val: serde_json::Value = serde_json::from_str(&reconstructed)
-            .expect("reconstructed payload must be valid JSON");
+        let val: serde_json::Value =
+            serde_json::from_str(&reconstructed).expect("reconstructed payload must be valid JSON");
         assert_eq!(val["a"], "b");
     }
 
@@ -259,7 +263,12 @@ mod tests {
         let data = br#"{"key":"value"}"#;
 
         // Write using same logic as emit_chunk_raw / flush_chunk
-        write!(raw_buf, r#"{{"type":"chunk","seq":{},"total":{},"data":""#, seq, total).unwrap();
+        write!(
+            raw_buf,
+            r#"{{"type":"chunk","seq":{},"total":{},"data":""#,
+            seq, total
+        )
+        .unwrap();
         for &b in data {
             match b {
                 b'"' => raw_buf.write_all(b"\\\"").unwrap(),
