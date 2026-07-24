@@ -5,7 +5,7 @@ pub mod decompress;
 pub mod types;
 pub mod validate;
 
-pub use types::{emit_chunk_frame, emit_chunk_raw, IpcError, ResponseStreamer};
+pub use types::{emit_chunk_frame, emit_chunk_raw, stream_to_stdout, IpcError, ResponseStreamer};
 
 /// Default chunk target size (64 KiB) for streaming large simulation responses.
 pub const DEFAULT_CHUNK_TARGET: usize = 64 * 1024;
@@ -49,6 +49,7 @@ mod tests {
         let frame = StreamFrame {
             frame_type: FrameType::Snapshot,
             seq: 3,
+            total: None,
             data: serde_json::json!({"entries": 42}),
         };
         let json = serde_json::to_string(&frame).unwrap();

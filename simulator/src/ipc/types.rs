@@ -127,11 +127,6 @@ impl<W: Write> ResponseStreamer<W> {
         }
     }
 
-    /// Convenience constructor wrapping `std::io::stdout()`.
-    pub fn new_stdout(total_chunks: u32, chunk_target: usize) -> Self {
-        Self::new(std::io::stdout().lock(), total_chunks, chunk_target)
-    }
-
     /// Feed raw JSON bytes. When the internal buffer exceeds `chunk_target`,
     /// it is flushed as a chunk frame to the underlying writer.
     pub fn feed(&mut self, bytes: &[u8]) -> Result<(), IpcError> {
@@ -154,13 +149,11 @@ impl<W: Write> ResponseStreamer<W> {
 
     fn flush_chunk(&mut self) -> Result<(), IpcError> {
         let data_bytes = core::mem::take(&mut self.buffer);
-        // Write the frame prefix with type, seq, total
         write!(
             self.writer,
             r#"{{"type":"chunk","seq":{},"total":{},"data":""#,
             self.seq, self.total_chunks
         )?;
-        // JSON-escape the raw bytes as a string value
         for &b in &data_bytes {
             match b {
                 b'"' => self.writer.write_all(b"\\\"")?,
@@ -180,6 +173,12 @@ impl<W: Write> ResponseStreamer<W> {
     }
 }
 
+/// Create a `ResponseStreamer` wrapping `std::io::stdout().lock()`.
+#[allow(dead_code)]
+pub fn stream_to_stdout(total_chunks: u32, chunk_target: usize) -> ResponseStreamer<std::io::StdoutLock<'static>> {
+    ResponseStreamer::new(std::io::stdout().lock(), total_chunks, chunk_target)
+}
+
 /// Emit a single chunk frame with raw bytes written as a JSON-escaped
 /// string in the `data` field. Prefer `ResponseStreamer` for multi-chunk
 /// payloads.
@@ -193,7 +192,6 @@ pub fn emit_chunk_raw(seq: u32, total: u32, data: &[u8]) {
         seq, total
     )
     .and_then(|_| {
-        // JSON-escape the raw bytes
         for &b in data {
             match b {
                 b'"' => handle.write_all(b"\\\"")?,
