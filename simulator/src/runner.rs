@@ -212,6 +212,27 @@ impl SimHost {
     }
 }
 
+impl Drop for SimHost {
+    /// Clean up resources when the SimHost is dropped.
+    /// This ensures temp files, sockets, and other resources are properly released.
+    fn drop(&mut self) {
+        // 1. Clear pending events to release any references
+        self.pending_events.clear();
+
+        // 2. The inner Host will be dropped automatically, but we can explicitly release resources
+        // The Host's storage and budget will be cleaned up when it's dropped
+
+        // 3. Clear the ledger snapshot to release any held references
+        // LedgerSnapshot holds Rc pointers that need to be released
+        // The fork() method creates clones, so clearing the snapshot helps with memory
+        // We use std::mem::take to clear it without causing a double borrow
+        let _ = std::mem::take(&mut self.ledger_snapshot);
+
+        // Note: budget_limits, calibration, and memory_limit are simple types
+        // that don't require explicit cleanup
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
