@@ -146,7 +146,10 @@ impl SimHost {
     /// Captures the current host storage as a reusable ledger snapshot.
     #[instrument(level = "debug", skip(self))]
     pub fn capture_snapshot(&self) -> Result<LedgerSnapshot, SimHostError> {
-        debug!(snapshot_len = self.ledger_snapshot.len(), "capturing ledger snapshot");
+        debug!(
+            snapshot_len = self.ledger_snapshot.len(),
+            "capturing ledger snapshot"
+        );
         Ok(self.ledger_snapshot.fork())
     }
 
@@ -197,10 +200,8 @@ impl SimHost {
             storage_map = storage_map.insert(key, Some((Rc::new(entry.clone()), None)), budget)?;
         }
 
-        let storage = Storage::with_enforcing_footprint_and_map(
-            Footprint(footprint_map),
-            storage_map,
-        );
+        let storage =
+            Storage::with_enforcing_footprint_and_map(Footprint(footprint_map), storage_map);
 
         debug!("storage built from snapshot");
         Ok(storage)
