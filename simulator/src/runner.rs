@@ -6,7 +6,7 @@ use soroban_env_host::{
     budget::Budget,
     events::{Events, HostEvent},
     storage::{AccessType, Footprint, FootprintMap, Storage, StorageMap},
-    xdr::{Hash, Limits, ScErrorCode, ScErrorType, WriteXdr},
+    xdr::{Hash, HostFunction, Limits, ScErrorCode, ScErrorType, ScVal, WriteXdr},
     DiagnosticLevel, Error as EnvError, Host, HostError, TryIntoVal, Val,
 };
 use std::rc::Rc;
@@ -19,6 +19,8 @@ pub enum SimHostError {
     Host(#[from] HostError),
     #[error(transparent)]
     Snapshot(#[from] SnapshotError),
+    #[error("host execution panicked: {0}")]
+    Panic(String),
 }
 
 pub struct SimHost {
@@ -31,6 +33,36 @@ pub struct SimHost {
 }
 
 impl SimHost {
+    fn panic_payload_to_string(panic_info: &(dyn std::any::Any + Send)) -> String {
+        if let Some(s) = panic_info.downcast_ref::<String>() {
+            s.clone()
+        } else if let Some(s) = panic_info.downcast_ref::<&'static str>() {
+            (*s).to_string()
+        } else if let Some(s) = panic_info.downcast_ref::<&str>() {
+            (*s).to_string()
+        } else {
+            "Unknown panic".to_string()
+        }
+    }
+
+    pub fn with_panic_recovery<T, F>(&self, f: F) -> Result<T, SimHostError>
+    where
+        F: FnOnce() -> T,
+    {
+        match std::panic::catch_unwind(std::panic::AssertUnwindSafe(f)) {
+            Ok(result) => Ok(result),
+            Err(panic_info) => {
+                let message = Self::panic_payload_to_string(panic_info.as_ref());
+                Err(SimHostError::Panic(message))
+            }
+        }
+    }
+
+    pub fn invoke_function(&self, host_function: HostFunction) -> Result<ScVal, SimHostError> {
+        self.with_panic_recovery(|| self.inner.invoke_function(host_function))
+            .and_then(|result| result.map_err(SimHostError::Host))
+    }
+
     /// Initialize a new Host with optional budget settings and resource calibration.
     pub fn new(
         budget_limits: Option<(u64, u64)>,
@@ -247,6 +279,16 @@ mod tests {
         let host = SimHost::new(None, None, None);
         // Basic assertion that host is functional
         assert!(host.inner.budget_cloned().get_cpu_insns_consumed().is_ok());
+    }
+
+    #[test]
+    fn test_panic_recovery_wraps_host_execution() {
+        let host = SimHost::new(None, None, None);
+        let result = host.with_panic_recovery(|| panic!("memory violation"));
+
+        assert!(
+            matches!(result, Err(SimHostError::Panic(message)) if message.contains("memory violation"))
+        );
     }
 
     #[test]
