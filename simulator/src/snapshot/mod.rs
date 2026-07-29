@@ -929,9 +929,17 @@ mod tests {
         let from_mmap_elapsed = t1.elapsed();
 
         println!("N = {N} entries");
-        println!("from_bytes (eager):     {from_bytes_elapsed:?}, len = {}", from_bytes_snapshot.len());
-        println!("from_mmap_file (lazy):  {from_mmap_elapsed:?}, len = {}", from_mmap_snapshot.len());
-        println!("Run this test under `/usr/bin/time -v` (see PR description) to compare peak RSS.");
+        println!(
+            "from_bytes (eager):     {from_bytes_elapsed:?}, len = {}",
+            from_bytes_snapshot.len()
+        );
+        println!(
+            "from_mmap_file (lazy):  {from_mmap_elapsed:?}, len = {}",
+            from_mmap_snapshot.len()
+        );
+        println!(
+            "Run this test under `/usr/bin/time -v` (see PR description) to compare peak RSS."
+        );
 
         let _ = std::fs::remove_file(&bin_path);
         let _ = std::fs::remove_file(&mmap_path);
@@ -958,7 +966,10 @@ mod tests {
         assert_eq!(loaded.len(), 500);
         for i in [0u16, 250, 499] {
             let key = i.to_le_bytes().to_vec();
-            assert!(loaded.get(&key).is_some(), "entry {i} failed to decode on demand");
+            assert!(
+                loaded.get(&key).is_some(),
+                "entry {i} failed to decode on demand"
+            );
         }
         let _ = std::fs::remove_file(&path);
     }
