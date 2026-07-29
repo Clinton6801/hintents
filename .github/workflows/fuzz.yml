@@ -47,7 +47,7 @@ jobs:
 
       - name: Execute LLVM SanitizerCoverage Pass
         working-directory: ./simulator
-        run: cargo rustc --bin simulator -- -C passes=sancov-module
+        run: cargo rustc --bin erst-sim -- -C passes=sancov-module
 
       - name: Reclaim runner temp space after fuzz build
         if: always()
