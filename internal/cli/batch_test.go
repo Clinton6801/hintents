@@ -261,7 +261,7 @@ func TestRunBatch_PerSimulationTimeoutKillsSlow(t *testing.T) {
 	}
 
 	// Mock simulator that sleeps longer than timeout
-	mockBinary := createMockSimulatorSlow(t, tmpDir, 2*time.Second)
+	mockBinary := createMockSimulatorSlow(t, tmpDir, 5*time.Second)
 	t.Setenv("ERST_SIM_PATH", mockBinary)
 
 	cfg := BatchConfig{
@@ -284,8 +284,7 @@ func TestRunBatch_PerSimulationTimeoutKillsSlow(t *testing.T) {
 	}
 	if result.Error == nil {
 		t.Error("expected error to be set")
-	}
-	if !contains(result.Error.Error(), "timeout") {
+	} else if !contains(result.Error.Error(), "timeout") {
 		t.Errorf("expected timeout error, got: %v", result.Error)
 	}
 }
@@ -463,13 +462,18 @@ func createMockSimulatorSlow(t *testing.T, tmpDir string, delay time.Duration) s
 	if seconds < 1 {
 		seconds = 1
 	}
+	
 	script := fmt.Sprintf(`#!/bin/bash
 sleep %d
 exit 0
 `, seconds)
+	
 	if runtime.GOOS == "windows" {
 		mockPath += ".bat"
-		script = fmt.Sprintf("@echo off\ntimeout /t %d /nobreak >nul 2>&1\nexit /b 0\n", seconds)
+		// On Windows, use a more reliable blocking mechanism that responds to process termination
+		// The "timeout" command with /nobreak will block and can be killed by process termination
+		// We add extra buffer to ensure it runs longer than the test timeout
+		script = fmt.Sprintf("@echo off\nping -n %d 127.0.0.1 >nul 2>&1\nexit /b 0\n", seconds+2)
 	}
 
 	if err := os.WriteFile(mockPath, []byte(script), 0755); err != nil {
