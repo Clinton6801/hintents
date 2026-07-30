@@ -437,6 +437,7 @@ exit 0
 	if err := os.WriteFile(mockPath, []byte(script), 0755); err != nil {
 		t.Fatalf("failed to create mock simulator: %v", err)
 	}
+
 	return mockPath
 }
 
@@ -453,6 +454,7 @@ exit 1
 	if err := os.WriteFile(mockPath, []byte(script), 0755); err != nil {
 		t.Fatalf("failed to create mock simulator: %v", err)
 	}
+
 	return mockPath
 }
 
@@ -462,12 +464,12 @@ func createMockSimulatorSlow(t *testing.T, tmpDir string, delay time.Duration) s
 	if seconds < 1 {
 		seconds = 1
 	}
-	
+
 	script := fmt.Sprintf(`#!/bin/bash
 sleep %d
 exit 0
 `, seconds)
-	
+
 	if runtime.GOOS == "windows" {
 		mockPath += ".bat"
 		// On Windows, use a more reliable blocking mechanism that responds to process termination
@@ -479,6 +481,7 @@ exit 0
 	if err := os.WriteFile(mockPath, []byte(script), 0755); err != nil {
 		t.Fatalf("failed to create mock simulator: %v", err)
 	}
+
 	return mockPath
 }
 
@@ -488,5 +491,6 @@ func contains(s, substr string) bool {
 			return true
 		}
 	}
+
 	return false
 }
