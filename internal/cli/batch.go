@@ -19,12 +19,12 @@ import (
 
 // BatchConfig holds configuration for parallel batch simulation.
 type BatchConfig struct {
-	InputDir   string        // directory containing transaction files
-	OutputDir  string        // directory for simulation results
-	Concurrency int          // number of parallel simulator instances (default: runtime.NumCPU())
+	InputDir    string        // directory containing transaction files
+	OutputDir   string        // directory for simulation results
+	Concurrency int           // number of parallel simulator instances (default: runtime.NumCPU())
 	FilePattern string        // glob pattern for transaction files (default: "*.json")
-	Timeout    time.Duration // per-simulation timeout (default: 30s)
-	FailFast   bool          // stop all on first failure
+	Timeout     time.Duration // per-simulation timeout (default: 30s)
+	FailFast    bool          // stop all on first failure
 }
 
 // BatchResult represents the result of simulating a single transaction file.

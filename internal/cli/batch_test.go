@@ -61,8 +61,8 @@ func TestRunBatch_ProcessesAllFiles(t *testing.T) {
 
 func TestRunBatch_ErrorsWhenInputDirNotExists(t *testing.T) {
 	cfg := BatchConfig{
-		InputDir:   "/nonexistent/path",
-		OutputDir:  t.TempDir(),
+		InputDir:    "/nonexistent/path",
+		OutputDir:   t.TempDir(),
 		Concurrency: 1,
 	}
 

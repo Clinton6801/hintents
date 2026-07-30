@@ -5,7 +5,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/dotandev/hintents/internal/cli"
@@ -14,12 +13,12 @@ import (
 )
 
 var (
-	batchSimulateInputDirFlag  string
-	batchSimulateOutputDirFlag string
+	batchSimulateInputDirFlag    string
+	batchSimulateOutputDirFlag   string
 	batchSimulateConcurrencyFlag int
 	batchSimulateFilePatternFlag string
-	batchSimulateTimeoutFlag   time.Duration
-	batchSimulateFailFastFlag  bool
+	batchSimulateTimeoutFlag     time.Duration
+	batchSimulateFailFastFlag    bool
 )
 
 // batchSimulateCmd executes parallel simulations of multiple transaction files.
@@ -66,7 +65,7 @@ func init() {
 	rootCmd.AddCommand(batchSimulateCmd)
 }
 
-func runBatchSimulate(cmd *cobra.Command, args []string) error {
+func runBatchSimulate(cmd *cobra.Command, _ []string) error {
 	ctx := cmd.Context()
 
 	// Set default concurrency if not specified
@@ -76,12 +75,12 @@ func runBatchSimulate(cmd *cobra.Command, args []string) error {
 	}
 
 	cfg := cli.BatchConfig{
-		InputDir:   batchSimulateInputDirFlag,
-		OutputDir:  batchSimulateOutputDirFlag,
+		InputDir:    batchSimulateInputDirFlag,
+		OutputDir:   batchSimulateOutputDirFlag,
 		Concurrency: concurrency,
 		FilePattern: batchSimulateFilePatternFlag,
-		Timeout:    batchSimulateTimeoutFlag,
-		FailFast:   batchSimulateFailFastFlag,
+		Timeout:     batchSimulateTimeoutFlag,
+		FailFast:    batchSimulateFailFastFlag,
 	}
 
 	startTime := time.Now()
