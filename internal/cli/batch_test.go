@@ -70,6 +70,7 @@ func TestRunBatch_ErrorsWhenInputDirNotExists(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected error for non-existent InputDir")
 	}
+
 	if !contains(err.Error(), "does not exist") {
 		t.Errorf("expected 'does not exist' in error, got: %v", err)
 	}
@@ -193,6 +194,7 @@ func TestRunBatch_CollectsFailureResults(t *testing.T) {
 		if result.Success {
 			t.Errorf("expected failure for %s", result.FilePath)
 		}
+
 		if result.Error == nil {
 			t.Errorf("expected error for %s", result.FilePath)
 		}
@@ -236,6 +238,7 @@ func TestRunBatch_FailFastStopsOnFirstFailure(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected error when FailFast is triggered")
 	}
+
 	if !contains(err.Error(), "stopped after first failure") {
 		t.Errorf("expected 'stopped after first failure' in error, got: %v", err)
 	}
@@ -282,6 +285,7 @@ func TestRunBatch_PerSimulationTimeoutKillsSlow(t *testing.T) {
 	if result.Success {
 		t.Error("expected failure due to timeout")
 	}
+
 	if result.Error == nil {
 		t.Error("expected error to be set")
 	} else if !contains(result.Error.Error(), "timeout") {
@@ -326,6 +330,7 @@ func TestRunBatch_ResultsIncludeDuration(t *testing.T) {
 		if result.Duration == 0 {
 			t.Errorf("expected non-zero Duration for %s", result.FilePath)
 		}
+
 		if result.Duration < 0 {
 			t.Errorf("expected positive Duration, got %v for %s", result.Duration, result.FilePath)
 		}
@@ -345,12 +350,15 @@ func TestRunBatch_FilePatternFilteringWorks(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(inputDir, "tx1.json"), []byte(`{}`), 0644); err != nil {
 		t.Fatal(err)
 	}
+
 	if err := os.WriteFile(filepath.Join(inputDir, "tx2.json"), []byte(`{}`), 0644); err != nil {
 		t.Fatal(err)
 	}
+
 	if err := os.WriteFile(filepath.Join(inputDir, "tx3.txt"), []byte(`{}`), 0644); err != nil {
 		t.Fatal(err)
 	}
+
 	if err := os.WriteFile(filepath.Join(inputDir, "tx4.xml"), []byte(`{}`), 0644); err != nil {
 		t.Fatal(err)
 	}
